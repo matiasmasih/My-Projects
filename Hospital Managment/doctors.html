@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doctors - MediCare Hospital</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/pages/doctors.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <div class="logo">
+          <i class="fas fa-hospital-alt"></i>
+          <span>MediCare</span>
+        </div>
+        <nav class="nav">
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="appointments.html">Appointments</a></li>
+            <li><a href="patients.html">Patients</a></li>
+            <li><a href="doctors.html" class="active">Doctors</a></li>
+            <li><a href="departments.html">Departments</a></li>
+            <li><a href="payments.html">Payments</a></li>
+            <li class="user-menu">
+              <a href="profile.html" class="user-link">
+                <i class="fas fa-user-circle"></i>
+                <span id="userName">User</span>
+              </a>
+              <div class="dropdown-menu">
+                <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                <a href="#" id="logoutBtn"
+                  ><i class="fas fa-sign-out-alt"></i> Logout</a
+                >
+              </div>
+            </li>
+          </ul>
+        </nav>
+        <div class="mobile-toggle">
+          <i class="fas fa-bars"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- Doctors Section -->
+    <section class="doctors-section">
+      <div class="container">
+        <div class="section-header">
+          <h1>Our Medical Team</h1>
+          <p>Meet our experienced healthcare professionals</p>
+          <button class="btn btn-primary" id="newDoctorBtn">
+            <i class="fas fa-plus"></i> Add Doctor
+          </button>
+        </div>
+
+        <!-- Doctor Stats -->
+        <div class="stats-cards">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-user-md"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Total Doctors</h3>
+              <span class="stat-number" id="totalDoctors">0</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-stethoscope"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Available Today</h3>
+              <span class="stat-number" id="availableDoctors">0</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-star"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Average Rating</h3>
+              <span class="stat-number" id="averageRating">0.0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="filters">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input
+              type="text"
+              id="searchDoctors"
+              placeholder="Search doctors by name, specialty, or department..."
+            />
+          </div>
+          <div class="filter-group">
+            <select id="departmentFilter">
+              <option value="">All Departments</option>
+              <option value="cardiology">Cardiology</option>
+              <option value="dermatology">Dermatology</option>
+              <option value="pediatrics">Pediatrics</option>
+              <option value="orthopedics">Orthopedics</option>
+              <option value="neurology">Neurology</option>
+            </select>
+            <select id="specialtyFilter">
+              <option value="">All Specialties</option>
+              <option value="cardiologist">Cardiologist</option>
+              <option value="dermatologist">Dermatologist</option>
+              <option value="pediatrician">Pediatrician</option>
+              <option value="orthopedic">Orthopedic Surgeon</option>
+              <option value="neurologist">Neurologist</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Doctors Grid -->
+        <div class="doctors-grid" id="doctorsGrid">
+          <!-- Doctors will be loaded here -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Doctor Modal -->
+    <div class="modal" id="doctorModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modalTitle">Add New Doctor</h3>
+          <button class="modal-close" id="modalClose">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form id="doctorForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="doctorFirstName">First Name</label>
+                <input
+                  type="text"
+                  id="doctorFirstName"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="doctorLastName">Last Name</label>
+                <input
+                  type="text"
+                  id="doctorLastName"
+                  class="form-control"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="doctorEmail">Email</label>
+                <input
+                  type="email"
+                  id="doctorEmail"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="doctorPhone">Phone</label>
+                <input
+                  type="tel"
+                  id="doctorPhone"
+                  class="form-control"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="doctorDepartment">Department</label>
+                <select id="doctorDepartment" class="form-control" required>
+                  <option value="">Select Department</option>
+                  <option value="cardiology">Cardiology</option>
+                  <option value="dermatology">Dermatology</option>
+                  <option value="pediatrics">Pediatrics</option>
+                  <option value="orthopedics">Orthopedics</option>
+                  <option value="neurology">Neurology</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="doctorSpecialty">Specialty</label>
+                <input
+                  type="text"
+                  id="doctorSpecialty"
+                  class="form-control"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="doctorExperience">Years of Experience</label>
+                <input
+                  type="number"
+                  id="doctorExperience"
+                  class="form-control"
+                  min="0"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="doctorEducation">Education</label>
+                <input
+                  type="text"
+                  id="doctorEducation"
+                  class="form-control"
+                  placeholder="Medical school, degrees..."
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="doctorBio">Bio/Description</label>
+              <textarea
+                id="doctorBio"
+                class="form-control"
+                rows="3"
+                placeholder="Brief professional biography..."
+              ></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="doctorConsultationFee">Consultation Fee ($)</label>
+                <input
+                  type="number"
+                  id="doctorConsultationFee"
+                  class="form-control"
+                  min="0"
+                  step="0.01"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="doctorAvailability">Availability</label>
+                <select id="doctorAvailability" class="form-control" required>
+                  <option value="available">Available</option>
+                  <option value="unavailable">Unavailable</option>
+                  <option value="on_leave">On Leave</option>
+                </select>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="modalCancel">
+            Cancel
+          </button>
+          <button type="button" class="btn btn-primary" id="modalSave">
+            Save Doctor
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>MediCare Hospital</h3>
+            <p>Providing quality healthcare management solutions since 2023.</p>
+          </div>
+          <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="doctors.html">Doctors</a></li>
+              <li><a href="departments.html">Departments</a></li>
+              <li><a href="payments.html">Payments</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Contact Us</h4>
+            <p><i class="fas fa-phone"></i> +1 (555) 123-4567</p>
+            <p><i class="fas fa-envelope"></i> info@medicare.com</p>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>
+            &copy; 2023 MediCare Hospital Management System. All rights
+            reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/pages/doctors.js"></script>
+  </body>
+</html>

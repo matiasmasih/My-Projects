@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile - MediCare Hospital</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/pages/profile.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <div class="logo">
+          <i class="fas fa-hospital-alt"></i>
+          <span>MediCare</span>
+        </div>
+        <nav class="nav">
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="appointments.html">Appointments</a></li>
+            <li><a href="patients.html">Patients</a></li>
+            <li><a href="doctors.html">Doctors</a></li>
+            <li><a href="departments.html">Departments</a></li>
+            <li><a href="payments.html">Payments</a></li>
+            <li class="user-menu">
+              <a href="profile.html" class="user-link active">
+                <i class="fas fa-user-circle"></i>
+                <span id="userName">User</span>
+              </a>
+              <div class="dropdown-menu">
+                <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                <a href="#" id="logoutBtn"
+                  ><i class="fas fa-sign-out-alt"></i> Logout</a
+                >
+              </div>
+            </li>
+          </ul>
+        </nav>
+        <div class="mobile-toggle">
+          <i class="fas fa-bars"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- Profile Section -->
+    <section class="profile-section">
+      <div class="container">
+        <!-- Profile Header with Image Upload -->
+        <div class="profile-header">
+          <div class="profile-avatar">
+            <div class="profile-image-container">
+              <div class="profile-image" id="profileHeaderImageContainer">
+                <i class="fas fa-user-circle" id="profileHeaderIcon"></i>
+                <img
+                  id="profileHeaderImage"
+                  src=""
+                  alt="Profile"
+                  style="display: none"
+                />
+              </div>
+              <div class="profile-image-edit" id="editAvatarBtn">
+                <i class="fas fa-camera"></i>
+              </div>
+              <input
+                type="file"
+                id="profileImageInput"
+                class="profile-image-input"
+                accept="image/*"
+              />
+            </div>
+            <div
+              class="profile-image-actions"
+              id="imageActions"
+              style="display: none"
+            >
+              <button class="btn btn-primary btn-sm" id="saveImageBtn">
+                Save Image
+              </button>
+              <button class="btn btn-secondary btn-sm" id="cancelImageBtn">
+                Cancel
+              </button>
+            </div>
+          </div>
+          <div class="profile-info">
+            <h1 id="profileUserName">John Doe</h1>
+            <p id="profileUserRole">Patient</p>
+            <p id="profileUserEmail">john.doe@example.com</p>
+          </div>
+          <div class="profile-actions">
+            <button class="btn btn-secondary" id="editProfileBtn">
+              <i class="fas fa-edit"></i> Edit Profile
+            </button>
+          </div>
+        </div>
+
+        <div class="profile-content">
+          <div class="content-sidebar">
+            <nav class="profile-nav">
+              <a href="#personal" class="nav-item active" data-tab="personal">
+                <i class="fas fa-user"></i>
+                Personal Info
+              </a>
+              <a href="#medical" class="nav-item" data-tab="medical">
+                <i class="fas fa-file-medical"></i>
+                Medical History
+              </a>
+              <a href="#appointments" class="nav-item" data-tab="appointments">
+                <i class="fas fa-calendar-check"></i>
+                My Appointments
+              </a>
+              <a href="#security" class="nav-item" data-tab="security">
+                <i class="fas fa-shield-alt"></i>
+                Security
+              </a>
+              <a href="#settings" class="nav-item" data-tab="settings">
+                <i class="fas fa-cog"></i>
+                Settings
+              </a>
+            </nav>
+          </div>
+
+          <div class="content-main">
+            <!-- Personal Info Tab -->
+            <div class="tab-content active" id="personalTab">
+              <div class="tab-header">
+                <h2>Personal Information</h2>
+                <p>Manage your personal details and contact information</p>
+              </div>
+              <div class="info-grid">
+                <div class="info-card">
+                  <h3>Basic Information</h3>
+                  <div class="info-list">
+                    <div class="info-item">
+                      <span class="info-label">Full Name</span>
+                      <span class="info-value" id="infoFullName">John Doe</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Date of Birth</span>
+                      <span class="info-value" id="infoDob"
+                        >January 15, 1985</span
+                      >
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Gender</span>
+                      <span class="info-value" id="infoGender">Male</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Blood Group</span>
+                      <span class="info-value" id="infoBloodGroup">O+</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="info-card">
+                  <h3>Contact Information</h3>
+                  <div class="info-list">
+                    <div class="info-item">
+                      <span class="info-label">Email</span>
+                      <span class="info-value" id="infoEmail"
+                        >john.doe@example.com</span
+                      >
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Phone</span>
+                      <span class="info-value" id="infoPhone"
+                        >+1 (555) 123-4567</span
+                      >
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Address</span>
+                      <span class="info-value" id="infoAddress"
+                        >123 Main Street, New York, NY 10001</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="info-card">
+                  <h3>Emergency Contact</h3>
+                  <div class="info-list">
+                    <div class="info-item">
+                      <span class="info-label">Name</span>
+                      <span class="info-value" id="infoEmergencyName"
+                        >Jane Doe</span
+                      >
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Relationship</span>
+                      <span class="info-value" id="infoEmergencyRelation"
+                        >Spouse</span
+                      >
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Phone</span>
+                      <span class="info-value" id="infoEmergencyPhone"
+                        >+1 (555) 123-4568</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Medical History Tab -->
+            <div class="tab-content" id="medicalTab">
+              <div class="tab-header">
+                <h2>Medical History</h2>
+                <p>Your medical records and health information</p>
+              </div>
+              <div class="medical-grid">
+                <div class="medical-card">
+                  <h3>Allergies</h3>
+                  <div class="medical-list" id="allergiesList">
+                    <!-- Allergies will be loaded here -->
+                  </div>
+                </div>
+                <div class="medical-card">
+                  <h3>Current Medications</h3>
+                  <div class="medical-list" id="medicationsList">
+                    <!-- Medications will be loaded here -->
+                  </div>
+                </div>
+                <div class="medical-card">
+                  <h3>Medical Conditions</h3>
+                  <div class="medical-list" id="conditionsList">
+                    <!-- Conditions will be loaded here -->
+                  </div>
+                </div>
+                <div class="medical-card full-width">
+                  <h3>Recent Visits</h3>
+                  <div class="visits-list" id="visitsList">
+                    <!-- Recent visits will be loaded here -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Appointments Tab -->
+            <div class="tab-content" id="appointmentsTab">
+              <div class="tab-header">
+                <h2>My Appointments</h2>
+                <p>View and manage your upcoming appointments</p>
+              </div>
+              <div class="appointments-list" id="profileAppointmentsList">
+                <!-- Appointments will be loaded here -->
+              </div>
+            </div>
+
+            <!-- Security Tab -->
+            <div class="tab-content" id="securityTab">
+              <div class="tab-header">
+                <h2>Security Settings</h2>
+                <p>Manage your password and account security</p>
+              </div>
+              <div class="security-grid">
+                <div class="security-card">
+                  <h3>Change Password</h3>
+                  <form id="changePasswordForm">
+                    <div class="form-group">
+                      <label for="currentPassword">Current Password</label>
+                      <input
+                        type="password"
+                        id="currentPassword"
+                        class="form-control"
+                        required
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label for="newPassword">New Password</label>
+                      <input
+                        type="password"
+                        id="newPassword"
+                        class="form-control"
+                        required
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label for="confirmNewPassword"
+                        >Confirm New Password</label
+                      >
+                      <input
+                        type="password"
+                        id="confirmNewPassword"
+                        class="form-control"
+                        required
+                      />
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                      Update Password
+                    </button>
+                  </form>
+                </div>
+                <div class="security-card">
+                  <h3>Two-Factor Authentication</h3>
+                  <div class="security-info">
+                    <p>Add an extra layer of security to your account</p>
+                    <div class="toggle-group">
+                      <span>Enable 2FA</span>
+                      <label class="toggle-switch">
+                        <input type="checkbox" id="enable2FA" />
+                        <span class="toggle-slider"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div class="tab-content" id="settingsTab">
+              <div class="tab-header">
+                <h2>Account Settings</h2>
+                <p>Customize your account preferences</p>
+              </div>
+              <div class="settings-grid">
+                <div class="settings-card">
+                  <h3>Notification Preferences</h3>
+                  <div class="settings-list">
+                    <div class="setting-item">
+                      <span>Email Notifications</span>
+                      <label class="toggle-switch">
+                        <input
+                          type="checkbox"
+                          id="emailNotifications"
+                          checked
+                        />
+                        <span class="toggle-slider"></span>
+                      </label>
+                    </div>
+                    <div class="setting-item">
+                      <span>SMS Notifications</span>
+                      <label class="toggle-switch">
+                        <input type="checkbox" id="smsNotifications" />
+                        <span class="toggle-slider"></span>
+                      </label>
+                    </div>
+                    <div class="setting-item">
+                      <span>Appointment Reminders</span>
+                      <label class="toggle-switch">
+                        <input
+                          type="checkbox"
+                          id="appointmentReminders"
+                          checked
+                        />
+                        <span class="toggle-slider"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="settings-card">
+                  <h3>Privacy Settings</h3>
+                  <div class="settings-list">
+                    <div class="setting-item">
+                      <span>Share medical data for research</span>
+                      <label class="toggle-switch">
+                        <input type="checkbox" id="shareMedicalData" />
+                        <span class="toggle-slider"></span>
+                      </label>
+                    </div>
+                    <div class="setting-item">
+                      <span>Visible to other patients</span>
+                      <label class="toggle-switch">
+                        <input type="checkbox" id="visibleToPatients" />
+                        <span class="toggle-slider"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal" id="editProfileModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Edit Profile</h3>
+          <button class="modal-close" id="editModalClose">&times;</button>
+        </div>
+        <div class="modal-body">
+          <!-- Profile Image Upload Section -->
+          <div class="form-section">
+            <h3>Profile Picture</h3>
+            <div class="profile-image-section">
+              <div class="profile-image-container">
+                <div class="profile-image" id="modalProfileImage">
+                  <i class="fas fa-user"></i>
+                  <img
+                    id="modalProfileImagePreview"
+                    src=""
+                    alt="Profile"
+                    style="display: none"
+                  />
+                </div>
+                <div class="profile-image-edit" id="modalEditImageBtn">
+                  <i class="fas fa-camera"></i>
+                </div>
+                <input
+                  type="file"
+                  id="modalProfileImageInput"
+                  class="profile-image-input"
+                  accept="image/*"
+                />
+              </div>
+              <div
+                class="profile-image-actions"
+                id="modalImageActions"
+                style="display: none"
+              >
+                <button class="btn btn-primary btn-sm" id="modalSaveImageBtn">
+                  Save Image
+                </button>
+                <button
+                  class="btn btn-secondary btn-sm"
+                  id="modalCancelImageBtn"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Personal Information Form -->
+          <div class="form-section">
+            <h3>Personal Information</h3>
+            <form id="editProfileForm">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="editFirstName">First Name</label>
+                  <input
+                    type="text"
+                    id="editFirstName"
+                    class="form-control"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="editLastName">Last Name</label>
+                  <input
+                    type="text"
+                    id="editLastName"
+                    class="form-control"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="editEmail">Email</label>
+                <input
+                  type="email"
+                  id="editEmail"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="editPhone">Phone</label>
+                <input
+                  type="tel"
+                  id="editPhone"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="editDob">Date of Birth</label>
+                  <input
+                    type="date"
+                    id="editDob"
+                    class="form-control"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="editGender">Gender</label>
+                  <select id="editGender" class="form-control" required>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="editAddress">Address</label>
+                <textarea
+                  id="editAddress"
+                  class="form-control"
+                  rows="3"
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <label for="editBloodGroup">Blood Group</label>
+                <select id="editBloodGroup" class="form-control">
+                  <option value="">Select Blood Group</option>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="editEmergencyName">Emergency Contact Name</label>
+                  <input
+                    type="text"
+                    id="editEmergencyName"
+                    class="form-control"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="editEmergencyRelation">Relationship</label>
+                  <input
+                    type="text"
+                    id="editEmergencyRelation"
+                    class="form-control"
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="editEmergencyPhone">Emergency Contact Phone</label>
+                <input
+                  type="tel"
+                  id="editEmergencyPhone"
+                  class="form-control"
+                />
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="editModalCancel">
+            Cancel
+          </button>
+          <button type="button" class="btn btn-primary" id="editModalSave">
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>MediCare Hospital</h3>
+            <p>Providing quality healthcare management solutions since 2023.</p>
+          </div>
+          <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="doctors.html">Doctors</a></li>
+              <li><a href="departments.html">Departments</a></li>
+              <li><a href="payments.html">Payments</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Contact Us</h4>
+            <p><i class="fas fa-phone"></i> +1 (555) 123-4567</p>
+            <p><i class="fas fa-envelope"></i> info@medicare.com</p>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>
+            &copy; 2023 MediCare Hospital Management System. All rights
+            reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/pages/profile.js"></script>
+  </body>
+</html>

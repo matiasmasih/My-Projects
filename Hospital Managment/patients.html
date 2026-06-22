@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Patients - MediCare Hospital</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/pages/patients.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <div class="logo">
+          <i class="fas fa-hospital-alt"></i>
+          <span>MediCare</span>
+        </div>
+        <nav class="nav">
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="appointments.html">Appointments</a></li>
+            <li><a href="patients.html" class="active">Patients</a></li>
+            <li><a href="doctors.html">Doctors</a></li>
+            <li><a href="departments.html">Departments</a></li>
+            <li><a href="payments.html">Payments</a></li>
+            <li class="user-menu">
+              <a href="profile.html" class="user-link">
+                <i class="fas fa-user-circle"></i>
+                <span id="userName">User</span>
+              </a>
+              <div class="dropdown-menu">
+                <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                <a href="#" id="logoutBtn"
+                  ><i class="fas fa-sign-out-alt"></i> Logout</a
+                >
+              </div>
+            </li>
+          </ul>
+        </nav>
+        <div class="mobile-toggle">
+          <i class="fas fa-bars"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- Patients Section -->
+    <section class="patients-section">
+      <div class="container">
+        <div class="section-header">
+          <h1>Patient Management</h1>
+          <p>Manage patient records and information</p>
+          <button class="btn btn-primary" id="newPatientBtn">
+            <i class="fas fa-plus"></i> New Patient
+          </button>
+        </div>
+
+        <!-- Patient Stats -->
+        <div class="stats-cards">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-user-injured"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Total Patients</h3>
+              <span class="stat-number" id="totalPatients">0</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Today's Appointments</h3>
+              <span class="stat-number" id="todayAppointments">0</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-procedures"></i>
+            </div>
+            <div class="stat-info">
+              <h3>In Treatment</h3>
+              <span class="stat-number" id="inTreatment">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="filters">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input
+              type="text"
+              id="searchPatients"
+              placeholder="Search patients by name, ID, or contact..."
+            />
+          </div>
+          <div class="filter-actions">
+            <button class="btn btn-secondary" id="exportPatientsBtn">
+              <i class="fas fa-download"></i> Export
+            </button>
+            <button class="btn btn-secondary" id="refreshPatientsBtn">
+              <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+          </div>
+        </div>
+
+        <!-- Patients Grid -->
+        <div class="patients-grid" id="patientsGrid">
+          <!-- Patients will be loaded here -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Patient Modal -->
+    <div class="modal" id="patientModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modalTitle">New Patient</h3>
+          <button class="modal-close" id="modalClose">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form id="patientForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="patientFirstName">First Name</label>
+                <input
+                  type="text"
+                  id="patientFirstName"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="patientLastName">Last Name</label>
+                <input
+                  type="text"
+                  id="patientLastName"
+                  class="form-control"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="patientEmail">Email</label>
+                <input
+                  type="email"
+                  id="patientEmail"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="patientPhone">Phone</label>
+                <input
+                  type="tel"
+                  id="patientPhone"
+                  class="form-control"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="patientDob">Date of Birth</label>
+                <input
+                  type="date"
+                  id="patientDob"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="patientGender">Gender</label>
+                <select id="patientGender" class="form-control" required>
+                  <option value="">Select Gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="patientAddress">Address</label>
+              <textarea
+                id="patientAddress"
+                class="form-control"
+                rows="2"
+              ></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="patientEmergencyContact">Emergency Contact</label>
+                <input
+                  type="text"
+                  id="patientEmergencyContact"
+                  class="form-control"
+                />
+              </div>
+              <div class="form-group">
+                <label for="patientEmergencyPhone">Emergency Phone</label>
+                <input
+                  type="tel"
+                  id="patientEmergencyPhone"
+                  class="form-control"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="patientMedicalHistory">Medical History</label>
+              <textarea
+                id="patientMedicalHistory"
+                class="form-control"
+                rows="3"
+                placeholder="Any known medical conditions, allergies, etc."
+              ></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="modalCancel">
+            Cancel
+          </button>
+          <button type="button" class="btn btn-primary" id="modalSave">
+            Save Patient
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>MediCare Hospital</h3>
+            <p>Providing quality healthcare management solutions since 2023.</p>
+          </div>
+          <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="doctors.html">Doctors</a></li>
+              <li><a href="departments.html">Departments</a></li>
+              <li><a href="payments.html">Payments</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Contact Us</h4>
+            <p><i class="fas fa-phone"></i> +1 (555) 123-4567</p>
+            <p><i class="fas fa-envelope"></i> info@medicare.com</p>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>
+            &copy; 2023 MediCare Hospital Management System. All rights
+            reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/pages/patients.js"></script>
+  </body>
+</html>

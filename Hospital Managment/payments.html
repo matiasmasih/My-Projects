@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payments - MediCare Hospital</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/pages/payments.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <div class="logo">
+          <i class="fas fa-hospital-alt"></i>
+          <span>MediCare</span>
+        </div>
+        <nav class="nav">
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="appointments.html">Appointments</a></li>
+            <li><a href="patients.html">Patients</a></li>
+            <li><a href="doctors.html">Doctors</a></li>
+            <li><a href="departments.html">Departments</a></li>
+            <li><a href="payments.html" class="active">Payments</a></li>
+            <li class="user-menu">
+              <a href="profile.html" class="user-link">
+                <i class="fas fa-user-circle"></i>
+                <span id="userName">User</span>
+              </a>
+              <div class="dropdown-menu">
+                <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                <a href="#" id="logoutBtn"
+                  ><i class="fas fa-sign-out-alt"></i> Logout</a
+                >
+              </div>
+            </li>
+          </ul>
+        </nav>
+        <div class="mobile-toggle">
+          <i class="fas fa-bars"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- Payments Section -->
+    <section class="payments-section">
+      <div class="container">
+        <div class="section-header">
+          <h1>Payment Management</h1>
+          <p>Manage patient payments and billing</p>
+          <button class="btn btn-primary" id="newPaymentBtn">
+            <i class="fas fa-plus"></i> New Payment
+          </button>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-cards">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Total Revenue</h3>
+              <span class="stat-number" id="totalRevenue">$0.00</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Pending Payments</h3>
+              <span class="stat-number" id="pendingPayments">0</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Completed Payments</h3>
+              <span class="stat-number" id="completedPayments">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+          <div class="filter-group">
+            <label>Status:</label>
+            <select id="statusFilter">
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="completed">Completed</option>
+              <option value="failed">Failed</option>
+              <option value="refunded">Refunded</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Date Range:</label>
+            <input type="date" id="startDate" />
+            <span>to</span>
+            <input type="date" id="endDate" />
+          </div>
+          <div class="filter-group">
+            <label>Search:</label>
+            <input
+              type="text"
+              id="searchPayments"
+              placeholder="Search payments..."
+            />
+          </div>
+        </div>
+
+        <!-- Payments Table -->
+        <div class="card">
+          <div class="card-header">
+            <h3>Payment Records</h3>
+            <div class="table-actions">
+              <button class="btn btn-secondary" id="exportBtn">
+                <i class="fas fa-download"></i> Export
+              </button>
+              <button class="btn btn-secondary" id="refreshBtn">
+                <i class="fas fa-sync-alt"></i> Refresh
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table" id="paymentsTable">
+                <thead>
+                  <tr>
+                    <th>Payment ID</th>
+                    <th>Patient</th>
+                    <th>Service</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Method</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Payments will be loaded here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- New Payment Modal -->
+    <div class="modal" id="paymentModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modalTitle">New Payment</h3>
+          <button class="modal-close" id="modalClose">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form id="paymentForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="modalPatient">Patient</label>
+                <select id="modalPatient" class="form-control" required>
+                  <option value="">Select Patient</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="modalAppointment">Appointment</label>
+                <select id="modalAppointment" class="form-control">
+                  <option value="">Select Appointment (Optional)</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="modalService">Service Type</label>
+              <select id="modalService" class="form-control" required>
+                <option value="">Select Service</option>
+                <option value="consultation">Consultation</option>
+                <option value="surgery">Surgery</option>
+                <option value="lab_test">Lab Test</option>
+                <option value="medication">Medication</option>
+                <option value="hospital_stay">Hospital Stay</option>
+                <option value="emergency">Emergency</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="modalAmount">Amount ($)</label>
+                <input
+                  type="number"
+                  id="modalAmount"
+                  class="form-control"
+                  step="0.01"
+                  min="0"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="modalPaymentMethod">Payment Method</label>
+                <select id="modalPaymentMethod" class="form-control" required>
+                  <option value="">Select Method</option>
+                  <option value="cash">Cash</option>
+                  <option value="credit_card">Credit Card</option>
+                  <option value="debit_card">Debit Card</option>
+                  <option value="insurance">Insurance</option>
+                  <option value="bank_transfer">Bank Transfer</option>
+                  <option value="mobile_payment">Mobile Payment</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Card Information Section (Hidden by default) -->
+            <div id="cardInfoSection" style="display: none">
+              <div class="form-section">
+                <h4>Card Information</h4>
+                <div class="form-group">
+                  <label for="cardNumber">Card Number</label>
+                  <input
+                    type="text"
+                    id="cardNumber"
+                    class="form-control"
+                    placeholder="1234 5678 9012 3456"
+                    maxlength="19"
+                  />
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="expiryDate">Expiry Date</label>
+                    <input
+                      type="text"
+                      id="expiryDate"
+                      class="form-control"
+                      placeholder="MM/YY"
+                      maxlength="5"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="cvv">CVV</label>
+                    <input
+                      type="text"
+                      id="cvv"
+                      class="form-control"
+                      placeholder="123"
+                      maxlength="3"
+                    />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="cardHolder">Cardholder Name</label>
+                  <input
+                    type="text"
+                    id="cardHolder"
+                    class="form-control"
+                    placeholder="John Doe"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Insurance Information Section (Hidden by default) -->
+            <div id="insuranceInfoSection" style="display: none">
+              <div class="form-section">
+                <h4>Insurance Information</h4>
+                <div class="form-group">
+                  <label for="insuranceProvider">Insurance Provider</label>
+                  <input
+                    type="text"
+                    id="insuranceProvider"
+                    class="form-control"
+                    placeholder="Insurance Company Name"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="policyNumber">Policy Number</label>
+                  <input
+                    type="text"
+                    id="policyNumber"
+                    class="form-control"
+                    placeholder="Policy Number"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="groupNumber">Group Number</label>
+                  <input
+                    type="text"
+                    id="groupNumber"
+                    class="form-control"
+                    placeholder="Group Number (if applicable)"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="modalDescription">Description</label>
+              <textarea
+                id="modalDescription"
+                class="form-control"
+                rows="3"
+                placeholder="Payment description..."
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label for="modalStatus">Status</label>
+              <select id="modalStatus" class="form-control" required>
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+                <option value="failed">Failed</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="modalCancel">
+            Cancel
+          </button>
+          <button type="button" class="btn btn-primary" id="modalSave">
+            Process Payment
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>MediCare Hospital</h3>
+            <p>Providing quality healthcare management solutions since 2023.</p>
+          </div>
+          <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="doctors.html">Doctors</a></li>
+              <li><a href="departments.html">Departments</a></li>
+              <li><a href="payments.html">Payments</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Contact Us</h4>
+            <p><i class="fas fa-phone"></i> +1 (555) 123-4567</p>
+            <p><i class="fas fa-envelope"></i> info@medicare.com</p>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>
+            &copy; 2023 MediCare Hospital Management System. All rights
+            reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/pages/payments.js"></script>
+  </body>
+</html>
