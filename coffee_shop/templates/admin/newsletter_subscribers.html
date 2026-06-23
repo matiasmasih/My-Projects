@@ -1,0 +1,418 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.newsletter-admin-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #faf7f2 0%, #f5efe8 100%);
+    min-height: calc(100vh - 200px);
+}
+
+/* Banner Styles */
+.newsletter-banner {
+    background: linear-gradient(135deg, #2C1810 0%, #3D2518 50%, #2C1810 100%);
+    border-radius: 24px;
+    padding: 40px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.newsletter-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(198,124,78,0.1) 0%, transparent 70%);
+    transform: rotate(25deg);
+    pointer-events: none;
+}
+
+.newsletter-banner::after {
+    content: '📧';
+    position: absolute;
+    bottom: 10px;
+    right: 30px;
+    font-size: 80px;
+    opacity: 0.1;
+}
+
+.banner-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    min-height: 180px;
+}
+
+.banner-top {
+    flex: 1;
+}
+
+.banner-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.banner-title i {
+    font-size: 50px;
+    color: #D4AF37;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.banner-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 20px;
+}
+
+.banner-stats {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.banner-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.1);
+    padding: 8px 16px;
+    border-radius: 40px;
+    backdrop-filter: blur(5px);
+}
+
+.banner-stat-item i {
+    color: #D4AF37;
+    font-size: 18px;
+}
+
+.banner-stat-item span {
+    color: white;
+    font-size: 14px;
+}
+
+.banner-stat-item strong {
+    color: #D4AF37;
+    font-size: 18px;
+    margin-left: 5px;
+}
+
+.banner-bottom {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.export-btn-banner {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 40px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 42px;
+}
+
+.export-btn-banner:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(40,167,69,0.4);
+    color: white;
+}
+
+.subscribers-card {
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+.card-title {
+    background: linear-gradient(135deg, #2C1810, #3D2518);
+    padding: 18px 25px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.card-title i {
+    margin-right: 8px;
+}
+
+.table-responsive {
+    padding: 0;
+}
+
+.subscribers-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.subscribers-table th {
+    background: #f8f9fa;
+    padding: 15px 20px;
+    text-align: left;
+    font-weight: 700;
+    color: #2C1810;
+    font-size: 0.85rem;
+    border-bottom: 2px solid #E8E0D5;
+}
+
+.subscribers-table td {
+    padding: 15px 20px;
+    border-bottom: 1px solid #E8E0D5;
+    color: #555;
+    vertical-align: middle;
+}
+
+.subscribers-table tr:hover {
+    background: #fef9f0;
+}
+
+.badge-confirmed {
+    background: #D4EDDA;
+    color: #155724;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.badge-pending {
+    background: #FFF3CD;
+    color: #856404;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.badge-active {
+    background: #D4EDDA;
+    color: #155724;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.badge-inactive {
+    background: #F8D7DA;
+    color: #721C24;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.delete-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.delete-btn:hover {
+    background: #c82333;
+    transform: scale(1.02);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px;
+}
+
+.empty-state i {
+    font-size: 70px;
+    color: #C67C4E;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    font-size: 1.3rem;
+    color: #2C1810;
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    color: #666;
+}
+
+@media (max-width: 768px) {
+    .newsletter-admin-container {
+        padding: 30px 15px;
+    }
+    .banner-title {
+        font-size: 1.8rem;
+        flex-direction: column;
+        text-align: center;
+    }
+    .banner-stats {
+        justify-content: center;
+    }
+    .banner-bottom {
+        justify-content: center;
+    }
+    .subscribers-table th,
+    .subscribers-table td {
+        padding: 10px 12px;
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .banner-stats {
+        flex-wrap: wrap;
+    }
+}
+</style>
+
+<div class="newsletter-admin-container">
+    <!-- Banner Section -->
+    <div class="newsletter-banner">
+        <div class="banner-content">
+            <div class="banner-top">
+                <div class="banner-title">
+                    <i class="fas fa-envelope-open-text"></i>
+                    <span>{{ t('newsletter_subscribers') }}</span>
+                </div>
+                <div class="banner-subtitle">
+                    {{ t('manage_subscribers') | default('Manage your newsletter subscribers') }}
+                </div>
+                <div class="banner-stats" id="bannerStats">
+                    <div class="banner-stat-item">
+                        <i class="fas fa-users"></i>
+                        <span>{{ t('total') | default('Total') }}: <strong id="totalSubscribers">0</strong></span>
+                    </div>
+                    <div class="banner-stat-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>{{ t('active') | default('Active') }}: <strong id="activeSubscribers">0</strong></span>
+                    </div>
+                    <div class="banner-stat-item">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ t('pending') | default('Pending') }}: <strong id="pendingSubscribers">0</strong></span>
+                    </div>
+                </div>
+            </div>
+            <div class="banner-bottom">
+                <a href="/admin/export-newsletter" class="export-btn-banner">
+                    <i class="fas fa-download"></i> {{ t('export_csv') }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subscribers Card -->
+    <div class="subscribers-card">
+        <div class="card-title">
+            <i class="fas fa-users"></i> {{ t('subscribers_list') }}
+        </div>
+        <div class="table-responsive">
+            {% if subscribers %}
+            <table class="subscribers-table">
+                <thead>
+                    <tr>
+                        <th>{{ t('full_name') }}</th>
+                        <th>{{ t('email') }}</th>
+                        <th>{{ t('subscribed_date') }}</th>
+                        <th>{{ t('confirmed') }}</th>
+                        <th>{{ t('status') }}</th>
+                        <th>{{ t('action') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sub in subscribers %}
+                    <tr>
+                        <td><strong>{{ sub.full_name }}</strong></td>
+                        <td>{{ sub.email }}</td>
+                        <td>{{ sub.subscribed_at.strftime('%d.%m.%Y') if sub.subscribed_at else 'N/A' }}</td>
+                        <td>
+                            {% if sub.is_confirmed %}
+                                <span class="badge-confirmed"><i class="fas fa-check-circle"></i> {{ t('confirmed') }}</span>
+                            {% else %}
+                                <span class="badge-pending"><i class="fas fa-clock"></i> {{ t('pending') | default('Pending') }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if sub.is_active %}
+                                <span class="badge-active"><i class="fas fa-check-circle"></i> {{ t('active') | default('Active') }}</span>
+                            {% else %}
+                                <span class="badge-inactive"><i class="fas fa-times-circle"></i> {{ t('inactive') | default('Inactive') }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <button class="delete-btn" onclick="deleteSubscriber({{ sub.id }})">
+                                <i class="fas fa-trash"></i> {{ t('delete') }}
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-users"></i>
+                <h3>{{ t('no_subscribers') }}</h3>
+                <p>{{ t('no_subscribers_msg') }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function updateBannerStats() {
+    const subscribers = {{ subscribers | tojson | safe }};
+    const total = subscribers.length;
+    const active = subscribers.filter(s => s.is_active).length;
+    const pending = subscribers.filter(s => !s.is_confirmed).length;
+
+    document.getElementById('totalSubscribers').innerText = total;
+    document.getElementById('activeSubscribers').innerText = active;
+    document.getElementById('pendingSubscribers').innerText = pending;
+}
+
+function deleteSubscriber(id) {
+    if (confirm('{{ t("delete_subscriber_confirm") }}')) {
+        fetch('/api/admin/delete-subscriber', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({id: id})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('{{ t("delete_error") }}');
+            }
+        });
+    }
+}
+
+// Update banner stats when page loads
+updateBannerStats();
+</script>
+{% endblock %}

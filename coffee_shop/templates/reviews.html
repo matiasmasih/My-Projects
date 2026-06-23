@@ -1,0 +1,643 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.reviews-container {
+    background: linear-gradient(135deg, #faf7f2 0%, #f5efe8 100%);
+    min-height: calc(100vh - 200px);
+    padding: 40px 0;
+}
+
+/* Banner Styles */
+.reviews-banner {
+    background: linear-gradient(135deg, #2C1810 0%, #3D2518 50%, #2C1810 100%);
+    border-radius: 24px;
+    padding: 40px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.reviews-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(198,124,78,0.1) 0%, transparent 70%);
+    transform: rotate(25deg);
+    pointer-events: none;
+}
+
+.reviews-banner::after {
+    content: '⭐';
+    position: absolute;
+    bottom: 10px;
+    right: 30px;
+    font-size: 80px;
+    opacity: 0.1;
+}
+
+.banner-content {
+    position: relative;
+    z-index: 2;
+}
+
+.banner-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.banner-title i {
+    font-size: 50px;
+    color: #D4AF37;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.banner-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 20px;
+}
+
+.banner-stats {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.banner-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.1);
+    padding: 8px 16px;
+    border-radius: 40px;
+    backdrop-filter: blur(5px);
+}
+
+.banner-stat-item i {
+    color: #D4AF37;
+    font-size: 18px;
+}
+
+.banner-stat-item span {
+    color: white;
+    font-size: 14px;
+}
+
+.banner-stat-item strong {
+    color: #D4AF37;
+    font-size: 18px;
+    margin-left: 5px;
+}
+
+/* Modern Review Cards */
+.review-card {
+    background: white;
+    border-radius: 28px;
+    padding: 32px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(198,124,78,0.06);
+}
+
+.review-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #C67C4E, #D4AF37, #E8A87C);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.review-card:hover::before {
+    opacity: 1;
+}
+
+.review-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 30px 60px rgba(198,124,78,0.15);
+    border-color: rgba(198,124,78,0.15);
+}
+
+.review-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 18px;
+}
+
+.review-stars {
+    color: #D4AF37;
+    font-size: 18px;
+    letter-spacing: 3px;
+}
+
+.review-quote-icon {
+    font-size: 40px;
+    color: rgba(198,124,78,0.12);
+    font-family: serif;
+    line-height: 1;
+    margin-top: -5px;
+}
+
+.review-text {
+    font-size: 15px;
+    line-height: 1.8;
+    color: #4A4A4A;
+    margin-bottom: 22px;
+    font-style: italic;
+    position: relative;
+    z-index: 1;
+    min-height: 70px;
+}
+
+.review-divider {
+    width: 40px;
+    height: 3px;
+    background: linear-gradient(90deg, #C67C4E, #D4AF37);
+    border-radius: 3px;
+    margin-bottom: 18px;
+}
+
+.review-author {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.review-avatar {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 22px;
+    box-shadow: 0 8px 25px rgba(198,124,78,0.25);
+    flex-shrink: 0;
+    position: relative;
+}
+
+.review-avatar::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #C67C4E, #D4AF37);
+    z-index: -1;
+    opacity: 0.3;
+}
+
+.review-author-info {
+    flex: 1;
+}
+
+.review-name {
+    font-weight: 700;
+    color: #2C1810;
+    font-size: 16px;
+    margin-bottom: 2px;
+}
+
+.review-title {
+    font-size: 12px;
+    color: #C67C4E;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.review-date {
+    font-size: 11px;
+    color: #999;
+    margin-top: 2px;
+}
+
+/* Write Review Card */
+.write-review-card {
+    background: linear-gradient(135deg, #ffffff, #faf5ef);
+    border-radius: 28px;
+    padding: 50px;
+    text-align: center;
+    border: 2px dashed rgba(198,124,78,0.2);
+    transition: all 0.4s ease;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+}
+
+.write-review-card:hover {
+    border-color: #C67C4E;
+    transform: translateY(-5px);
+    box-shadow: 0 20px 50px rgba(198,124,78,0.1);
+}
+
+.write-review-card .icon-wrapper {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, rgba(198,124,78,0.1), rgba(212,175,55,0.1));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+.write-review-card .icon-wrapper i {
+    font-size: 36px;
+    color: #C67C4E;
+}
+
+.write-review-card h3 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #2C1810;
+    margin-bottom: 12px;
+}
+
+.write-review-card p {
+    font-size: 1rem;
+    color: #888;
+    margin-bottom: 25px;
+}
+
+.btn-write {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    border: none;
+    padding: 10px 32px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    color: white;
+    display: inline-block;
+    text-decoration: none;
+    box-shadow: 0 5px 20px rgba(198,124,78,0.25);
+    height: 44px;
+    line-height: 24px;
+}
+
+.btn-write:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(198,124,78,0.35);
+    color: white;
+}
+
+/* Star Rating Input */
+.star-rating-input {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin: 25px 0;
+}
+
+.star-rating-input i {
+    font-size: 38px;
+    cursor: pointer;
+    color: #ddd;
+    transition: all 0.2s ease;
+}
+
+.star-rating-input i:hover,
+.star-rating-input i.active {
+    color: #D4AF37;
+    transform: scale(1.15);
+}
+
+/* Modal */
+.modal-content {
+    border-radius: 28px;
+    overflow: hidden;
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    color: white;
+    padding: 20px 28px;
+    border: none;
+}
+
+.modal-header .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+.modal-body {
+    padding: 32px;
+}
+
+.modal-footer {
+    padding: 20px 32px;
+    border-top: 1px solid #f0ede8;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 24px;
+    border-radius: 50px;
+    height: 40px;
+    font-size: 0.9rem;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    color: white;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    color: white;
+    border: none;
+    padding: 8px 24px;
+    border-radius: 50px;
+    height: 40px;
+    font-size: 0.9rem;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #A0522D, #8B4513);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .banner-title {
+        font-size: 1.8rem;
+        flex-direction: column;
+        text-align: center;
+    }
+    .banner-stats {
+        justify-content: center;
+    }
+    .review-card {
+        padding: 24px 20px;
+    }
+    .write-review-card {
+        padding: 30px 20px;
+    }
+    .write-review-card h3 {
+        font-size: 1.4rem;
+    }
+    .star-rating-input i {
+        font-size: 30px;
+    }
+    .btn-write {
+        height: 40px;
+        font-size: 0.85rem;
+        padding: 8px 24px;
+    }
+}
+</style>
+
+<div class="reviews-container">
+    <div class="container">
+        <!-- Banner -->
+        <div class="reviews-banner">
+            <div class="banner-content">
+                <div class="banner-title">
+                    <i class="fas fa-star"></i>
+                    <span>{{ t('customer_reviews') }}</span>
+                </div>
+                <div class="banner-subtitle">
+                    {{ t('reviews_subtitle') }}
+                </div>
+                <div class="banner-stats">
+                    <div class="banner-stat-item">
+                        <i class="fas fa-star"></i>
+                        <span>{{ t('average_rating') }}: <strong>4.8 ★</strong></span>
+                    </div>
+                    <div class="banner-stat-item">
+                        <i class="fas fa-comments"></i>
+                        <span>{{ t('total_reviews') }}: <strong>6</strong></span>
+                    </div>
+                    <div class="banner-stat-item">
+                        <i class="fas fa-heart"></i>
+                        <span>{{ t('happy_customers') }}: <strong>100%</strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Review 1 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="review-card">
+                    <div class="review-card-top">
+                        <div class="review-stars">★★★★★</div>
+                        <div class="review-quote-icon">"</div>
+                    </div>
+                    <p class="review-text">{{ t('review1_text') }}</p>
+                    <div class="review-divider"></div>
+                    <div class="review-author">
+                        <div class="review-avatar">S</div>
+                        <div class="review-author-info">
+                            <div class="review-name">Sarah Johnson</div>
+                            <div class="review-title">{{ t('coffee_enthusiast') }}</div>
+                            <div class="review-date">2 weeks ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Review 2 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="review-card">
+                    <div class="review-card-top">
+                        <div class="review-stars">★★★★★</div>
+                        <div class="review-quote-icon">"</div>
+                    </div>
+                    <p class="review-text">{{ t('review2_text') }}</p>
+                    <div class="review-divider"></div>
+                    <div class="review-author">
+                        <div class="review-avatar">M</div>
+                        <div class="review-author-info">
+                            <div class="review-name">Michael Chen</div>
+                            <div class="review-title">{{ t('regular_customer') }}</div>
+                            <div class="review-date">3 weeks ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Review 3 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="review-card">
+                    <div class="review-card-top">
+                        <div class="review-stars">★★★★★</div>
+                        <div class="review-quote-icon">"</div>
+                    </div>
+                    <p class="review-text">{{ t('review3_text') }}</p>
+                    <div class="review-divider"></div>
+                    <div class="review-author">
+                        <div class="review-avatar">E</div>
+                        <div class="review-author-info">
+                            <div class="review-name">Emma Davis</div>
+                            <div class="review-title">{{ t('remote_worker') }}</div>
+                            <div class="review-date">1 month ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Review 4 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="review-card">
+                    <div class="review-card-top">
+                        <div class="review-stars">★★★★☆</div>
+                        <div class="review-quote-icon">"</div>
+                    </div>
+                    <p class="review-text">{{ t('review4_text') }}</p>
+                    <div class="review-divider"></div>
+                    <div class="review-author">
+                        <div class="review-avatar">P</div>
+                        <div class="review-author-info">
+                            <div class="review-name">Priya Patel</div>
+                            <div class="review-title">{{ t('tea_lover') }}</div>
+                            <div class="review-date">1 month ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Review 5 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="review-card">
+                    <div class="review-card-top">
+                        <div class="review-stars">★★★★★</div>
+                        <div class="review-quote-icon">"</div>
+                    </div>
+                    <p class="review-text">{{ t('review5_text') }}</p>
+                    <div class="review-divider"></div>
+                    <div class="review-author">
+                        <div class="review-avatar">D</div>
+                        <div class="review-author-info">
+                            <div class="review-name">David Wilson</div>
+                            <div class="review-title">{{ t('coffee_addict') }}</div>
+                            <div class="review-date">2 months ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Review 6 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="review-card">
+                    <div class="review-card-top">
+                        <div class="review-stars">★★★★★</div>
+                        <div class="review-quote-icon">"</div>
+                    </div>
+                    <p class="review-text">{{ t('review6_text') }}</p>
+                    <div class="review-divider"></div>
+                    <div class="review-author">
+                        <div class="review-avatar">J</div>
+                        <div class="review-author-info">
+                            <div class="review-name">Jessica Taylor</div>
+                            <div class="review-title">{{ t('loyal_customer') }}</div>
+                            <div class="review-date">2 months ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Write Review Section -->
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-8">
+                <div class="write-review-card">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-pen-alt"></i>
+                    </div>
+                    <h3>{{ t('share_experience') }}</h3>
+                    <p>{{ t('share_experience_msg') }}</p>
+                    {% if current_user.is_authenticated %}
+                    <button class="btn-write" data-bs-toggle="modal" data-bs-target="#reviewModal">
+                        {{ t('write_review') }}
+                    </button>
+                    {% else %}
+                    <a href="/login" class="btn-write">{{ t('login_write_review') }}</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Review Modal -->
+<div class="modal fade" id="reviewModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-star me-2"></i>{{ t('write_review') }}</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="star-rating-input" id="starRating">
+                    <i class="far fa-star" data-rating="1"></i>
+                    <i class="far fa-star" data-rating="2"></i>
+                    <i class="far fa-star" data-rating="3"></i>
+                    <i class="far fa-star" data-rating="4"></i>
+                    <i class="far fa-star" data-rating="5"></i>
+                </div>
+                <input type="hidden" id="reviewRating" value="0">
+                <div class="mb-3">
+                    <textarea class="form-control" id="reviewComment" rows="4" placeholder="{{ t('write_review_placeholder') }}"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ t('cancel') }}</button>
+                <button type="button" class="btn btn-primary" id="submitReview">{{ t('submit_review') }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let selectedRating = 0;
+document.querySelectorAll('.star-rating-input i').forEach(star => {
+    star.addEventListener('click', function() {
+        selectedRating = parseInt(this.dataset.rating);
+        document.getElementById('reviewRating').value = selectedRating;
+        document.querySelectorAll('.star-rating-input i').forEach((s, i) => {
+            if (i < selectedRating) {
+                s.className = 'fas fa-star';
+                s.style.color = '#D4AF37';
+            } else {
+                s.className = 'far fa-star';
+                s.style.color = '#ddd';
+            }
+        });
+    });
+});
+
+document.getElementById('submitReview')?.addEventListener('click', async function() {
+    if (selectedRating === 0) {
+        alert('{{ t("select_rating") }}');
+        return;
+    }
+    const rating = document.getElementById('reviewRating').value;
+    const comment = document.getElementById('reviewComment').value;
+    const response = await fetch('/api/review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rating: rating, comment: comment })
+    });
+    if (response.ok) {
+        alert('{{ t("review_thanks") }}');
+        location.reload();
+    }
+});
+</script>
+{% endblock %}

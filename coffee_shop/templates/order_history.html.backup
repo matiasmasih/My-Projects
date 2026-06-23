@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <i class="fas fa-box-open fa-3x mb-3" style="color: #C67C4E;"></i>
+        <h1 class="display-4 mb-3">{{ t('my_orders') }}</h1>
+        <p class="text-muted">{{ t('track_orders') }}</p>
+
+        <!-- Currency Selector -->
+        <div class="mt-3">
+            <label class="me-2">Currency:</label>
+            <select id="currency-selector" class="form-select d-inline-block w-auto" onchange="changeCurrency(this.value)">
+                <option value="USD" {% if session.get('currency', 'USD') == 'USD' %}selected{% endif %}>$ USD - Dollar</option>
+                <option value="EUR" {% if session.get('currency', 'USD') == 'EUR' %}selected{% endif %}>€ EUR - Euro</option>
+                <option value="AFN" {% if session.get('currency', 'USD') == 'AFN' %}selected{% endif %}>؋ AFN - Afghani</option>
+            </select>
+        </div>
+    </div>
+
+    {% if orders %}
+        {% for order in orders %}
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header bg-white">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <strong>{{ order.order_number }}</strong>
+                    </div>
+                    <div class="col-md-3">
+                        {{ order.created_at.strftime('%d/%m/%Y %H:%M') if order.created_at else 'N/A' }}
+                    </div>
+                    <div class="col-md-2">
+                        {{ format_currency(order.total_amount) }}
+                    </div>
+                    <div class="col-md-2">
+                        <span class="badge {% if order.status == 'cancelled' %}bg-danger{% elif order.status == 'completed' %}bg-success{% else %}bg-warning{% endif %}">
+                            {{ order.status }}
+                        </span>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-sm btn-outline-primary" onclick="toggleOrder({{ order.id }})">
+                            {{ t('view_details') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body" id="order-{{ order.id }}" style="display: none;">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h6>{{ t('order_items') }}</h6>
+                        {% set items = order.get_items() %}
+                        {% for item in items %}
+                        <div class="d-flex justify-content-between py-2 border-bottom">
+                            <span>
+                                <strong>{{ item.quantity }}x</strong> {{ item.name }}
+                            </span>
+                            <span>{{ format_currency(item.price_at_time * item.quantity) }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="col-md-4">
+                        <div class="bg-light p-3 rounded">
+                            <h6>{{ t('order_summary') }}</h6>
+                            <div class="d-flex justify-content-between">
+                                <span>{{ t('subtotal') }}</span>
+                                <span>{{ format_currency(order.total_amount / 1.1) }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>{{ t('tax') }}</span>
+                                <span>{{ format_currency(order.total_amount - (order.total_amount / 1.1)) }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>{{ t('delivery_fee') }}</span>
+                                <span>{{ format_currency(2.50) }}</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <strong>{{ t('total') }}</strong>
+                                <strong>{{ format_currency(order.total_amount + 2.50) }}</strong>
+                            </div>
+                            <hr>
+                            <a href="/receipt/{{ order.order_number }}" class="btn btn-sm btn-outline-success w-100 mb-2" target="_blank">
+                                <i class="fas fa-receipt me-1"></i> {{ t('view_receipt') }}
+                            </a>
+                            <button class="btn btn-sm btn-success w-100 reorder-btn" data-order-id="{{ order.id }}">
+                                <i class="fas fa-redo-alt me-1"></i> {{ t('reorder') }}
+                            </button>
+                            {% if order.status == 'pending' %}
+                            <button class="btn btn-sm btn-danger w-100 mt-2 cancel-order-btn" data-order-id="{{ order.id }}" data-order-number="{{ order.order_number }}">
+                                <i class="fas fa-trash-alt me-1"></i> Cancel Order
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-shopping-cart fa-4x mb-3 text-muted"></i>
+            <h3>{{ t('no_orders') }}</h3>
+            <p class="text-muted">{{ t('start_shopping') }}</p>
+            <a href="/menu" class="btn btn-primary mt-3">{{ t('browse_menu') }}</a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function toggleOrder(orderId) {
+    const body = document.getElementById(`order-${orderId}`);
+    if (body.style.display === 'none' || body.style.display === '') {
+        body.style.display = 'block';
+    } else {
+        body.style.display = 'none';
+    }
+}
+
+function changeCurrency(currency) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('currency', currency);
+    window.location.href = url.toString();
+}
+
+document.querySelectorAll('.reorder-btn').forEach(btn => {
+    btn.addEventListener('click', async function() {
+        const orderId = this.dataset.orderId;
+        try {
+            const response = await fetch('/api/reorder', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({order_id: orderId, order_type: 'web'})
+            });
+            if (response.ok) {
+                window.location.href = '/cart';
+            } else {
+                alert('Failed to reorder. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        }
+    });
+});
+
+// Cancel order functionality
+document.querySelectorAll('.cancel-order-btn').forEach(btn => {
+    btn.addEventListener('click', async function() {
+        const orderId = this.dataset.orderId;
+        const orderNumber = this.dataset.orderNumber;
+        
+        if (confirm(`Are you sure you want to cancel order ${orderNumber}? This action cannot be undone.`)) {
+            try {
+                const response = await fetch(`/api/cancel-order/${orderId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert('Order cancelled successfully!');
+                    location.reload();
+                } else {
+                    alert('Failed to cancel order.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

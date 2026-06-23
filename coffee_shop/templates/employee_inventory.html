@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <i class="fas fa-boxes fa-3x mb-3" style="color: #C67C4E;"></i>
+        <h1 class="display-4 mb-3">{% if session.lang == 'fi' %}Varastonhallinta{% elif session.lang == 'sv' %}Lagerhantering{% elif session.lang == 'fa' %}مدیریت موجودی{% else %}Inventory Management{% endif %}</h1>
+        <p class="text-muted">{% if session.lang == 'fi' %}Näytä kaikki tuotteet ja varastotasot{% elif session.lang == 'sv' %}Visa alla produkter och lagernivåer{% elif session.lang == 'fa' %}مشاهده همه محصولات و سطوح موجودی{% else %}View all products and stock levels{% endif %}</p>
+    </div>
+
+    <div class="mb-4">
+        <a href="/employee-dashboard" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> {% if session.lang == 'fi' %}Takaisin kojelautaan{% elif session.lang == 'sv' %}Tillbaka till instrumentpanelen{% elif session.lang == 'fa' %}بازگشت به داشبورد{% else %}Back to Dashboard{% endif %}
+        </a>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="border rounded-3 p-3 text-center bg-white">
+                <h3 class="mb-0" style="color: #C67C4E;" id="totalProducts">0</h3>
+                <small class="text-muted">{% if session.lang == 'fi' %}Tuotteita yhteensä{% elif session.lang == 'sv' %}Totalt antal produkter{% elif session.lang == 'fa' %}کل محصولات{% else %}Total Products{% endif %}</small>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="border rounded-3 p-3 text-center bg-white">
+                <h3 class="mb-0" style="color: #C67C4E;" id="lowStockCount">0</h3>
+                <small class="text-muted">{% if session.lang == 'fi' %}Vähän varastossa{% elif session.lang == 'sv' %}Lågt lager{% elif session.lang == 'fa' %}موجودی کم{% else %}Low Stock{% endif %}</small>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="border rounded-3 p-3 text-center bg-white">
+                <h3 class="mb-0" style="color: #C67C4E;" id="outStockCount">0</h3>
+                <small class="text-muted">{% if session.lang == 'fi' %}Loppu varastosta{% elif session.lang == 'sv' %}Slut i lager{% elif session.lang == 'fa' %}ناموجود{% else %}Out of Stock{% endif %}</small>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="border rounded-3 p-3 text-center bg-white">
+                <h3 class="mb-0" style="color: #C67C4E;" id="totalValue">0</h3>
+                <small class="text-muted">{% if session.lang == 'fi' %}Kokonaisarvo{% elif session.lang == 'sv' %}Totalt värde{% elif session.lang == 'fa' %}ارزش کل{% else %}Total Value{% endif %}</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <input type="text" id="searchInput" class="form-control" placeholder="{% if session.lang == 'fi' %}🔍 Hae tuotteita nimellä...{% elif session.lang == 'sv' %}🔍 Sök produkter efter namn...{% elif session.lang == 'fa' %}🔍 جستجوی محصولات بر اساس نام...{% else %}🔍 Search products by name...{% endif %}" style="border-radius: 50px; padding: 12px 20px; border: 1px solid #E8E0D5;">
+    </div>
+
+    <div class="mb-4 d-flex gap-2 flex-wrap">
+        <button class="filter-btn active" data-filter="all" style="padding: 6px 18px; border-radius: 30px; background: #C67C4E; color: white; border: none;">{% if session.lang == 'fi' %}Kaikki{% elif session.lang == 'sv' %}Alla{% elif session.lang == 'fa' %}همه{% else %}All{% endif %}</button>
+        <button class="filter-btn" data-filter="coffee" style="padding: 6px 18px; border-radius: 30px; background: #f0f0f0; border: none;">{% if session.lang == 'fi' %}☕ Kahvi{% elif session.lang == 'sv' %}☕ Kaffe{% elif session.lang == 'fa' %}☕ قهوه{% else %}☕ Coffee{% endif %}</button>
+        <button class="filter-btn" data-filter="tea" style="padding: 6px 18px; border-radius: 30px; background: #f0f0f0; border: none;">{% if session.lang == 'fi' %}🍵 Tee{% elif session.lang == 'sv' %}🍵 Te{% elif session.lang == 'fa' %}🍵 چای{% else %}🍵 Tea{% endif %}</button>
+        <button class="filter-btn" data-filter="pastry" style="padding: 6px 18px; border-radius: 30px; background: #f0f0f0; border: none;">{% if session.lang == 'fi' %}🥐 Leivonnaiset{% elif session.lang == 'sv' %}🥐 Bakverk{% elif session.lang == 'fa' %}🥐 شیرینی{% else %}🥐 Pastry{% endif %}</button>
+        <button class="filter-btn" data-filter="other_drinks" style="padding: 6px 18px; border-radius: 30px; background: #f0f0f0; border: none;">{% if session.lang == 'fi' %}🥤 Muut juomat{% elif session.lang == 'sv' %}🥤 Andra drycker{% elif session.lang == 'fa' %}🥤 نوشیدنی‌های دیگر{% else %}🥤 Other Drinks{% endif %}</button>
+    </div>
+
+    <div class="row" id="productsGrid"></div>
+</div>
+
+<style>
+.filter-btn {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.filter-btn:hover {
+    background: #C67C4E !important;
+    color: white !important;
+    transform: translateY(-2px);
+}
+.product-card {
+    border: 1px solid #E8E0D5;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    background: white;
+    height: 100%;
+}
+.product-card:hover {
+    border-color: #C67C4E;
+    transform: translateY(-3px);
+}
+.product-img {
+    height: 160px;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+.product-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.product-img i {
+    font-size: 50px;
+    color: #C67C4E;
+}
+.product-info {
+    padding: 15px;
+}
+.product-name {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: #2C1810;
+}
+.product-category {
+    font-size: 0.7rem;
+    color: #C67C4E;
+    margin-bottom: 8px;
+}
+.product-price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #C67C4E;
+    margin: 8px 0;
+}
+.stock-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+.stock-high { background: #D4EDDA; color: #155724; }
+.stock-low { background: #FFF3CD; color: #856404; }
+.stock-out { background: #F8D7DA; color: #721C24; }
+</style>
+
+<script>
+const allProducts = {{ products | tojson }};
+const lang = '{{ session.lang }}';
+const currencyCode = '{{ session.get("currency", "USD") }}';
+const exchangeRates = {'EUR': 0.92, 'SEK': 10.5, 'AFN': 71.5, 'USD': 1};
+
+function convertPrice(priceUSD) {
+    let rate = exchangeRates[currencyCode] || 1;
+    return parseFloat(priceUSD) * rate;
+}
+
+function formatPrice(priceUSD) {
+    let num = convertPrice(priceUSD);
+    if (isNaN(num)) num = 0;
+    
+    if (currencyCode === 'EUR') {
+        return num.toFixed(2) + ' €';
+    } else if (currencyCode === 'SEK') {
+        return num.toFixed(2) + ' kr';
+    } else if (currencyCode === 'AFN') {
+        return '\u200E' + Math.round(num).toLocaleString() + ' AFN';
+    } else {
+        return num.toFixed(2) + ' $';
+    }
+}
+
+function updateStats() {
+    let total = allProducts.length;
+    let lowStock = 0;
+    let outStock = 0;
+    let totalValueUSD = 0;
+
+    allProducts.forEach(p => {
+        let stock = p.stock || 0;
+        let priceUSD = parseFloat(p.price) || 0;
+        if (stock > 0 && stock < 10) lowStock++;
+        if (stock <= 0) outStock++;
+        totalValueUSD += priceUSD * stock;
+    });
+
+    document.getElementById('totalProducts').innerText = total;
+    document.getElementById('lowStockCount').innerText = lowStock;
+    document.getElementById('outStockCount').innerText = outStock;
+    document.getElementById('totalValue').innerText = formatPrice(totalValueUSD);
+}
+
+function getProductImageUrl(product) {
+    if (product.image_filename) {
+        return '/static/images/' + product.image_filename;
+    }
+    let imageName = product.name.toLowerCase().replace(/ /g, '-').replace(/'/g, '') + '.jpg';
+    return '/static/images/' + imageName;
+}
+
+function renderProducts() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+
+    let filtered = allProducts;
+    if (activeFilter !== 'all') {
+        filtered = filtered.filter(p => p.category === activeFilter);
+    }
+    if (searchTerm) {
+        filtered = filtered.filter(p => p.name.toLowerCase().includes(searchTerm));
+    }
+
+    const container = document.getElementById('productsGrid');
+
+    const noProductsText = lang === 'fi' ? 'Tuotteita ei löytynyt' : (lang === 'sv' ? 'Inga produkter hittades' : (lang === 'fa' ? 'محصولی یافت نشد' : 'No products found'));
+    const tryAdjustText = lang === 'fi' ? 'Yritä muokata hakua' : (lang === 'sv' ? 'Försök justera sökningen' : (lang === 'fa' ? 'سعی کنید جستجو را تنظیم کنید' : 'Try adjusting your search'));
+    const inStockText = lang === 'fi' ? 'Varastossa' : (lang === 'sv' ? 'I lager' : (lang === 'fa' ? 'موجود' : 'In Stock'));
+    const lowStockText = lang === 'fi' ? 'Vähän varastossa' : (lang === 'sv' ? 'Lågt lager' : (lang === 'fa' ? 'موجودی کم' : 'Low Stock'));
+    const outStockText = lang === 'fi' ? 'Loppu' : (lang === 'sv' ? 'Slut' : (lang === 'fa' ? 'ناموجود' : 'Out of Stock'));
+    const activeText = lang === 'fi' ? 'Aktiivinen' : (lang === 'sv' ? 'Aktiv' : (lang === 'fa' ? 'فعال' : 'Active'));
+    const inactiveText = lang === 'fi' ? 'Epäaktiivinen' : (lang === 'sv' ? 'Inaktiv' : (lang === 'fa' ? 'غیرفعال' : 'Inactive'));
+
+    if (filtered.length === 0) {
+        container.innerHTML = `<div class="col-12 text-center py-5"><i class="fas fa-search fa-3x mb-3 text-muted"></i><h4>${noProductsText}</h4><p class="text-muted">${tryAdjustText}</p></div>`;
+        return;
+    }
+
+    let html = '';
+    filtered.forEach(product => {
+        let stock = product.stock || 0;
+        let stockClass = stock <= 0 ? 'stock-out' : (stock < 10 ? 'stock-low' : 'stock-high');
+        let stockText = stock <= 0 ? outStockText : (stock < 10 ? lowStockText + ' (' + stock + ')' : inStockText);
+        let imageUrl = getProductImageUrl(product);
+        let formattedPrice = formatPrice(product.price);
+
+        html += `
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="${imageUrl}" 
+                             alt="${product.name}"
+                             onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\\'fas fa-mug-hot\\' style=\\'font-size:50px;color:#C67C4E;\\'></i>'">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-category">${product.category || 'Other'}</div>
+                        <div class="product-price">${formattedPrice}</div>
+                        <div class="mt-2">
+                            <span class="stock-badge ${stockClass}">${stockText}</span>
+                            <span class="badge ${product.is_available ? 'bg-success' : 'bg-secondary'} ms-2">${product.is_available ? activeText : inactiveText}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+
+document.getElementById('searchInput').addEventListener('keyup', renderProducts);
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        document.querySelectorAll('.filter-btn').forEach(b => {
+            b.style.background = '#f0f0f0';
+            b.style.color = '#666';
+        });
+        this.style.background = '#C67C4E';
+        this.style.color = 'white';
+        renderProducts();
+    });
+});
+
+updateStats();
+renderProducts();
+</script>
+{% endblock %}

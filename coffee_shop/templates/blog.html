@@ -1,0 +1,455 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.blog-page {
+    background: linear-gradient(135deg, #faf7f2 0%, #f5efe8 100%);
+    min-height: calc(100vh - 200px);
+    padding: 40px 0;
+}
+
+/* Banner Styles - Same as other pages */
+.blog-banner {
+    background: linear-gradient(135deg, #2C1810 0%, #3D2518 50%, #2C1810 100%);
+    border-radius: 24px;
+    padding: 40px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.blog-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(198,124,78,0.1) 0%, transparent 70%);
+    transform: rotate(25deg);
+    pointer-events: none;
+}
+
+.blog-banner::after {
+    content: '📝';
+    position: absolute;
+    bottom: 10px;
+    right: 30px;
+    font-size: 80px;
+    opacity: 0.1;
+}
+
+.banner-content {
+    position: relative;
+    z-index: 2;
+}
+
+.banner-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.banner-title i {
+    font-size: 50px;
+    color: #D4AF37;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.banner-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 20px;
+}
+
+.banner-stats {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.banner-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.1);
+    padding: 8px 16px;
+    border-radius: 40px;
+    backdrop-filter: blur(5px);
+}
+
+.banner-stat-item i {
+    color: #D4AF37;
+    font-size: 18px;
+}
+
+.banner-stat-item span {
+    color: white;
+    font-size: 14px;
+}
+
+.banner-stat-item strong {
+    color: #D4AF37;
+    font-size: 18px;
+    margin-left: 5px;
+}
+
+.banner-actions {
+    margin-top: 20px;
+}
+
+.btn-banner-add {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 40px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 42px;
+}
+
+.btn-banner-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(198,124,78,0.4);
+    color: white;
+}
+
+/* Modern Blog Cards */
+.blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+}
+
+.blog-card {
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    border: 1px solid rgba(198,124,78,0.06);
+    position: relative;
+}
+
+.blog-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #C67C4E, #D4AF37, #E8A87C);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 1;
+}
+
+.blog-card:hover::before {
+    opacity: 1;
+}
+
+.blog-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 30px 60px rgba(198,124,78,0.15);
+    border-color: rgba(198,124,78,0.15);
+}
+
+.blog-image {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+}
+
+.blog-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.blog-card:hover .blog-image img {
+    transform: scale(1.08);
+}
+
+.blog-image .category-tag {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    color: white;
+    padding: 5px 16px;
+    border-radius: 30px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(198,124,78,0.3);
+}
+
+.blog-content {
+    padding: 24px;
+}
+
+.blog-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2C1810;
+    margin-bottom: 10px;
+    line-height: 1.4;
+    transition: color 0.3s ease;
+}
+
+.blog-card:hover .blog-title {
+    color: #C67C4E;
+}
+
+.blog-excerpt {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    margin-bottom: 16px;
+}
+
+.blog-divider {
+    width: 40px;
+    height: 3px;
+    background: linear-gradient(90deg, #C67C4E, #D4AF37);
+    border-radius: 3px;
+    margin-bottom: 16px;
+}
+
+.blog-meta {
+    display: flex;
+    gap: 20px;
+    color: #999;
+    font-size: 0.75rem;
+    padding-top: 14px;
+    border-top: 1px solid #f0ede8;
+}
+
+.blog-meta i {
+    margin-right: 5px;
+    color: #C67C4E;
+}
+
+.read-more-link {
+    display: inline-block;
+    color: #C67C4E;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    margin-top: 4px;
+}
+
+.blog-card:hover .read-more-link {
+    transform: translateX(5px);
+    color: #A0522D;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    background: white;
+    border-radius: 28px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+}
+
+.empty-state i {
+    font-size: 70px;
+    color: #C67C4E;
+    opacity: 0.3;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    font-size: 1.8rem;
+    color: #2C1810;
+    margin-bottom: 12px;
+}
+
+.empty-state p {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.btn-empty-add {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    height: 44px;
+}
+
+.btn-empty-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(198,124,78,0.3);
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .banner-title {
+        font-size: 1.8rem;
+        flex-direction: column;
+        text-align: center;
+    }
+    .banner-stats {
+        justify-content: center;
+    }
+    .blog-grid {
+        grid-template-columns: 1fr;
+    }
+    .blog-image {
+        height: 180px;
+    }
+    .empty-state h3 {
+        font-size: 1.3rem;
+    }
+}
+</style>
+
+<div class="blog-page">
+    <div class="container">
+        <!-- Banner -->
+        <div class="blog-banner">
+            <div class="banner-content">
+                <div class="banner-title">
+                    <i class="fas fa-newspaper"></i>
+                    <span>{{ t('coffee_times_blog') }}</span>
+                </div>
+                <div class="banner-subtitle">
+                    {{ t('blog_subtitle') }}
+                </div>
+                <div class="banner-stats">
+                    <div class="banner-stat-item">
+                        <i class="fas fa-file-alt"></i>
+                        <span>{{ t('articles') }}: <strong id="articleCount">0</strong></span>
+                    </div>
+                    <div class="banner-stat-item">
+                        <i class="fas fa-user"></i>
+                        <span>{{ t('authors') }}: <strong id="authorCount">0</strong></span>
+                    </div>
+                    <div class="banner-stat-item">
+                        <i class="fas fa-calendar"></i>
+                        <span>{{ t('latest') }}: <strong id="latestDate">-</strong></span>
+                    </div>
+                </div>
+                {% if current_user.is_admin %}
+                <div class="banner-actions">
+                    <a href="/admin/add-blog" class="btn-banner-add">
+                        <i class="fas fa-plus-circle"></i> {{ t('add_article') }}
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Articles -->
+        {% if articles %}
+        <div class="blog-grid">
+            {% for article in articles %}
+            <div class="blog-card" onclick="window.location.href='/blog/{{ article.id }}'">
+                <div class="blog-image">
+                    <img src="{{ article.image_url or '/static/images/coffee-placeholder.jpg' }}" 
+                         alt="{{ article.title }}"
+                         onerror="this.src='/static/images/coffee-placeholder.jpg'">
+                    <span class="category-tag">{{ article.category }}</span>
+                </div>
+                <div class="blog-content">
+                    <h3 class="blog-title">
+                        {% if session.lang == 'fi' and article.title_fi %}
+                            {{ article.title_fi }}
+                        {% elif session.lang == 'sv' and article.title_sv %}
+                            {{ article.title_sv }}
+                        {% elif session.lang == 'fa' and article.title_fa %}
+                            {{ article.title_fa }}
+                        {% else %}
+                            {{ article.title }}
+                        {% endif %}
+                    </h3>
+                    <p class="blog-excerpt">
+                        {% if session.lang == 'fi' and article.content_fi %}
+                            {{ article.content_fi[:120] }}...
+                        {% elif session.lang == 'sv' and article.content_sv %}
+                            {{ article.content_sv[:120] }}...
+                        {% elif session.lang == 'fa' and article.content_fa %}
+                            {{ article.content_fa[:120] }}...
+                        {% else %}
+                            {{ article.content[:120] }}...
+                        {% endif %}
+                    </p>
+                    <div class="blog-divider"></div>
+                    <div class="blog-meta">
+                        <span><i class="fas fa-user"></i> {{ article.author }}</span>
+                        <span><i class="fas fa-calendar"></i> {{ article.published_at.strftime('%b %d, %Y') if article.published_at else 'N/A' }}</span>
+                    </div>
+                    <span class="read-more-link">{{ t('read_more') }} →</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-newspaper"></i>
+            <h3>{{ t('no_articles') }}</h3>
+            <p>{{ t('no_articles_msg') }}</p>
+            {% if current_user.is_admin %}
+            <a href="/admin/add-blog" class="btn-empty-add">
+                <i class="fas fa-plus-circle"></i> {{ t('add_article') }}
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function updateBannerStats() {
+    const articles = {{ articles | tojson | safe }};
+    const total = articles.length;
+    
+    const authors = new Set(articles.map(a => a.author));
+    const authorCount = authors.size;
+    
+    let latestDate = '-';
+    if (articles.length > 0) {
+        const latest = articles.reduce((a, b) => {
+            return new Date(a.published_at) > new Date(b.published_at) ? a : b;
+        });
+        if (latest.published_at) {
+            latestDate = new Date(latest.published_at).toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric' 
+            });
+        }
+    }
+    
+    document.getElementById('articleCount').innerText = total;
+    document.getElementById('authorCount').innerText = authorCount;
+    document.getElementById('latestDate').innerText = latestDate;
+}
+
+updateBannerStats();
+</script>
+{% endblock %}

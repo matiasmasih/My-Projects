@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.register-container {
+    background: linear-gradient(135deg, #FAF7F2 0%, #F0E8DC 100%);
+    min-height: calc(100vh - 300px);
+    padding: 60px 0;
+}
+.register-card {
+    background: white;
+    border-radius: 32px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+.register-header {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    padding: 40px;
+    text-align: center;
+    color: white;
+}
+.register-header i {
+    font-size: 60px;
+    color: #D4AF37;
+    margin-bottom: 20px;
+}
+.register-body {
+    padding: 40px;
+}
+.form-control-custom {
+    border: 2px solid #E0E0E0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+.form-control-custom:focus {
+    border-color: #C67C4E;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(198,124,78,0.1);
+}
+.btn-register {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 50px;
+    font-weight: 600;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+.btn-register:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(198,124,78,0.3);
+}
+.info-note {
+    background: #fff3cd;
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #856404;
+}
+</style>
+
+<div class="register-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="register-card">
+                    <div class="register-header">
+                        <i class="fas fa-user-shield"></i>
+                        <h1>Admin Registration</h1>
+                        <p>Create your administrator account</p>
+                    </div>
+                    <div class="register-body">
+                        <form method="POST">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Username</label>
+                                <input type="text" name="username" class="form-control-custom" placeholder="Choose a username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Email</label>
+                                <input type="email" name="email" class="form-control-custom" placeholder="Your email address" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Password</label>
+                                <input type="password" name="password" class="form-control-custom" placeholder="Choose a password" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Confirm Password</label>
+                                <input type="password" name="confirm_password" class="form-control-custom" placeholder="Confirm your password" required>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">Secret Admin Key</label>
+                                <input type="password" name="secret_key" class="form-control-custom" placeholder="Enter the admin setup key" required>
+                                <small class="text-muted">Contact the shop owner for the secret key</small>
+                            </div>
+                            <button type="submit" class="btn-register">
+                                <i class="fas fa-check-circle me-2"></i>Create Admin Account
+                            </button>
+                        </form>
+                        
+                        <div class="info-note">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Note:</strong> You need the admin setup key to register. This keeps unauthorized people from becoming admin.
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <p class="text-muted">
+                                <i class="fas fa-lock me-1"></i> Already have an account? 
+                                <a href="/login" style="color: #C67C4E;">{{ t("login_here") }}</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Password confirmation check
+document.querySelector('form').addEventListener('submit', function(e) {
+    const password = document.querySelector('input[name="password"]').value;
+    const confirm = document.querySelector('input[name="confirm_password"]').value;
+    if (password !== confirm) {
+        e.preventDefault();
+        alert('Passwords do not match!');
+    }
+});
+</script>
+{% endblock %}

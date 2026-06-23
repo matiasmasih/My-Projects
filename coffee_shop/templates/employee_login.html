@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow border-0 rounded-4">
+                <div class="card-header bg-white border-0 pt-4 text-center">
+                    <i class="fas fa-user-tie fa-3x mb-3" style="color: #C67C4E;"></i>
+                    <h3>{% if session.lang == 'fi' %}Työntekijän kirjautuminen{% elif session.lang == 'sv' %}Anställd inloggning{% elif session.lang == 'fa' %}ورود کارکنان{% else %}Employee Login{% endif %}</h3>
+                    <p class="text-muted">{% if session.lang == 'fi' %}Vain henkilökunnalle{% elif session.lang == 'sv' %}Endast personal{% elif session.lang == 'fa' %}فقط برای کارکنان{% else %}Staff access only{% endif %}</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">{% if session.lang == 'fi' %}Käyttäjätunnus{% elif session.lang == 'sv' %}Användarnamn{% elif session.lang == 'fa' %}نام کاربری{% else %}Username{% endif %}</label>
+                            <input type="text" name="username" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{% if session.lang == 'fi' %}Salasana{% elif session.lang == 'sv' %}Lösenord{% elif session.lang == 'fa' %}رمز عبور{% else %}Password{% endif %}</label>
+                            <input type="password" name="password" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-2">
+                            <i class="fas fa-sign-in-alt me-2"></i> {% if session.lang == 'fi' %}Kirjaudu työntekijänä{% elif session.lang == 'sv' %}Logga in som anställd{% elif session.lang == 'fa' %}ورود به عنوان کارمند{% else %}Login as Employee{% endif %}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

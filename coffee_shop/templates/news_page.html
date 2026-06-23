@@ -1,0 +1,330 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.news-page {
+    background: #f5efe8;
+    min-height: 100vh;
+}
+
+.newspaper-header {
+    background: linear-gradient(135deg, #2C1810, #3D2518);
+    color: white;
+    padding: 60px 20px;
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.newspaper-header h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    font-family: 'Times New Roman', serif;
+    letter-spacing: 2px;
+}
+
+.newspaper-header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.newspaper-header .date {
+    margin-top: 20px;
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+/* Featured Article */
+.featured-article {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-bottom: 50px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.featured-article:hover {
+    transform: translateY(-5px);
+}
+
+.featured-image {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+}
+
+.featured-content {
+    padding: 30px;
+}
+
+.featured-category {
+    display: inline-block;
+    background: #C67C4E;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    margin-bottom: 15px;
+}
+
+.featured-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #2C1810;
+    margin-bottom: 15px;
+}
+
+.featured-excerpt {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+/* Article Grid */
+.article-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.article-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.article-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+
+.article-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.article-content {
+    padding: 20px;
+}
+
+.article-category {
+    display: inline-block;
+    background: #C67C4E;
+    color: white;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    margin-bottom: 10px;
+}
+
+.article-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2C1810;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.article-excerpt {
+    color: #666;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.article-meta {
+    color: #999;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.read-more {
+    color: #C67C4E;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+/* Sidebar */
+.sidebar {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+.sidebar h4 {
+    color: #2C1810;
+    margin-bottom: 20px;
+    font-weight: 700;
+    border-left: 4px solid #C67C4E;
+    padding-left: 12px;
+}
+
+.categories-list {
+    list-style: none;
+    padding: 0;
+}
+
+.categories-list li {
+    margin-bottom: 12px;
+}
+
+.categories-list a {
+    color: #666;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+}
+
+.categories-list a:hover {
+    color: #C67C4E;
+    transform: translateX(5px);
+}
+
+/* Newsletter Subscribe Box */
+.subscribe-box {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    color: white;
+    text-align: center;
+    padding: 25px;
+    border-radius: 16px;
+}
+
+.subscribe-box h4 {
+    color: white;
+    border-left: none;
+    margin-bottom: 10px;
+}
+
+.subscribe-box input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.subscribe-box button {
+    background: #2C1810;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .newspaper-header h1 {
+        font-size: 2rem;
+    }
+    .featured-title {
+        font-size: 1.3rem;
+    }
+    .article-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<div class="news-page">
+    <div class="newspaper-header">
+        <h1>☕ The Coffee Times</h1>
+        <p>Your daily dose of coffee news, stories, and brewing insights</p>
+        <div class="date">{{ now().strftime('%A, %B %d, %Y') }}</div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Featured Article -->
+                {% if featured %}
+                <div class="featured-article" onclick="window.location.href='/news/{{ featured.id }}'">
+                    {% if featured.image_url %}
+                    <img src="{{ featured.image_url }}" alt="{{ featured.title }}" class="featured-image" onerror="this.src='/static/images/coffee-placeholder.jpg'">
+                    {% endif %}
+                    <div class="featured-content">
+                        <span class="featured-category">{{ featured.category }}</span>
+                        <h2 class="featured-title">{{ featured.title }}</h2>
+                        <p class="featured-excerpt">{{ featured.content[:200] }}...</p>
+                        <div class="article-meta">
+                            <span><i class="fas fa-user"></i> {{ featured.author }}</span>
+                            <span><i class="fas fa-calendar"></i> {{ featured.published_at.strftime('%B %d, %Y') }}</span>
+                            <span class="read-more">Read full article →</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Recent Articles Grid -->
+                <h3 class="mb-4">📰 Latest Articles</h3>
+                <div class="article-grid">
+                    {% for article in articles %}
+                    <div class="article-card" onclick="window.location.href='/news/{{ article.id }}'">
+                        {% if article.image_url %}
+                        <img src="{{ article.image_url }}" alt="{{ article.title }}" class="article-image" onerror="this.src='/static/images/coffee-placeholder.jpg'">
+                        {% endif %}
+                        <div class="article-content">
+                            <span class="article-category">{{ article.category }}</span>
+                            <h4 class="article-title">{{ article.title }}</h4>
+                            <p class="article-excerpt">{{ article.content[:100] }}...</p>
+                            <div class="article-meta">
+                                <span><i class="fas fa-user"></i> {{ article.author }}</span>
+                                <span><i class="fas fa-calendar"></i> {{ article.published_at.strftime('%b %d, %Y') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Categories Sidebar -->
+                <div class="sidebar">
+                    <h4>📂 Categories</h4>
+                    <ul class="categories-list">
+                        <li><a href="#"><span>☕ Coffee News</span> <span>12</span></a></li>
+                        <li><a href="#"><span>🎁 Giveaways</span> <span>5</span></a></li>
+                        <li><a href="#"><span>🔑 Early Access</span> <span>8</span></a></li>
+                        <li><a href="#"><span>📖 Brewing Tips</span> <span>15</span></a></li>
+                        <li><a href="#"><span>🏆 Events</span> <span>4</span></a></li>
+                    </ul>
+                </div>
+
+                <!-- Subscribe Box -->
+                <div class="subscribe-box">
+                    <i class="fas fa-envelope fa-2x mb-2"></i>
+                    <h4>Subscribe to Newsletter</h4>
+                    <p>Get the latest coffee news delivered to your inbox</p>
+                    <form method="POST" action="{{ url_for('newsletter') }}">
+                        <input type="email" name="email" placeholder="Your email address" required>
+                        <input type="hidden" name="full_name" value="Newsletter Subscriber">
+                        <button type="submit">Subscribe Now →</button>
+                    </form>
+                </div>
+
+                <!-- Popular Posts -->
+                <div class="sidebar mt-4">
+                    <h4>🔥 Popular Posts</h4>
+                    <ul class="categories-list">
+                        <li><a href="#">How to Make the Perfect Espresso</a></li>
+                        <li><a href="#">10 Coffee Facts You Didn't Know</a></li>
+                        <li><a href="#">Best Coffee Shops in Helsinki</a></li>
+                        <li><a href="#">Cold Brew vs Iced Coffee</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.setup-container {
+    background: linear-gradient(135deg, #FAF7F2 0%, #F0E8DC 100%);
+    min-height: calc(100vh - 300px);
+    padding: 60px 0;
+}
+.setup-card {
+    background: white;
+    border-radius: 32px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+.setup-header {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    padding: 40px;
+    text-align: center;
+    color: white;
+}
+.setup-header i {
+    font-size: 60px;
+    color: #D4AF37;
+    margin-bottom: 20px;
+}
+.setup-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+.setup-body {
+    padding: 40px;
+}
+.form-control-custom {
+    border: 2px solid #E0E0E0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+.form-control-custom:focus {
+    border-color: #C67C4E;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(198,124,78,0.1);
+}
+.btn-setup {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 50px;
+    font-weight: 600;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+.btn-setup:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(198,124,78,0.3);
+}
+.info-box {
+    background: #f8f9fa;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-left: 4px solid #D4AF37;
+}
+</style>
+
+<div class="setup-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="setup-card">
+                    <div class="setup-header">
+                        <i class="fas fa-user-shield"></i>
+                        <h1>Admin Setup</h1>
+                        <p>Create the administrator account</p>
+                    </div>
+                    <div class="setup-body">
+                        {% if admin_exists %}
+                        <div class="info-box" style="border-left-color: #dc3545; background: #fff5f5;">
+                            <i class="fas fa-exclamation-triangle" style="color: #dc3545; font-size: 24px; float: right;"></i>
+                            <h5 style="color: #dc3545;">Admin Already Exists!</h5>
+                            <p class="text-muted mb-0">An administrator account has already been created.</p>
+                        </div>
+                        <div class="text-center mt-4">
+                            <a href="/login" class="btn-setup" style="display: inline-block; width: auto; padding: 12px 35px;">
+                                <i class="fas fa-sign-in-alt me-2"></i>Go to Login
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="info-box">
+                            <i class="fas fa-info-circle" style="color: #C67C4E; font-size: 24px; float: right;"></i>
+                            <h5>Welcome to Bean & Brew Coffee</h5>
+                            <p class="text-muted mb-0">Create the administrator account to start managing your coffee shop.</p>
+                        </div>
+                        
+                        <form method="POST">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Username</label>
+                                <input type="text" name="username" class="form-control-custom" placeholder="admin" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Email</label>
+                                <input type="email" name="email" class="form-control-custom" placeholder="admin@coffeeshop.com" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Password</label>
+                                <input type="password" name="password" class="form-control-custom" placeholder="Choose a strong password" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Full Name (Optional)</label>
+                                <input type="text" name="full_name" class="form-control-custom" placeholder="Your full name">
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">Phone (Optional)</label>
+                                <input type="tel" name="phone" class="form-control-custom" placeholder="Your phone number">
+                            </div>
+                            <button type="submit" class="btn-setup">
+                                <i class="fas fa-check-circle me-2"></i>Create Admin Account
+                            </button>
+                        </form>
+                        
+                        <div class="text-center mt-4">
+                            <p class="text-muted small">
+                                <i class="fas fa-lock me-1"></i> This page is only available before an admin is created.
+                            </p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bean & Brew Coffee</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+<!-- RTL Styles for Persian Language -->
+{% if session.lang == 'fa' %}
+<style>
+    body { direction: rtl; text-align: right; font-family: 'Poppins', 'Tahoma', sans-serif; }
+    .navbar-nav { margin-right: auto; margin-left: 0 !important; gap: 5px; }
+    .dropdown-menu { text-align: right; left: auto !important; right: 0 !important; min-width: 180px; }
+    .navbar-brand { margin-right: 0; margin-left: auto; }
+    .dropdown-item i { margin-left: 8px; margin-right: 0; }
+    .cart-count { margin-right: 3px; margin-left: 0; }
+    .navbar-collapse { margin-right: auto; }
+</style>
+{% endif %}
+
+<style>
+    /* General Styles */
+    body {
+        font-family: 'Poppins', sans-serif;
+        padding-top: 65px;
+    }
+
+    /* Navbar - Black background */
+    .navbar {
+        background: #000000 !important;
+        padding: 5px 0;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        min-height: 60px;
+    }
+
+    .navbar-brand {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #C67C4E !important;
+        white-space: nowrap;
+        padding: 0;
+        margin: 0 10px 0 0;
+    }
+
+    .navbar-brand i {
+        margin-right: 5px;
+        font-size: 1.1rem;
+    }
+
+    .navbar-toggler {
+        border: none;
+        padding: 4px 8px;
+    }
+
+    /* Navbar items - Flexible for all languages */
+    .navbar-nav {
+        align-items: center;
+        gap: 5px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        flex-wrap: wrap;
+    }
+
+    .nav-item {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .nav-link {
+        color: white !important;
+        font-weight: 500;
+        padding: 5px 8px !important;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        margin: 0 !important;
+        white-space: nowrap;
+    }
+
+    .nav-link:hover {
+        color: #C67C4E !important;
+        background: rgba(255,255,255,0.1);
+    }
+
+    /* Username text */
+    .username-text {
+        display: inline-block;
+        max-width: 70px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 0.75rem;
+    }
+
+    .admin-text, .lang-code {
+        display: inline-block;
+        font-size: 0.75rem;
+    }
+
+    /* Force username and icon on one line */
+    .nav-item.dropdown .nav-link {
+        display: inline-flex !important;
+        align-items: center !important;
+        white-space: nowrap !important;
+    }
+
+    /* Buttons */
+    .dark-mode-toggle, .notification-bell {
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+    }
+
+    .dark-mode-toggle i, .notification-bell i {
+        font-size: 12px;
+    }
+
+    .dark-mode-toggle:hover, .notification-bell:hover {
+        background: #C67C4E;
+        transform: scale(1.02);
+    }
+
+    /* Cart count */
+    .cart-count {
+        background: #C67C4E;
+        border-radius: 50%;
+        display: inline-block;
+        font-size: 0.55rem;
+        padding: 1px 4px;
+        margin-left: 2px;
+        color: white;
+        font-weight: 600;
+    }
+
+    /* Dropdown */
+    .dropdown-menu {
+        background: white;
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        padding: 5px 0;
+        margin-top: 5px;
+        min-width: 180px;
+        z-index: 1050;
+    }
+
+    .dropdown-item {
+        padding: 6px 15px;
+        color: #2C1810;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .dropdown-item i {
+        width: 18px;
+        font-size: 0.8rem;
+        color: #C67C4E;
+    }
+
+    .dropdown-item:hover {
+        background: #f8f9fa;
+        color: #C67C4E;
+    }
+
+    .dropdown-divider {
+        margin: 4px 0;
+    }
+
+    /* Footer */
+    .footer {
+        background: #000000;
+        color: white;
+        padding: 30px 0 15px;
+        margin-top: 40px;
+    }
+
+    .footer h5 {
+        color: #C67C4E;
+        margin-bottom: 12px;
+        font-size: 0.9rem;
+    }
+
+    .footer p {
+        font-size: 0.75rem;
+    }
+
+    .social-links a {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+        text-align: center;
+        line-height: 30px;
+        margin-right: 8px;
+        transition: all 0.3s ease;
+        color: white;
+        font-size: 0.75rem;
+    }
+
+    .social-links a:hover {
+        background: #C67C4E;
+        transform: translateY(-2px);
+    }
+
+    /* Chatbot Widget */
+    #chatbot-widget {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+
+    .chatbot-toggle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #C67C4E, #A0522D);
+        border: none;
+        color: white;
+        font-size: 22px;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(198,124,78,0.4);
+        transition: all 0.3s ease;
+    }
+
+    .chatbot-toggle:hover {
+        transform: scale(1.03);
+    }
+
+    .chatbot-container {
+        display: none;
+        position: absolute;
+        bottom: 65px;
+        right: 0;
+        width: 300px;
+        height: 420px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        overflow: hidden;
+        flex-direction: column;
+    }
+
+    .chatbot-container.show {
+        display: flex;
+    }
+
+    .chatbot-header {
+        background: linear-gradient(135deg, #C67C4E, #A0522D);
+        color: white;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+    }
+
+    .chatbot-messages {
+        flex: 1;
+        padding: 10px;
+        overflow-y: auto;
+        background: #f8f9fa;
+        font-size: 0.8rem;
+    }
+
+    .message {
+        margin-bottom: 8px;
+        padding: 6px 10px;
+        border-radius: 15px;
+        max-width: 80%;
+    }
+
+    .message.bot {
+        background: white;
+        color: #2C1810;
+        border: 1px solid #E8E0D5;
+    }
+
+    .message.user {
+        background: #C67C4E;
+        color: white;
+        margin-left: auto;
+    }
+
+    .chatbot-input {
+        display: flex;
+        padding: 8px;
+        border-top: 1px solid #eee;
+        background: white;
+        gap: 5px;
+    }
+
+    .chatbot-input input {
+        flex: 1;
+        padding: 6px 10px;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        outline: none;
+        font-size: 0.8rem;
+    }
+
+    .chatbot-input button {
+        background: #C67C4E;
+        border: none;
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    /* Responsive - Ensure all navbar items show */
+    @media (max-width: 1200px) {
+        .navbar-nav {
+            gap: 3px !important;
+        }
+        .nav-link {
+            padding: 5px 6px !important;
+            font-size: 0.7rem !important;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .navbar-nav {
+            gap: 3px !important;
+        }
+        .nav-link {
+            padding: 4px 5px !important;
+            font-size: 0.65rem !important;
+        }
+        .username-text, .admin-text, .lang-code {
+            display: none !important;
+        }
+        .dark-mode-toggle, .notification-bell {
+            width: 25px !important;
+            height: 25px !important;
+        }
+        .cart-count {
+            font-size: 0.5rem !important;
+            padding: 1px 3px !important;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .navbar-nav {
+            flex-direction: column;
+            width: 100%;
+            gap: 5px !important;
+        }
+        .nav-item {
+            width: 100%;
+            text-align: center;
+        }
+        .dropdown-menu {
+            position: static !important;
+            width: 100%;
+        }
+        .navbar-collapse {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+    }
+
+    /* Dark Mode */
+    body.dark-mode {
+        background-color: #1a1a2e;
+        color: #eee;
+    }
+
+    body.dark-mode .dropdown-menu {
+        background-color: #2d2d44;
+    }
+
+    body.dark-mode .dropdown-item {
+        color: #eee;
+    }
+
+    body.dark-mode .dropdown-item:hover {
+        background-color: #3d3d54;
+    }
+
+    body.dark-mode .chatbot-container {
+        background-color: #2d2d44;
+    }
+
+    body.dark-mode .chatbot-messages {
+        background-color: #1a1a2e;
+    }
+
+    body.dark-mode .message.bot {
+        background-color: #2d2d44;
+        color: #eee;
+        border-color: #3d3d54;
+    }
+</style>
+<script>
+    function enableNotifications() {
+        if ("Notification" in window) {
+            Notification.requestPermission().then(function(permission) {
+                if (permission === "granted") {
+                    alert("{{ t('notifications_enabled') }}");
+                    // Send a test notification
+                    new Notification("Bean & Brew Coffee", {
+                        body: "You will now receive order updates! ☕",
+                        icon: "/static/images/coffee-icon.png"
+                    });
+                } else {
+                    alert("{{ t('notifications_blocked') }}");
+                }
+            });
+        } else {
+            alert("Your browser does not support notifications.");
+        }
+    }
+
+    function toggleDarkMode() {
+        document.body.classList.toggle("dark-mode");
+        const isDark = document.body.classList.contains("dark-mode");
+        localStorage.setItem("darkMode", isDark);
+        const icon = document.querySelector(".dark-mode-toggle i");
+        if (icon) {
+            icon.className = isDark ? "fas fa-sun" : "fas fa-moon";
+        }
+    }
+
+    if (localStorage.getItem("darkMode") === "true") {
+        document.body.classList.add("dark-mode");
+        const icon = document.querySelector(".dark-mode-toggle i");
+        if (icon) icon.className = "fas fa-sun";
+    }
+</script>
+
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container-fluid" style="padding-left: 10px; padding-right: 10px;">
+        <a class="navbar-brand" href="/" style="margin-right: 10px;">
+            <i class="fas fa-mug-hot"></i> Bean & Brew
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto" style="gap: 0px;">
+                <li class="nav-item"><a class="nav-link" href="/">{{ t('home') }}</a></li>
+                <li class="nav-item"><a class="nav-link" href="/menu">{{ t('menu') }}</a></li>
+                <li class="nav-item"><a class="nav-link" href="/favorites">{{ t('favorites') }}</a></li>
+                <li class="nav-item"><a class="nav-link" href="/reviews">{{ t('reviews') }}</a></li>
+                <li class="nav-item"><a class="nav-link" href="/newsletter">{{ t('subscribe') }}</a></li>
+                <li class="nav-item"><a class="nav-link" href="/blog">{{ t('blog') }}</a></li>    
+                <li class="nav-item"><a class="nav-link" href="/wifi">{{ t('wifi') }}</a></li>
+                <li class="nav-item"><a class="nav-link" href="/about">{{ t('about_us') }}</a></li>
+                <li class="nav-item"><a class="nav-link" href="/contact">{{ t('contact_us') }}</a></li>
+            </ul>
+
+            <ul class="navbar-nav" style="gap: 0px;">
+                <!-- Cart with text -->
+                <li class="nav-item"><a class="nav-link" href="/cart"><i class="fas fa-shopping-cart"></i> {{ t('cart') }} <span class="cart-count">0</span></a></li>
+
+                <!-- Dark Mode Toggle -->
+                <li class="nav-item"><button class="dark-mode-toggle" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button></li>
+
+                <!-- Notification Bell -->
+                <li class="nav-item"><button class="notification-bell" onclick="enableNotifications()"><i class="fas fa-bell"></i></button></li>
+
+                <!-- Language Selector -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="fas fa-globe"></i><span class="lang-code">{% if session.lang == 'fi' %}FI{% elif session.lang == 'sv' %}SV{% elif session.lang == 'fa' %}FA{% else %}EN{% endif %}</span></a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/set-lang/en">🇬🇧 English</a></li>
+                        <li><a class="dropdown-item" href="/set-lang/fi">🇫🇮 Suomi</a></li>
+                        <li><a class="dropdown-item" href="/set-lang/sv">🇸🇪 Svenska</a></li>
+                        <li><a class="dropdown-item" href="/set-lang/fa">🇮🇷 فارسی</a></li>
+                    </ul>
+                </li>
+
+                {% if current_user.is_authenticated %}
+                    <!-- Admin Dropdown (only for admin users) -->
+                {% if current_user.is_admin %}
+                <li class="nav-item dropdown">
+                     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="fas fa-cog"></i><span class="admin-text">{{ t('admin') }}</span></a>
+                   <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/admin/sales-dashboard"><i class="fas fa-chart-line me-2"></i>{{ t('admin_dashboard') }}</a></li>
+                        <li><a class="dropdown-item" href="/admin/inventory"><i class="fas fa-boxes me-2"></i>{{ t('admin_inventory') }}</a></li>
+                        <li><a class="dropdown-item" href="/admin/customers"><i class="fas fa-users me-2"></i>{{ t('admin_customers') }}</a></li>
+                        <li><a class="dropdown-item" href="/admin/export"><i class="fas fa-download me-2"></i>{{ t('admin_export') }}</a></li>
+                        <li><a class="dropdown-item" href="/admin/newsletter"><i class="fas fa-newspaper me-2"></i>{{ t('admin_newsletter') }}</a></li>
+                        <li><a class="dropdown-item" href="/admin/team"><i class="fas fa-users me-2"></i>{{ t('team_management') }}</a></li>
+                   </ul>
+                 </li>
+                {% endif %}
+
+                   <!-- User Dropdown -->
+                <li class="nav-item dropdown">
+                     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="fas fa-user"></i><span class="username-text">{{ current_user.username }}</span></a>
+                   <ul class="dropdown-menu dropdown-menu-end">
+                      {% if current_user.role == 'employee' %}
+                      <li><a class="dropdown-item" href="/employee-dashboard"><i class="fas fa-user-tie me-2"></i>{{ t('employee_dashboard') }}</a></li>
+                      {% endif %}
+                      <li><a class="dropdown-item" href="/profile"><i class="fas fa-id-card me-2"></i>{{ t('profile') }}</a></li>
+                      <li><a class="dropdown-item" href="/order-history"><i class="fas fa-box me-2"></i>{{ t('orders') }}</a></li>
+                      <li><a class="dropdown-item" href="/track-order"><i class="fas fa-map-marker-alt me-2"></i>{{ t('track_order') }}</a></li>
+                      <li><a class="dropdown-item" href="/chatbot-orders"><i class="fas fa-robot me-2"></i>{{ t('chatbot_orders_title') }}</a></li>
+                      <li><a class="dropdown-item" href="/chatbot-checkout"><i class="fas fa-robot me-2"></i>{{ t('chatbot_checkout') }}</a></li>
+                      <li><a class="dropdown-item" href="/my-receipts"><i class="fas fa-receipt me-2"></i>{{ t('my_receipts') }}</a></li>
+                      <li><a class="dropdown-item" href="/loyalty"><i class="fas fa-gift me-2"></i>{{ t('loyalty_rewards') }}</a></li>
+                      <li><a class="dropdown-item" href="/referral"><i class="fas fa-share-alt me-2"></i>{{ t('refer_friend') }}</a></li>
+
+                      {% if current_user.is_admin %}
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item" href="/employee-dashboard"><i class="fas fa-user-tie me-2"></i>{{ t('employee_dashboard') }}</a></li>
+                      <li><a class="dropdown-item" href="/admin-access"><i class="fas fa-user-shield me-2"></i> {{ t('admin_panel') }}</a></li>
+                      <li><a class="dropdown-item" href="/admin/newsletter"><i class="fas fa-newspaper me-2"></i>{{ t('newsletter_subscribers') }}</a></li>
+                      <li><a class="dropdown-item" href="/admin/team"><i class="fas fa-users me-2"></i>{{ t('team_management') }}</a></li>
+                      {% endif %}
+
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item" href="/cart"><i class="fas fa-shopping-cart me-2"></i>{{ t('cart') }}</a></li>
+                      <li><a class="dropdown-item" href="/checkout"><i class="fas fa-credit-card me-2"></i>{{ t('checkout') }}</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>{{ t('logout') }}</a></li>
+                   </ul>
+                </li>
+                {% else %}
+               <li class="nav-item"><a class="nav-link" href="/login">{{ t('login') }}</a></li>
+               <li class="nav-item"><a class="nav-link" href="/register">{{ t('register') }}</a></li>
+             {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-3">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+        {% endfor %}
+    {% endwith %}
+</div>
+
+{% block content %}{% endblock %}
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <h5><i class="fas fa-mug-hot me-2"></i>Bean & Brew</h5>
+                <p>{% if session.lang == 'fi' %}Käsintehtyä kahvia vuodesta 2026{% elif session.lang == 'sv' %}Hantverkskaffe sedan 2026{% elif session.lang == 'fa' %}قهوه دست ساز از سال ۲۰۲۶{% else %}Handcrafted coffee since 2026{% endif %}</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <h5><i class="fas fa-clock me-2"></i>{% if session.lang == 'fi' %}Aukioloajat{% elif session.lang == 'sv' %}Öppettider{% elif session.lang == 'fa' %}ساعات کاری{% else %}Hours{% endif %}</h5>
+                <p class="mb-0">{% if session.lang == 'fi' %}Ma-Pe: 7-21{% elif session.lang == 'sv' %}Mån-Fre: 7-21{% elif session.lang == 'fa' %}دوشنبه تا جمعه: ۷-۲۱{% else %}Mon-Fri: 7AM-9PM{% endif %}</p>
+                <p>{% if session.lang == 'fi' %}La-Su: 8-22{% elif session.lang == 'sv' %}Lör-Sön: 8-22{% elif session.lang == 'fa' %}شنبه و یکشنبه: ۸-۲۲{% else %}Sat-Sun: 8AM-10PM{% endif %}</p>
+            </div>
+            <div class="col-md-4 mb-3">
+                <h5><i class="fas fa-map-marker-alt me-2"></i>{% if session.lang == 'fi' %}Yhteys{% elif session.lang == 'sv' %}Kontakt{% elif session.lang == 'fa' %}تماس{% else %}Contact{% endif %}</h5>
+                <p class="mb-0"><i class="fas fa-location-dot me-2"></i>Iskoskuja 3 C 111, Vantaa</p>
+                <p class="mb-0"><i class="fas fa-phone me-2"></i>+(358) 413114312</p>
+                <p><i class="fas fa-envelope me-2"></i>matiasmasih@gmail.com</p>
+            </div>
+        </div>
+        <div class="text-center pt-3 mt-2 border-top border-secondary">
+            <p class="mb-0">&copy; 2026 Bean & Brew Coffee.</p>
+        </div>
+    </div>
+</footer>
+
+<div id="chatbot-widget">
+    <button class="chatbot-toggle" id="chatbotToggle">
+        <i class="fas fa-robot"></i>
+    </button>
+    <div class="chatbot-container" id="chatbotContainer">
+        <div class="chatbot-header">
+            <i class="fas fa-coffee"></i>
+            <h6 class="mb-0 ms-2">Barista Assistant</h6>
+            <button class="close-chat ms-auto" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">&times;</button>
+        </div>
+        <div class="chatbot-messages" id="chatMessages">
+            <div class="message bot">
+                Hello! Ask me about our menu, hours, or get a drink recommendation! ☕
+            </div>
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="userMessage" placeholder="Ask me anything...">
+            <button id="sendMessage"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/cart/count')
+        .then(r => r.json())
+        .then(data => {
+            const cartCount = document.querySelector('.cart-count');
+            if (cartCount) cartCount.textContent = data.count;
+        });
+});
+</script>
+</body>
+</html>

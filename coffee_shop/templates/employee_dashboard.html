@@ -1,0 +1,588 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+:root {
+    --primary: #C67C4E;
+    --primary-dark: #A0522D;
+    --dark: #2C1810;
+    --success: #28a745;
+    --warning: #ffc107;
+    --info: #17a2b8;
+    --danger: #dc3545;
+    --gray: #f8f9fa;
+}
+
+.dashboard-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.dashboard-header {
+    background: linear-gradient(135deg, var(--dark) 0%, #3D2518 100%);
+    border-radius: 30px;
+    padding: 40px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(198,124,78,0.15) 0%, transparent 70%);
+    animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+.dashboard-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.dashboard-header p {
+    color: rgba(255,255,255,0.8);
+    font-size: 1.1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 24px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+}
+
+.stat-card:hover::after {
+    transform: scaleX(1);
+}
+
+.stat-info h3 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 5px;
+}
+
+.stat-info p {
+    color: #666;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon i {
+    font-size: 28px;
+    color: white;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.feature-card {
+    background: white;
+    border-radius: 24px;
+    padding: 35px 25px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.feature-card:hover::before {
+    left: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(198,124,78,0.2);
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.feature-icon i {
+    font-size: 36px;
+    color: white;
+}
+
+.feature-card h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 10px;
+}
+
+.feature-card p {
+    color: #666;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.orders-section {
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+.section-header {
+    background: linear-gradient(135deg, var(--dark), #3D2518);
+    color: white;
+    padding: 20px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.section-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.section-header i {
+    margin-right: 10px;
+}
+
+.refresh-btn {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.refresh-btn:hover {
+    background: rgba(255,255,255,0.3);
+    transform: scale(1.02);
+}
+
+.order-item {
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.2s ease;
+}
+
+.order-item:hover {
+    background: #f8f9fa;
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.order-number {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--primary);
+}
+
+.order-status {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.status-pending { background: #FFF3CD; color: #856404; }
+.status-preparing { background: #D1ECF1; color: #0C5460; }
+.status-ready { background: #D4EDDA; color: #155724; }
+.status-completed { background: #E2E3E5; color: #383D41; }
+
+.order-details {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.order-actions {
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
+}
+
+.status-btn {
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.status-btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-preparing { background: #17a2b8; color: white; }
+.btn-ready { background: #28a745; color: white; }
+.btn-completed { background: #6c757d; color: white; }
+
+.empty-state {
+    text-align: center;
+    padding: 60px;
+    color: #999;
+}
+
+.empty-state i {
+    font-size: 60px;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+    .dashboard-header h1 {
+        font-size: 1.8rem;
+    }
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .section-header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+}
+</style>
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1><i class="fas fa-user-tie me-2"></i> {% if session.lang == 'fi' %}Työntekijän kojelauta{% elif session.lang == 'sv' %}Anställd instrumentpanel{% elif session.lang == 'fa' %}داشبورد کارکنان{% else %}Employee Dashboard{% endif %}</h1>
+        <p>{% if session.lang == 'fi' %}Tervetuloa takaisin{% elif session.lang == 'sv' %}Välkommen tillbaka{% elif session.lang == 'fa' %}خوش آمدید{% else %}Welcome back{% endif %}, {{ current_user.full_name or current_user.username }}! 👋</p>
+    </div>
+
+    <div class="stats-grid" id="statsContainer">
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3 id="totalOrders">0</h3>
+                <p>{% if session.lang == 'fi' %}Tilauksia tänään{% elif session.lang == 'sv' %}Order idag{% elif session.lang == 'fa' %}سفارش‌های امروز{% else %}Total Orders Today{% endif %}</p>
+            </div>
+            <div class="stat-icon">
+                <i class="fas fa-shopping-bag"></i>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3 id="pendingCount">0</h3>
+                <p>{% if session.lang == 'fi' %}Odottaa käsittelyä{% elif session.lang == 'sv' %}Väntande ordrar{% elif session.lang == 'fa' %}سفارش‌های در انتظار{% else %}Pending Orders{% endif %}</p>
+            </div>
+            <div class="stat-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3 id="completedCount">0</h3>
+                <p>{% if session.lang == 'fi' %}Valmistuneet tänään{% elif session.lang == 'sv' %}Slutförda idag{% elif session.lang == 'fa' %}تکمیل شده امروز{% else %}Completed Today{% endif %}</p>
+            </div>
+            <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3 id="todayRevenue">0</h3>
+                <p>{% if session.lang == 'fi' %}Päivän liikevaihto{% elif session.lang == 'sv' %}Dagens intäkter{% elif session.lang == 'fa' %}درآمد امروز{% else %}Revenue Today{% endif %}</p>
+            </div>
+            <div class="stat-icon">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="features-grid">
+        <a href="/employee/inventory" class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-boxes"></i>
+            </div>
+            <h3>{% if session.lang == 'fi' %}Varastonhallinta{% elif session.lang == 'sv' %}Lagerhantering{% elif session.lang == 'fa' %}مدیریت موجودی{% else %}Inventory Management{% endif %}</h3>
+            <p>{% if session.lang == 'fi' %}Näytä kaikki tuotteet, varastotasot ja saatavuus{% elif session.lang == 'sv' %}Visa alla produkter, lagernivåer och tillgänglighet{% elif session.lang == 'fa' %}مشاهده همه محصولات، سطوح موجودی و در دسترس بودن{% else %}View all products, stock levels, and availability{% endif %}</p>
+        </a>
+        <a href="/employee/customers" class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <h3>{% if session.lang == 'fi' %}Asiakashallinta{% elif session.lang == 'sv' %}Kundhantering{% elif session.lang == 'fa' %}مدیریت مشتریان{% else %}Customer Management{% endif %}</h3>
+            <p>{% if session.lang == 'fi' %}Näytä asiakastiedot ja tilaushistoria{% elif session.lang == 'sv' %}Visa kundinformation och orderhistorik{% elif session.lang == 'fa' %}مشاهده اطلاعات مشتری و تاریخچه سفارشات{% else %}View customer information and order history{% endif %}</p>
+        </a>
+        <a href="/employee/pending-orders" class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <h3>{% if session.lang == 'fi' %}Tilausten hallinta{% elif session.lang == 'sv' %}Orderhantering{% elif session.lang == 'fa' %}مدیریت سفارشات{% else %}Order Management{% endif %}</h3>
+            <p>{% if session.lang == 'fi' %}Päivitä tilauksen tila ja seuraa edistymistä{% elif session.lang == 'sv' %}Uppdatera orderstatus och följ framsteg{% elif session.lang == 'fa' %}به‌روزرسانی وضعیت سفارش و پیگیری پیشرفت{% else %}Update order status and track progress{% endif %}</p>
+        </a>
+    </div>
+
+    <div class="orders-section">
+        <div class="section-header">
+            <h3><i class="fas fa-hourglass-half"></i> {% if session.lang == 'fi' %}Odottaa käsittelyä{% elif session.lang == 'sv' %}Väntande ordrar{% elif session.lang == 'fa' %}سفارش‌های در انتظار{% else %}Pending Orders{% endif %}</h3>
+            <button class="refresh-btn" onclick="loadDashboardData()">
+                <i class="fas fa-sync-alt"></i> {% if session.lang == 'fi' %}Päivitä{% elif session.lang == 'sv' %}Uppdatera{% elif session.lang == 'fa' %}بازخوانی{% else %}Refresh{% endif %}
+            </button>
+        </div>
+        <div id="pendingOrdersList">
+            <div class="empty-state">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>{% if session.lang == 'fi' %}Ladataan tilauksia...{% elif session.lang == 'sv' %}Laddar ordrar...{% elif session.lang == 'fa' %}در حال بارگذاری سفارشات...{% else %}Loading orders...{% endif %}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="orders-section">
+        <div class="section-header">
+            <h3><i class="fas fa-history"></i> {% if session.lang == 'fi' %}Viimeisimmät tilaukset{% elif session.lang == 'sv' %}Senaste ordrar{% elif session.lang == 'fa' %}سفارش‌های اخیر{% else %}Recent Orders{% endif %}</h3>
+        </div>
+        <div id="recentOrdersList">
+            <div class="empty-state">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>{% if session.lang == 'fi' %}Ladataan tilauksia...{% elif session.lang == 'sv' %}Laddar ordrar...{% elif session.lang == 'fa' %}در حال بارگذاری سفارشات...{% else %}Loading orders...{% endif %}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function formatCurrency(amount) {
+    const currencyCode = '{{ session.get("currency", "USD") }}';
+    if (currencyCode === 'EUR') {
+        return amount.toFixed(2) + ' €';
+    } else if (currencyCode === 'SEK') {
+        return amount.toFixed(2) + ' kr';
+    } else if (currencyCode === 'AFN') {
+        return '\u200E' + Math.round(amount).toLocaleString() + ' AFN';
+    } else {
+        return amount.toFixed(2) + ' $';
+    }
+}
+
+async function loadDashboardData() {
+    try {
+        const response = await fetch('/api/employee/orders');
+        const data = await response.json();
+
+        const stats = data.stats || {};
+        document.getElementById('totalOrders').textContent = stats.total || 0;
+        document.getElementById('pendingCount').textContent = stats.pending || 0;
+        document.getElementById('completedCount').textContent = stats.completed || 0;
+        document.getElementById('todayRevenue').textContent = formatCurrency(stats.revenue || 0);
+
+        const pendingOrders = data.pending || [];
+        renderPendingOrders(pendingOrders);
+
+        const allOrders = data.orders || [];
+        renderRecentOrders(allOrders.slice(0, 5));
+
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+function renderPendingOrders(orders) {
+    const container = document.getElementById('pendingOrdersList');
+    const lang = '{{ session.lang }}';
+
+    const noPendingText = lang === 'fi' ? 'Ei odottavia tilauksia! 🎉' : (lang === 'sv' ? 'Inga väntande ordrar! 🎉' : (lang === 'fa' ? 'سفارش در انتظاری وجود ندارد! 🎉' : 'No pending orders! 🎉'));
+    const pendingText = lang === 'fi' ? 'Odottaa' : (lang === 'sv' ? 'Väntar' : (lang === 'fa' ? 'در انتظار' : 'Pending'));
+    const preparingText = lang === 'fi' ? 'Valmistellaan' : (lang === 'sv' ? 'Förbereder' : (lang === 'fa' ? 'در حال آماده‌سازی' : 'Preparing'));
+    const readyText = lang === 'fi' ? 'Valmis' : (lang === 'sv' ? 'Klar' : (lang === 'fa' ? 'آماده' : 'Ready'));
+    const completedText = lang === 'fi' ? 'Valmistunut' : (lang === 'sv' ? 'Slutförd' : (lang === 'fa' ? 'تکمیل شده' : 'Completed'));
+    const guestText = lang === 'fi' ? 'Vieras' : (lang === 'sv' ? 'Gäst' : (lang === 'fa' ? 'میهمان' : 'Guest'));
+
+    if (orders.length === 0) {
+        container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle"></i><p>${noPendingText}</p></div>`;
+        return;
+    }
+
+    container.innerHTML = orders.map(order => `
+        <div class="order-item" id="order-${order.id}">
+            <div class="order-header">
+                <span class="order-number"><i class="fas fa-receipt me-1"></i> ${order.order_number}</span>
+                <span class="order-status status-pending">${pendingText}</span>
+            </div>
+            <div class="order-details">
+                <span><i class="fas fa-user me-1"></i> ${order.customer_name || guestText}</span>
+                <span><i class="fas fa-money-bill me-1"></i> ${formatCurrency(parseFloat(order.total_amount))}</span>
+                <span><i class="fas fa-calendar me-1"></i> ${order.created_at ? new Date(order.created_at).toLocaleTimeString() : 'N/A'}</span>
+            </div>
+            <div class="order-actions">
+                <button class="status-btn btn-preparing" onclick="updateStatus(${order.id}, 'preparing')">
+                    <i class="fas fa-utensils"></i> ${preparingText}
+                </button>
+                <button class="status-btn btn-ready" onclick="updateStatus(${order.id}, 'ready')">
+                    <i class="fas fa-check"></i> ${readyText}
+                </button>
+                <button class="status-btn btn-completed" onclick="updateStatus(${order.id}, 'completed')">
+                    <i class="fas fa-flag-checkered"></i> ${completedText}
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderRecentOrders(orders) {
+    const container = document.getElementById('recentOrdersList');
+    const lang = '{{ session.lang }}';
+
+    const noOrdersText = lang === 'fi' ? 'Ei tilauksia tänään' : (lang === 'sv' ? 'Inga ordrar idag' : (lang === 'fa' ? 'امروز سفارشی وجود ندارد' : 'No orders yet today'));
+    const guestText = lang === 'fi' ? 'Vieras' : (lang === 'sv' ? 'Gäst' : (lang === 'fa' ? 'میهمان' : 'Guest'));
+
+    if (orders.length === 0) {
+        container.innerHTML = `<div class="empty-state"><i class="fas fa-box-open"></i><p>${noOrdersText}</p></div>`;
+        return;
+    }
+
+    container.innerHTML = orders.map(order => {
+        let statusText = '';
+        const status = order.status;
+        if (status === 'pending') statusText = lang === 'fi' ? 'Odottaa' : (lang === 'sv' ? 'Väntar' : (lang === 'fa' ? 'در انتظار' : 'Pending'));
+        else if (status === 'preparing') statusText = lang === 'fi' ? 'Valmistellaan' : (lang === 'sv' ? 'Förbereder' : (lang === 'fa' ? 'در حال آماده‌سازی' : 'Preparing'));
+        else if (status === 'ready') statusText = lang === 'fi' ? 'Valmis' : (lang === 'sv' ? 'Klar' : (lang === 'fa' ? 'آماده' : 'Ready'));
+        else if (status === 'completed') statusText = lang === 'fi' ? 'Valmistunut' : (lang === 'sv' ? 'Slutförd' : (lang === 'fa' ? 'تکمیل شده' : 'Completed'));
+
+        return `
+            <div class="order-item">
+                <div class="order-header">
+                    <span class="order-number"><i class="fas fa-receipt me-1"></i> ${order.order_number}</span>
+                    <span class="order-status status-${order.status}">${statusText}</span>
+                </div>
+                <div class="order-details">
+                    <span><i class="fas fa-user me-1"></i> ${order.customer_name || guestText}</span>
+                    <span><i class="fas fa-money-bill me-1"></i> ${formatCurrency(parseFloat(order.total_amount))}</span>
+                    <span><i class="fas fa-calendar me-1"></i> ${order.created_at ? new Date(order.created_at).toLocaleTimeString() : 'N/A'}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+async function updateStatus(orderId, status) {
+    try {
+        const response = await fetch(`/api/update-order-status/${orderId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: status })
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            const orderElement = document.getElementById(`order-${orderId}`);
+            if (orderElement) {
+                orderElement.style.opacity = '0.5';
+                setTimeout(() => {
+                    loadDashboardData();
+                }, 500);
+            }
+        } else {
+            alert('{% if session.lang == "fi" %}Tilan päivitys epäonnistui{% elif session.lang == "sv" %}Misslyckades att uppdatera status{% elif session.lang == "fa" %}به‌روزرسانی وضعیت ناموفق بود{% else %}Failed to update status{% endif %}');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('{% if session.lang == "fi" %}Virhe tilaa päivittäessä{% elif session.lang == "sv" %}Fel vid uppdatering av status{% elif session.lang == "fa" %}خطا در به‌روزرسانی وضعیت{% else %}Error updating status{% endif %}');
+    }
+}
+
+loadDashboardData();
+setInterval(loadDashboardData, 30000);
+</script>
+{% endblock %}

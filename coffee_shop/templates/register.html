@@ -1,0 +1,453 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.register-container {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    background: linear-gradient(135deg, #faf7f2 0%, #f5efe8 100%);
+}
+
+.register-card {
+    max-width: 520px;
+    width: 100%;
+    background: white;
+    border-radius: 32px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.register-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 30px 60px -12px rgba(198,124,78,0.3);
+}
+
+.register-header {
+    background: linear-gradient(135deg, #2C1810, #3D2518);
+    padding: 35px 30px;
+    text-align: center;
+    position: relative;
+}
+
+.register-header::before {
+    content: '☕';
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 40px;
+    opacity: 0.1;
+}
+
+.register-header i {
+    font-size: 60px;
+    color: #C67C4E;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+}
+
+.register-header h1 {
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.register-header p {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.9rem;
+}
+
+.register-body {
+    padding: 35px 35px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2C1810;
+    font-size: 0.85rem;
+}
+
+.form-group label i {
+    margin-right: 8px;
+    color: #C67C4E;
+    width: 18px;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.input-wrapper i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #C67C4E;
+    font-size: 0.95rem;
+}
+
+.input-wrapper input {
+    width: 100%;
+    padding: 12px 15px 12px 42px;
+    border: 2px solid #E8E0D5;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    background: #fefcf9;
+}
+
+.input-wrapper input:focus {
+    border-color: #C67C4E;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(198,124,78,0.15);
+    background: white;
+}
+
+.input-wrapper input::placeholder {
+    color: #bbb;
+    font-size: 0.85rem;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.optional-badge {
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: #999;
+    margin-left: 5px;
+}
+
+.ref-code-box {
+    background: linear-gradient(135deg, #fef9f0, #fff5e8);
+    border: 1px solid #E8E0D5;
+    border-radius: 16px;
+    padding: 15px;
+    margin-bottom: 25px;
+    text-align: center;
+    position: relative;
+}
+
+.ref-code-box i {
+    font-size: 28px;
+    color: #C67C4E;
+    margin-bottom: 8px;
+}
+
+.ref-code-box p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.ref-code-box strong {
+    color: #C67C4E;
+    font-size: 1rem;
+}
+
+.btn-register {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn-register:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(198,124,78,0.4);
+}
+
+.btn-register:active {
+    transform: translateY(0);
+}
+
+.terms {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #999;
+}
+
+.terms a {
+    color: #C67C4E;
+    text-decoration: none;
+}
+
+.terms a:hover {
+    text-decoration: underline;
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #E8E0D5;
+}
+
+.login-link p {
+    color: #666;
+    font-size: 0.85rem;
+}
+
+.login-link a {
+    color: #C67C4E;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.login-link a:hover {
+    color: #A0522D;
+    text-decoration: underline;
+}
+
+/* Alert styles */
+.alert {
+    padding: 12px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-size: 0.85rem;
+}
+
+.alert-danger {
+    background: #FEF3F2;
+    border: 1px solid #FEE2E2;
+    color: #DC2626;
+}
+
+.alert-success {
+    background: #ECFDF5;
+    border: 1px solid #D1FAE5;
+    color: #059669;
+}
+
+/* Password strength indicator */
+.password-strength {
+    margin-top: 8px;
+    height: 4px;
+    border-radius: 2px;
+    background: #E8E0D5;
+    overflow: hidden;
+}
+
+.password-strength-bar {
+    width: 0%;
+    height: 100%;
+    transition: width 0.3s ease, background 0.3s ease;
+}
+
+/* RTL fixes for Persian */
+body.rtl .input-wrapper i {
+    left: auto;
+    right: 15px;
+}
+
+body.rtl .input-wrapper input {
+    padding-left: 15px;
+    padding-right: 42px;
+}
+
+body.rtl .form-group label i {
+    margin-right: 0;
+    margin-left: 8px;
+}
+
+body.rtl .optional-badge {
+    margin-left: 0;
+    margin-right: 5px;
+}
+
+@media (max-width: 640px) {
+    .register-body {
+        padding: 25px 20px;
+    }
+    
+    .register-header {
+        padding: 25px 20px;
+    }
+    
+    .register-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .register-container {
+        padding: 40px 15px;
+    }
+    
+    .register-card {
+        border-radius: 24px;
+    }
+}
+</style>
+
+<div class="register-container">
+    <div class="register-card">
+        <div class="register-header">
+            <i class="fas fa-mug-hot"></i>
+            <h1>{{ t('join_us') }}</h1>
+            <p>{{ t('register_subtitle') }}</p>
+        </div>
+
+        <div class="register-body">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endwith %}
+
+            {% if ref_code %}
+            <div class="ref-code-box">
+                <i class="fas fa-gift"></i>
+                <p>{{ t('referral_code') }}: <strong>{{ ref_code }}</strong></p>
+                <small>{{ t('referral_discount') }}</small>
+            </div>
+            {% endif %}
+
+            <form method="POST" id="registerForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> {{ t('username') }} <span class="optional-badge">*</span></label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user"></i>
+                            <input type="text" name="username" placeholder="{{ t('username_placeholder') }}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> {{ t('email') }} <span class="optional-badge">*</span></label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" name="email" placeholder="{{ t('email_placeholder') }}" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> {{ t('password') }} <span class="optional-badge">*</span></label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" name="password" id="password" placeholder="{{ t('password_placeholder') }}" required>
+                        </div>
+                        <div class="password-strength">
+                            <div class="password-strength-bar" id="passwordStrength"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> {{ t('confirm_password') }} <span class="optional-badge">*</span></label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-check-circle"></i>
+                            <input type="password" name="confirm_password" id="confirmPassword" placeholder="{{ t('confirm_password_placeholder') }}" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-user-tag"></i> {{ t('full_name') }}</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user-tag"></i>
+                            <input type="text" name="full_name" placeholder="{{ t('full_name_placeholder') }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-phone"></i> {{ t('phone') }}</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-phone"></i>
+                            <input type="tel" name="phone" placeholder="{{ t('phone_placeholder') }}">
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" name="ref_code" value="{{ ref_code }}">
+
+                <button type="submit" class="btn-register">
+                    <i class="fas fa-user-plus"></i> {{ t('create_account') }}
+                </button>
+
+                <div class="terms">
+                    <p>{{ t('agree_terms') }} <a href="#">{{ t('terms_conditions') }}</a> {{ t('and') }} <a href="#">{{ t('privacy_policy') }}</a></p>
+                </div>
+            </form>
+
+            <div class="login-link">
+                <p>{{ t('already_have_account') }}? <a href="/login">{{ t('login_instead') }}</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Password strength indicator
+const passwordInput = document.getElementById('password');
+const confirmInput = document.getElementById('confirmPassword');
+const strengthBar = document.getElementById('passwordStrength');
+
+passwordInput.addEventListener('input', function() {
+    const password = this.value;
+    let strength = 0;
+    
+    if (password.length >= 6) strength += 25;
+    if (password.match(/[a-z]+/)) strength += 25;
+    if (password.match(/[A-Z]+/)) strength += 25;
+    if (password.match(/[0-9]+/) || password.match(/[$@#&!]+/)) strength += 25;
+    
+    strengthBar.style.width = strength + '%';
+    
+    if (strength < 25) {
+        strengthBar.style.background = '#dc3545';
+    } else if (strength < 50) {
+        strengthBar.style.background = '#ffc107';
+    } else if (strength < 75) {
+        strengthBar.style.background = '#17a2b8';
+    } else {
+        strengthBar.style.background = '#28a745';
+    }
+});
+
+// Password match validation
+confirmInput.addEventListener('input', function() {
+    if (this.value !== passwordInput.value && this.value.length > 0) {
+        this.style.borderColor = '#dc3545';
+    } else {
+        this.style.borderColor = '#E8E0D5';
+    }
+});
+</script>
+{% endblock %}

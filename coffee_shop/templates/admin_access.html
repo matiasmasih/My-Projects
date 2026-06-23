@@ -1,0 +1,761 @@
+{% extends "base.html" %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+.admin-premium {
+    font-family: 'Inter', sans-serif;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 40px 30px;
+    background: linear-gradient(135deg, #faf7f2 0%, #f5efe8 100%);
+    min-height: calc(100vh - 200px);
+}
+
+/* Hero Banner */
+.hero-banner {
+    background: linear-gradient(135deg, #2C1810, #3D2518);
+    border-radius: 40px;
+    padding: 45px 50px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-banner::before {
+    content: '☕';
+    position: absolute;
+    right: -30px;
+    bottom: -30px;
+    font-size: 180px;
+    opacity: 0.05;
+}
+
+.hero-content h1 {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.hero-content p {
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 30px;
+}
+
+.hero-stats {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.hero-stat {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 12px 25px;
+    min-width: 130px;
+}
+
+.hero-stat .stat-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #D4AF37;
+}
+
+.hero-stat .stat-label {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.7);
+}
+
+/* Section Title */
+.section-title {
+    margin: 40px 0 25px;
+    display: flex;
+    align-items: baseline;
+    gap: 15px;
+}
+
+.section-title h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2C1810;
+}
+
+/* Alerts */
+.alert-low-stock {
+    background: #FFF3CD;
+    border-left: 4px solid #FFC107;
+    padding: 12px 20px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Cards with different background colors */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.premium-card {
+    position: relative;
+    border-radius: 28px;
+    padding: 30px 25px;
+    text-decoration: none;
+    display: block;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+}
+
+/* Different background colors for each card */
+.premium-card:nth-child(1) { background: linear-gradient(135deg, #FFF5EB, #FFE8D9); }
+.premium-card:nth-child(2) { background: linear-gradient(135deg, #E8F5E9, #C8E6C9); }
+.premium-card:nth-child(3) { background: linear-gradient(135deg, #E3F2FD, #BBDEFB); }
+.premium-card:nth-child(4) { background: linear-gradient(135deg, #FCE4EC, #F8BBD0); }
+
+.premium-card .card-bg-icon {
+    position: absolute;
+    right: -20px;
+    bottom: -20px;
+    font-size: 120px;
+    opacity: 0.1;
+    transition: all 0.4s ease;
+}
+
+.premium-card:hover .card-bg-icon {
+    transform: scale(1.1) rotate(5deg);
+    opacity: 0.2;
+}
+
+.premium-card .card-icon {
+    width: 65px;
+    height: 65px;
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
+}
+
+.premium-card:hover .card-icon {
+    transform: scale(1.08) rotate(5deg);
+    box-shadow: 0 10px 20px rgba(198,124,78,0.3);
+}
+
+.premium-card .card-icon i {
+    font-size: 30px;
+    color: white;
+}
+
+.premium-card h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2C1810;
+    margin-bottom: 8px;
+}
+
+.premium-card p {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.card-arrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #C67C4E;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.premium-card:hover .card-arrow {
+    gap: 15px;
+}
+
+.premium-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 25px 40px rgba(0,0,0,0.15);
+}
+
+/* Data Cards */
+.data-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.data-card {
+    background: white;
+    border-radius: 24px;
+    padding: 25px;
+    border: 1px solid #E8E0D5;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+}
+
+.data-card h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2C1810;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.data-card h3 i {
+    color: #C67C4E;
+}
+
+.data-list {
+    list-style: none;
+    padding: 0;
+}
+
+.data-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.data-list li:last-child {
+    border-bottom: none;
+}
+
+.product-name {
+    font-weight: 600;
+    color: #2C1810;
+}
+
+.product-sold {
+    color: #C67C4E;
+    font-weight: 600;
+}
+
+.view-all {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.view-all a {
+    color: #C67C4E;
+    text-decoration: none;
+    font-size: 0.8rem;
+}
+
+/* Features Grid */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.feature-card {
+    position: relative;
+    background: white;
+    border-radius: 28px;
+    padding: 30px;
+    text-decoration: none;
+    display: block;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    border: 1px solid rgba(198,124,78,0.1);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+}
+
+.feature-card .card-bg-icon {
+    position: absolute;
+    right: -15px;
+    bottom: -15px;
+    font-size: 100px;
+    opacity: 0.06;
+}
+
+.feature-card:hover .card-bg-icon {
+    transform: scale(1.1);
+    opacity: 0.1;
+}
+
+.feature-icon {
+    width: 55px;
+    height: 55px;
+    background: rgba(198,124,78,0.12);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    transform: scale(1.05);
+}
+
+.feature-icon i {
+    font-size: 26px;
+    color: #C67C4E;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover .feature-icon i {
+    color: white;
+}
+
+.feature-card h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2C1810;
+    margin-bottom: 8px;
+}
+
+.feature-card p {
+    font-size: 0.75rem;
+    color: #888;
+    margin-bottom: 15px;
+}
+
+.feature-arrow {
+    color: #C67C4E;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover .feature-arrow {
+    gap: 10px;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    border-color: #C67C4E;
+    box-shadow: 0 20px 35px rgba(198,124,78,0.15);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .data-row {
+        grid-template-columns: 1fr;
+    }
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-premium {
+        padding: 20px;
+    }
+    .hero-banner {
+        padding: 30px;
+    }
+    .hero-content h1 {
+        font-size: 1.8rem;
+    }
+    .cards-grid {
+        grid-template-columns: 1fr;
+    }
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<div class="admin-premium">
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+        <div class="hero-content">
+            <h1>{{ t('welcome_back_admin') }} {{ current_user.full_name or current_user.username }}</h1>
+            <p>{{ t('admin_dashboard_subtitle') }}</p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="stat-value" id="heroRevenue">$0</div>
+                    <div class="stat-label">{{ t('total_revenue') }}</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="stat-value" id="heroOrders">0</div>
+                    <div class="stat-label">{{ t('total_orders') }}</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="stat-value" id="heroCustomers">0</div>
+                    <div class="stat-label">{{ t('total_customers') }}</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="stat-value" id="heroProducts">0</div>
+                    <div class="stat-label">{{ t('total_products') }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Real-time Data Section -->
+    <div class="data-row">
+        <!-- Low Stock Alerts -->
+        <div class="data-card">
+            <h3><i class="fas fa-exclamation-triangle"></i> {{ t('low_stock_alerts') }}</h3>
+            <div id="lowStockList">
+                <div class="alert-low-stock">
+                    <span>{{ t('loading') }}...</span>
+                </div>
+            </div>
+            <div class="view-all">
+                <a href="/admin/inventory">{{ t('view_all_products') }} →</a>
+            </div>
+        </div>
+
+        <!-- Top Selling Products -->
+        <div class="data-card">
+            <h3><i class="fas fa-fire"></i> {{ t('top_selling_products') }}</h3>
+            <ul class="data-list" id="topProductsList">
+                <li>{{ t('loading') }}...</li>
+            </ul>
+            <div class="view-all">
+                <a href="/admin/sales-dashboard">{{ t('view_full_report') }} →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders & Monthly Sales 3D Chart -->
+    <div class="data-row">
+        <!-- Recent Orders -->
+        <div class="data-card">
+            <h3><i class="fas fa-clock"></i> {{ t('recent_orders') }}</h3>
+            <ul class="data-list" id="recentOrdersList">
+                <li>{{ t('loading') }}...</li>
+            </ul>
+            <div class="view-all">
+                <a href="/admin/sales-dashboard">{{ t('view_all_orders') }} →</a>
+            </div>
+        </div>
+
+        <!-- Monthly Sales 3D Chart -->
+        <div class="data-card">
+            <h3><i class="fas fa-chart-line"></i> {{ t('monthly_sales_3d') }}</h3>
+            <div class="mini-chart">
+                <canvas id="salesChart3D" style="width:100%; height:250px;"></canvas>
+            </div>
+            <div class="view-all">
+                <a href="/admin/sales-dashboard">{{ t('detailed_analytics') }} →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions Cards with Different Colors -->
+    <div class="section-title">
+        <h2>{{ t('quick_actions') }}</h2>
+    </div>
+    <div class="cards-grid">
+        <a href="/admin/inventory" class="premium-card">
+            <div class="card-bg-icon"><i class="fas fa-boxes"></i></div>
+            <div class="card-icon"><i class="fas fa-boxes"></i></div>
+            <h3>{{ t('manage_inventory') }}</h3>
+            <p>{{ t('update_stock_products') }}</p>
+            <div class="card-arrow">{{ t('access') }} →</div>
+        </a>
+        <a href="/admin/customers" class="premium-card">
+            <div class="card-bg-icon"><i class="fas fa-users"></i></div>
+            <div class="card-icon"><i class="fas fa-users"></i></div>
+            <h3>{{ t('customer_list') }}</h3>
+            <p>{{ t('view_manage_customers') }}</p>
+            <div class="card-arrow">{{ t('access') }} →</div>
+        </a>
+        <a href="/admin/export" class="premium-card">
+            <div class="card-bg-icon"><i class="fas fa-download"></i></div>
+            <div class="card-icon"><i class="fas fa-download"></i></div>
+            <h3>{{ t('export_data') }}</h3>
+            <p>{{ t('download_reports') }}</p>
+            <div class="card-arrow">{{ t('access') }} →</div>
+        </a>
+        <a href="/admin/add-blog" class="premium-card">
+            <div class="card-bg-icon"><i class="fas fa-feather-alt"></i></div>
+            <div class="card-icon"><i class="fas fa-feather-alt"></i></div>
+            <h3>{{ t('write_blog') }}</h3>
+            <p>{{ t('publish_articles') }}</p>
+            <div class="card-arrow">{{ t('access') }} →</div>
+        </a>
+    </div>
+
+    <!-- Management Features -->
+    <div class="section-title">
+        <h2>{{ t('management_center') }}</h2>
+    </div>
+    <div class="features-grid">
+        <a href="/admin/sales-dashboard" class="feature-card">
+            <div class="card-bg-icon"><i class="fas fa-chart-line"></i></div>
+            <div class="feature-icon"><i class="fas fa-chart-pie"></i></div>
+            <h3>{{ t('sales_analytics') }}</h3>
+            <p>{{ t('view_reports_insights') }}</p>
+            <div class="feature-arrow">{{ t('access_dashboard') }} →</div>
+        </a>
+        <a href="/admin/newsletter" class="feature-card">
+            <div class="card-bg-icon"><i class="fas fa-envelope"></i></div>
+            <div class="feature-icon"><i class="fas fa-envelope-open-text"></i></div>
+            <h3>{{ t('newsletter_hub') }}</h3>
+            <p>{{ t('manage_subscribers_campaigns') }}</p>
+            <div class="feature-arrow">{{ t('manage_subscribers') }} →</div>
+        </a>
+        <a href="/admin/team" class="feature-card">
+            <div class="card-bg-icon"><i class="fas fa-user-friends"></i></div>
+            <div class="feature-icon"><i class="fas fa-user-friends"></i></div>
+            <h3>{{ t('team_management') }}</h3>
+            <p>{{ t('manage_team_members') }}</p>
+            <div class="feature-arrow">{{ t('manage_team') }} →</div>
+        </a>
+        <a href="/admin/chatbot-orders" class="feature-card">
+            <div class="card-bg-icon"><i class="fas fa-robot"></i></div>
+            <div class="feature-icon"><i class="fas fa-robot"></i></div>
+            <h3>{{ t('chatbot_orders') }}</h3>
+            <p>{{ t('view_ai_orders') }}</p>
+            <div class="feature-arrow">{{ t('view_orders') }} →</div>
+        </a>
+        <a href="/admin/news" class="feature-card">
+            <div class="card-bg-icon"><i class="fas fa-newspaper"></i></div>
+            <div class="feature-icon"><i class="fas fa-newspaper"></i></div>
+            <h3>{{ t('news_manager') }}</h3>
+            <p>{{ t('manage_news_articles') }}</p>
+            <div class="feature-arrow">{{ t('manage_news') }} →</div>
+        </a>
+        <a href="/employee-dashboard" class="feature-card">
+            <div class="card-bg-icon"><i class="fas fa-user-tie"></i></div>
+            <div class="feature-icon"><i class="fas fa-user-tie"></i></div>
+            <h3>{{ t('employee_portal') }}</h3>
+            <p>{{ t('staff_management') }}</p>
+            <div class="feature-arrow">{{ t('access_portal') }} →</div>
+        </a>
+    </div>
+</div>
+
+<script>
+let salesChart = null;
+
+async function loadStats() {
+    try {
+        const res = await fetch('/api/admin/sales-data?period=all');
+        const data = await res.json();
+        const currency = '{{ session.get("currency", "USD") }}';
+        let revenue = data.total_revenue || 0;
+        
+        if (currency === 'EUR') revenue = '€' + revenue.toFixed(0);
+        else if (currency === 'SEK') revenue = Math.round(revenue) + ' kr';
+        else if (currency === 'AFN') revenue = Math.round(revenue) + ' AFN';
+        else revenue = '$' + revenue.toFixed(0);
+        
+        document.getElementById('heroRevenue').innerHTML = revenue;
+        document.getElementById('heroOrders').innerHTML = data.total_orders || 0;
+        document.getElementById('heroCustomers').innerHTML = data.total_customers || 0;
+        
+        const prodRes = await fetch('/api/employee/inventory-data');
+        const prodData = await prodRes.json();
+        document.getElementById('heroProducts').innerHTML = prodData.stats?.total || 0;
+        
+        loadLowStock(prodData.products);
+        loadTopProducts();
+        loadRecentOrders();
+        loadMonthlySales();
+        
+    } catch(e) { console.error(e); }
+}
+
+function loadLowStock(products) {
+    const container = document.getElementById('lowStockList');
+    if (!products || products.length === 0) {
+        container.innerHTML = '<div class="alert-low-stock"><span>{{ t("no_products_found") }}</span></div>';
+        return;
+    }
+    
+    const lowStockItems = products.filter(p => (p.stock || 0) < 10 && (p.stock || 0) > 0);
+    const outStockItems = products.filter(p => (p.stock || 0) <= 0);
+    
+    if (lowStockItems.length === 0 && outStockItems.length === 0) {
+        container.innerHTML = '<div class="alert-low-stock" style="background:#D4EDDA; border-left-color:#28a745;"><span>✅ {{ t("all_stock_healthy") }}</span></div>';
+        return;
+    }
+    
+    let html = '';
+    const lang = '{{ session.lang }}';
+    const lowStockText = lang === 'fi' ? 'vain' : (lang === 'sv' ? 'endast' : (lang === 'fa' ? 'فقط' : 'only'));
+    const leftText = lang === 'fi' ? 'jäljellä' : (lang === 'sv' ? 'kvar' : (lang === 'fa' ? 'مانده' : 'left'));
+    
+    lowStockItems.slice(0, 5).forEach(p => {
+        html += `<div class="alert-low-stock">
+            <span><strong>⚠️ ${p.name}</strong> - ${lowStockText} ${p.stock} ${leftText}!</span>
+            <a href="/admin/inventory" style="color:#C67C4E;">{{ t("restock") }} →</a>
+        </div>`;
+    });
+    
+    outStockItems.slice(0, 3).forEach(p => {
+        html += `<div class="alert-low-stock" style="background:#F8D7DA; border-left-color:#dc3545;">
+            <span><strong>❌ ${p.name}</strong> - {{ t("out_of_stock") }}!</span>
+            <a href="/admin/inventory" style="color:#C67C4E;">{{ t("restock") }} →</a>
+        </div>`;
+    });
+    
+    container.innerHTML = html;
+}
+
+async function loadTopProducts() {
+    try {
+        const res = await fetch('/api/admin/sales-data?period=all');
+        const data = await res.json();
+        const topProducts = data.top_products || [];
+        
+        const container = document.getElementById('topProductsList');
+        if (topProducts.length === 0) {
+            container.innerHTML = '<li class="text-muted">{{ t("no_sales_data") }}</li>';
+            return;
+        }
+        
+        const lang = '{{ session.lang }}';
+        const soldText = lang === 'fi' ? 'myyty' : (lang === 'sv' ? 'sålda' : (lang === 'fa' ? 'فروخته شده' : 'sold'));
+        
+        let html = '';
+        topProducts.slice(0, 5).forEach(p => {
+            html += `<li>
+                <span class="product-name">${p.name}</span>
+                <span class="product-sold">${p.total_quantity || 0} ${soldText}</span>
+            </li>`;
+        });
+        container.innerHTML = html;
+    } catch(e) {
+        console.error(e);
+        document.getElementById('topProductsList').innerHTML = '<li>{{ t("error_loading_data") }}</li>';
+    }
+}
+
+async function loadRecentOrders() {
+    try {
+        const res = await fetch('/api/employee/orders');
+        const data = await res.json();
+        const orders = data.orders || [];
+        
+        const container = document.getElementById('recentOrdersList');
+        if (orders.length === 0) {
+            container.innerHTML = '<li class="text-muted">{{ t("no_orders_yet") }}</li>';
+            return;
+        }
+        
+        let html = '';
+        orders.slice(0, 5).forEach(order => {
+            html += `<li>
+                <span class="product-name">${order.order_number}</span>
+                <span class="product-sold">$${parseFloat(order.total_amount).toFixed(2)}</span>
+            </li>`;
+        });
+        container.innerHTML = html;
+    } catch(e) {
+        console.error(e);
+        document.getElementById('recentOrdersList').innerHTML = '<li>{{ t("error_loading_orders") }}</li>';
+    }
+}
+
+async function loadMonthlySales() {
+    try {
+        const res = await fetch('/api/admin/sales-data?period=month');
+        const data = await res.json();
+        const salesData = data.sales_data || [];
+        const labels = data.sales_labels || [];
+        
+        const ctx = document.getElementById('salesChart3D').getContext('2d');
+        
+        if (salesData.length === 0) {
+            document.getElementById('salesChart3D').parentElement.innerHTML = '<div style="text-align:center; padding:40px;">{{ t("no_sales_data_available") }}</div>';
+            return;
+        }
+        
+        if (salesChart) {
+            salesChart.destroy();
+        }
+        
+        const lang = '{{ session.lang }}';
+        const revenueLabel = lang === 'fi' ? 'Tuotto' : (lang === 'sv' ? 'Intäkter' : (lang === 'fa' ? 'درآمد' : 'Revenue'));
+        
+        salesChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: revenueLabel,
+                    data: salesData,
+                    backgroundColor: 'rgba(198,124,78,0.8)',
+                    borderColor: '#C67C4E',
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    barPercentage: 0.4,
+                    categoryPercentage: 0.6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: { font: { size: 12 }, color: '#2C1810' }
+                    },
+                    tooltip: {
+                        backgroundColor: '#2C1810',
+                        titleColor: '#D4AF37',
+                        bodyColor: 'white',
+                        callbacks: {
+                            label: function(context) {
+                                const currency = '{{ session.get("currency", "USD") }}';
+                                let value = context.raw;
+                                if (currency === 'EUR') return '€' + value.toFixed(0);
+                                if (currency === 'SEK') return value.toFixed(0) + ' kr';
+                                if (currency === 'AFN') return Math.round(value) + ' AFN';
+                                return '$' + value.toFixed(0);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        ticks: {
+                            callback: function(value) {
+                                const currency = '{{ session.get("currency", "USD") }}';
+                                if (currency === 'EUR') return '€' + value;
+                                if (currency === 'SEK') return value + ' kr';
+                                if (currency === 'AFN') return value + ' AFN';
+                                return '$' + value;
+                            }
+                        }
+                    },
+                    x: { 
+                        grid: { display: false }, 
+                        ticks: { font: { size: 10 } }
+                    }
+                }
+            }
+        });
+        
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+loadStats();
+</script>
+{% endblock %}

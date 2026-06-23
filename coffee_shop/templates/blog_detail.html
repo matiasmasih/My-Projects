@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.article-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 60px 20px;
+}
+
+.article-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.article-category {
+    display: inline-block;
+    background: #C67C4E;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    margin-bottom: 15px;
+}
+
+.article-header h1 {
+    font-size: 2.2rem;
+    color: #2C1810;
+    margin-bottom: 15px;
+}
+
+.article-meta {
+    color: #999;
+    font-size: 0.85rem;
+}
+
+.article-image {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 20px;
+    margin: 30px 0;
+}
+
+.article-content {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #444;
+}
+
+.article-content p {
+    margin-bottom: 20px;
+}
+
+.back-button {
+    display: inline-block;
+    background: #6c757d;
+    color: white;
+    padding: 10px 25px;
+    border-radius: 30px;
+    text-decoration: none;
+    margin-top: 40px;
+}
+
+.back-button:hover {
+    background: #5a6268;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .article-header h1 {
+        font-size: 1.5rem;
+    }
+    .article-content {
+        font-size: 0.95rem;
+    }
+}
+</style>
+
+<div class="article-container">
+    <div class="article-header">
+        <span class="article-category">{{ article.category }}</span>
+        <h1>
+            {% if session.lang == 'fi' and article.title_fi %}
+                {{ article.title_fi }}
+            {% elif session.lang == 'sv' and article.title_sv %}
+                {{ article.title_sv }}
+            {% elif session.lang == 'fa' and article.title_fa %}
+                {{ article.title_fa }}
+            {% else %}
+                {{ article.title }}
+            {% endif %}
+        </h1>
+        <div class="article-meta">
+            <i class="fas fa-user"></i> {{ article.author }}
+            <i class="fas fa-calendar"></i> {{ article.published_at.strftime('%B %d, %Y') }}
+        </div>
+    </div>
+
+    {% if article.image_url %}
+    <img src="{{ article.image_url }}" class="article-image" onerror="this.src='/static/images/coffee-placeholder.jpg'">
+    {% else %}
+    <img src="/static/images/coffee-placeholder.jpg" class="article-image">
+    {% endif %}
+
+    <div class="article-content">
+        <p>
+            {% if session.lang == 'fi' and article.content_fi %}
+                {{ article.content_fi }}
+            {% elif session.lang == 'sv' and article.content_sv %}
+                {{ article.content_sv }}
+            {% elif session.lang == 'fa' and article.content_fa %}
+                {{ article.content_fa }}
+            {% else %}
+                {{ article.content }}
+            {% endif %}
+        </p>
+    </div>
+
+    <a href="/blog" class="back-button">← {{ t('back_to_blog') }}</a>
+</div>
+{% endblock %}

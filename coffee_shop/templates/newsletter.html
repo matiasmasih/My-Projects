@@ -1,0 +1,705 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.newsletter-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #faf7f2 0%, #f5efe8 100%);
+    min-height: calc(100vh - 200px);
+}
+
+/* Banner Styles */
+.newsletter-banner {
+    background: linear-gradient(135deg, #2C1810 0%, #3D2518 50%, #2C1810 100%);
+    border-radius: 24px;
+    padding: 40px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.newsletter-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(198,124,78,0.1) 0%, transparent 70%);
+    transform: rotate(25deg);
+    pointer-events: none;
+}
+
+.newsletter-banner::after {
+    content: '📧';
+    position: absolute;
+    bottom: 10px;
+    right: 30px;
+    font-size: 80px;
+    opacity: 0.1;
+}
+
+.banner-content {
+    position: relative;
+    z-index: 2;
+}
+
+.banner-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.banner-title i {
+    font-size: 50px;
+    color: #D4AF37;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.banner-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 20px;
+}
+
+.banner-stats {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.banner-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.1);
+    padding: 8px 16px;
+    border-radius: 40px;
+    backdrop-filter: blur(5px);
+}
+
+.banner-stat-item i {
+    color: #D4AF37;
+    font-size: 18px;
+}
+
+.banner-stat-item span {
+    color: white;
+    font-size: 14px;
+}
+
+.banner-stat-item strong {
+    color: #D4AF37;
+    font-size: 18px;
+    margin-left: 5px;
+}
+
+.newsletter-card {
+    background: white;
+    border-radius: 32px;
+    box-shadow: 0 25px 45px -12px rgba(0,0,0,0.2);
+    max-width: 600px;
+    margin: 0 auto;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.newsletter-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 30px 55px -12px rgba(198,124,78,0.3);
+}
+
+.newsletter-image {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    padding: 45px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.newsletter-image::before {
+    content: '✉️';
+    position: absolute;
+    right: -30px;
+    bottom: -30px;
+    font-size: 120px;
+    opacity: 0.1;
+}
+
+.newsletter-image i {
+    font-size: 85px;
+    color: white;
+    margin-bottom: 15px;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.newsletter-image h2 {
+    color: white;
+    margin-top: 15px;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.newsletter-form {
+    padding: 40px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid #E8E0D5;
+    border-radius: 16px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #fefcf9;
+}
+
+.form-control:focus {
+    border-color: #C67C4E;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(198,124,78,0.1);
+    background: white;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 25px 0;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+.checkbox-group input {
+    width: 18px;
+    height: 18px;
+    accent-color: #C67C4E;
+    cursor: pointer;
+}
+
+.checkbox-group label {
+    color: #555;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.btn-subscribe {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-subscribe:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(198,124,78,0.4);
+}
+
+.success-message, .error-message {
+    padding: 15px 20px;
+    border-radius: 16px;
+    margin-bottom: 25px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+}
+
+.success-message {
+    background: #D4EDDA;
+    color: #155724;
+    border: 1px solid #C3E6CB;
+}
+
+.error-message {
+    background: #F8D7DA;
+    color: #721C24;
+    border: 1px solid #F5C6CB;
+}
+
+/* Benefits Cards */
+.benefits-section {
+    margin-top: 80px;
+    text-align: center;
+}
+
+.benefits-section h3 {
+    font-size: 2rem;
+    color: #2C1810;
+    margin-bottom: 15px;
+    position: relative;
+    display: inline-block;
+}
+
+.benefits-section h3:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #C67C4E, #D4AF37);
+    border-radius: 3px;
+}
+
+.benefits-section p {
+    color: #666;
+    margin-bottom: 40px;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
+}
+
+.benefit-card {
+    background: white;
+    padding: 35px 25px;
+    border-radius: 28px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.benefit-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.benefit-card:hover::before {
+    left: 100%;
+}
+
+.benefit-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 45px rgba(198,124,78,0.25);
+}
+
+.benefit-card i {
+    font-size: 55px;
+    color: #C67C4E;
+    margin-bottom: 20px;
+    transition: transform 0.3s ease;
+}
+
+.benefit-card:hover i {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.benefit-card h4 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2C1810;
+    margin-bottom: 12px;
+}
+
+.benefit-card p {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.read-more {
+    display: inline-block;
+    color: #C67C4E;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.benefit-card:hover .read-more {
+    transform: translateX(5px);
+    color: #A0522D;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    max-width: 550px;
+    width: 90%;
+    border-radius: 28px;
+    overflow: hidden;
+    animation: slideIn 0.3s ease;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    color: white;
+    padding: 20px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header i {
+    font-size: 32px;
+}
+
+.modal-header .close {
+    font-size: 32px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: white;
+    transition: transform 0.3s ease;
+}
+
+.modal-header .close:hover {
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    padding: 30px;
+}
+
+.modal-body h3 {
+    color: #2C1810;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+.modal-body p {
+    color: #555;
+    line-height: 1.7;
+    margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+    .banner-title {
+        font-size: 1.8rem;
+        flex-direction: column;
+        text-align: center;
+    }
+    .banner-stats {
+        justify-content: center;
+    }
+    .newsletter-image i {
+        font-size: 60px;
+    }
+    .newsletter-form {
+        padding: 30px 25px;
+    }
+    .benefits-grid {
+        grid-template-columns: 1fr;
+    }
+    .modal-body {
+        padding: 25px;
+    }
+}
+</style>
+
+<div class="newsletter-container">
+    <div class="container">
+        <!-- Banner -->
+        <div class="newsletter-banner">
+            <div class="banner-content">
+                <div class="banner-title">
+                    <i class="fas fa-envelope"></i>
+                    <span>{{ t('newsletter_title') }}</span>
+                </div>
+                <div class="banner-subtitle">
+                    {{ t('newsletter_subtitle') }}
+                </div>
+                <div class="banner-stats">
+                    <div class="banner-stat-item">
+                        <i class="fas fa-users"></i>
+                        <span>{{ t('subscribers_count') }}: <strong id="subscriberCount">0</strong></span>
+                    </div>
+                    <div class="banner-stat-item">
+                        <i class="fas fa-envelope-open-text"></i>
+                        <span>{{ t('weekly_emails') }}: <strong>1</strong></span>
+                    </div>
+                    <div class="banner-stat-item">
+                        <i class="fas fa-gift"></i>
+                        <span>{{ t('exclusive_offers') }}: <strong>20%</strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="newsletter-card">
+            <div class="newsletter-image">
+                <i class="fas fa-envelope-open-text"></i>
+                <h2>{{ t("newsletter_card_title") }}</h2>
+            </div>
+            <div class="newsletter-form">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% for category, message in messages %}
+                        <div class="{{ category == 'success' and 'success-message' or 'error-message' }}">
+                            <i class="fas {{ 'fa-check-circle' if category == 'success' else 'fa-exclamation-circle' }}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endwith %}
+
+                <form method="POST">
+                    <div class="form-group">
+                        <input type="text" name="full_name" class="form-control" placeholder="{{ t('full_name') }}" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" name="email" class="form-control" placeholder="{{ t('email') }}" required>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="privacy" required>
+                        <label for="privacy">{{ t("privacy_consent") }}</label>
+                    </div>
+
+                    <button type="submit" class="btn-subscribe">
+                        <i class="fas fa-paper-plane"></i> {{ t("subscribe_button") }}
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Clickable Benefits Cards -->
+        <div class="benefits-section">
+            <h3>{{ t("benefits_title") }}</h3>
+            <p>{{ t("benefits_subtitle") }}</p>
+            <div class="benefits-grid">
+                <div class="benefit-card" onclick="openModal('offers')">
+                    <i class="fas fa-tag"></i>
+                    <h4>{{ t("benefit_1_title") }}</h4>
+                    <p>{{ t("benefit_1_desc") }}</p>
+                    <span class="read-more">{{ t("learn_more") }} →</span>
+                </div>
+                <div class="benefit-card" onclick="openModal('giveaway')">
+                    <i class="fas fa-gift"></i>
+                    <h4>{{ t("benefit_2_title") }}</h4>
+                    <p>{{ t("benefit_2_desc") }}</p>
+                    <span class="read-more">{{ t("learn_more") }} →</span>
+                </div>
+                <div class="benefit-card" onclick="openModal('early')">
+                    <i class="fas fa-clock"></i>
+                    <h4>{{ t("benefit_3_title") }}</h4>
+                    <p>{{ t("benefit_3_desc") }}</p>
+                    <span class="read-more">{{ t("learn_more") }} →</span>
+                </div>
+                <div class="benefit-card" onclick="openModal('tips')">
+                    <i class="fas fa-book"></i>
+                    <h4>{{ t("benefit_4_title") }}</h4>
+                    <p>{{ t("benefit_4_desc") }}</p>
+                    <span class="read-more">{{ t("learn_more") }} →</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Popup -->
+<div id="infoModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <i id="modalIcon" class="fas fa-tag"></i>
+            <button class="close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <h3 id="modalTitle"></h3>
+            <p id="modalDescription"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+function openModal(type) {
+    const modal = document.getElementById('infoModal');
+    const modalIcon = document.getElementById('modalIcon');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDescription = document.getElementById('modalDescription');
+
+    const lang = '{{ session.lang }}';
+
+    const content = {
+        'offers': {
+            'en': {
+                title: 'Exclusive Offers',
+                desc: 'As a valued subscriber, you get access to exclusive discounts and promotions! Our subscribers enjoy 20% off on selected coffee blends every month. Plus, you will receive early access to seasonal specials and limited edition releases. Don\'t miss out on our monthly flash sales where you can get up to 50% off! Subscribe today and start saving on your favorite coffee.',
+                icon: 'fa-tag'
+            },
+            'fi': {
+                title: 'Eksklusiiviset tarjoukset',
+                desc: 'Arvostettuna tilaajana saat käyttöösi eksklusiivisia alennuksia ja tarjouksia! Tilaajamme saavat 20% alennusta valituista kahvisekoituksista joka kuukausi. Lisäksi saat ennakkopääsyn kausittaisiin erikoistuotteisiin ja rajoitetun erän tuotteisiin. Älä missaa kuukausittaisia salemyyntejämme, joista voit saada jopa 50% alennusta! Tilaa nyt ja ala säästää suosikkikahvissasi.',
+                icon: 'fa-tag'
+            },
+            'sv': {
+                title: 'Exklusiva erbjudanden',
+                desc: 'Som prenumerant får du tillgång till exklusiva rabatter och kampanjer! Våra prenumeranter får 20% rabatt på utvalda kaffeblandningar varje månad. Dessutom får du tidig tillgång till säsongsspecialiteter och begränsade upplagor. Missa inte våra månatliga flash-försäljningar där du kan få upp till 50% rabatt! Prenumerera idag och börja spara på ditt favoritkaffe.',
+                icon: 'fa-tag'
+            },
+            'fa': {
+                title: 'پیشنهادات ویژه',
+                desc: 'به عنوان عضو ویژه، به تخفیف‌ها و پیشنهادات انحصاری دسترسی دارید! اعضای ما هر ماه ۲۰٪ تخفیف روی ترکیبات قهوه منتخب دریافت می‌کنند. همچنین به محصولات فصلی ویژه و نسخه‌های محدود دسترسی زودهنگام خواهید داشت. فروش‌های فلش ماهانه ما را از دست ندهید که می‌توانید تا ۵۰٪ تخفیف دریافت کنید! همین الان عضو شوید و در قهوه مورد علاقه خود صرفه‌جویی کنید.',
+                icon: 'fa-tag'
+            }
+        },
+        'giveaway': {
+            'en': {
+                title: 'Free Coffee Giveaway',
+                desc: 'Every month, we randomly select 10 lucky subscribers to win free coffee! The winners receive a curated selection of our premium coffee beans, a branded mug, and exclusive accessories. To participate, all you need is an active subscription. Winners are announced on the 1st of each month via email. Good luck!',
+                icon: 'fa-gift'
+            },
+            'fi': {
+                title: 'Ilmainen kahvi -arvonta',
+                desc: 'Joka kuussa valitsemme satunnaisesti 10 onnekasta tilaajaa voittamaan ilmaista kahvia! Voittajat saavat huolella valitun valikoiman premium-kahvipapujamme, brändätyn mukin ja eksklusiivisia lisävarusteita. Osallistuaksesi tarvitset vain aktiivisen tilauksen. Voittajat ilmoitetaan kunkin kuukauden 1. päivänä sähköpostitse. Onnea!',
+                icon: 'fa-gift'
+            },
+            'sv': {
+                title: 'Gratis kaffeutlottning',
+                desc: 'Varje månad väljer vi slumpmässigt ut 10 lyckliga prenumeranter att vinna gratis kaffe! Vinnarna får ett noggrant utvalt sortiment av våra premiumkaffebönor, en mugg med tryck och exklusiva tillbehör. För att delta behöver du bara ha en aktiv prenumeration. Vinnarna meddelas den 1:a varje månad via e-post. Lycka till!',
+                icon: 'fa-gift'
+            },
+            'fa': {
+                title: 'قرعه‌کشی قهوه رایگان',
+                desc: 'هر ماه، ۱۰ عضو خوش شانس را به طور تصادفی برای برنده شدن قهوه رایگان انتخاب می‌کنیم! برندگان یک مجموعه منتخب از دانه‌های قهوه درجه یک، یک لیوان مارک دار و لوازم جانبی انحصاری دریافت می‌کنند. برای شرکت، فقط به یک عضویت فعال نیاز دارید. برندگان در اولین روز هر ماه از طریق ایمیل اعلام می‌شوند. موفق باشید!',
+                icon: 'fa-gift'
+            }
+        },
+        'early': {
+            'en': {
+                title: 'Early Access',
+                desc: 'Be the first to know about new coffee blends! Subscribers get exclusive early access to purchase new products before they launch to the general public. You will receive notifications about upcoming releases, special pre-order opportunities, and insider information about our coffee sourcing and roasting process.',
+                icon: 'fa-clock'
+            },
+            'fi': {
+                title: 'Ennakkopääsy',
+                desc: 'Saat tietää uusista kahvisekoituksista ensimmäisenä! Tilaajat saavat yksinoikeudella ennakkopääsyn ostaa uusia tuotteita ennen kuin ne julkaistaan suurelle yleisölle. Saat ilmoituksia tulevista julkaisuista, erityisistä ennakkotilausmahdollisuuksista ja sisäpiiritietoa kahvien hankinnasta ja paahtoprosessista.',
+                icon: 'fa-clock'
+            },
+            'sv': {
+                title: 'Tidig tillgång',
+                desc: 'Få reda på nya kaffeblandningar först! Prenumeranter får exklusiv tidig tillgång till att köpa nya produkter innan de lanseras för allmänheten. Du får meddelanden om kommande releaser, speciella förbeställningsmöjligheter och insiderinformation om vår kaffehärkomst och rostningsprocess.',
+                icon: 'fa-clock'
+            },
+            'fa': {
+                title: 'دسترسی زودهنگام',
+                desc: 'اولین نفری باشید که از ترکیبات جدید قهوه مطلع می‌شوید! اعضا دسترسی زودهنگام انحصاری برای خرید محصولات جدید قبل از عرضه به عموم دارند. شما در مورد انتشارهای آینده، فرصت‌های پیش‌سفارش ویژه و اطلاعات داخلی درباره منبع‌یابی و فرآیند برشته‌کاری قهوه ما اعلان دریافت خواهید کرد.',
+                icon: 'fa-clock'
+            }
+        },
+        'tips': {
+            'en': {
+                title: 'Brewing Tips',
+                desc: 'Learn professional brewing techniques from our master baristas! Our guide covers: choosing the right grind size (coarse for French press, fine for espresso), water temperature (ideally 195-205°F / 90-96°C), brewing time (3-4 minutes for pour-over), and proper storage (airtight container away from light, heat, and moisture). Whether you use a French press, pour-over, Aeropress, or espresso machine, these tips will elevate your coffee game!',
+                icon: 'fa-book'
+            },
+            'fi': {
+                title: 'Kahvinkeittovinkit',
+                desc: 'Opi ammattimaiset kahvinkeittotekniikat mestaribaristoiltamme! Oppaamme kattaa: oikean jauhatusasteen valinta (karkea ranskalaiseen puristimeen, hieno espressoon), veden lämpötila (mieluiten 90-96°C), haudutusaika (3-4 minuuttia kaatomenetelmällä) ja oikea säilytys (ilmatiivis astia poissa valolta, lämmöltä ja kosteudelta). Käytitpä sitten ranskalaista puristinta, kaatomenetelmää, Aeropressiä tai espressokonetta, nämä vinkit nostavat kahvisi uudelle tasolle!',
+                icon: 'fa-book'
+            },
+            'sv': {
+                title: 'Bryggtips',
+                desc: 'Lär dig professionella bryggtekniker från våra mästarbaristor! Vår guide täcker: att välja rätt malningsgrad (grov för fransk press, fin för espresso), vattentemperatur (helst 90-96°C), bryggtid (3-4 minuter för pour-over) och korrekt förvaring (lufttät behållare borta från ljus, värme och fukt). Oavsett om du använder fransk press, pour-over, Aeropress eller espressomaskin kommer dessa tips att höja ditt kaffe-spel!',
+                icon: 'fa-book'
+            },
+            'fa': {
+                title: 'نکات دم‌آوری',
+                desc: 'تکنیک‌های حرفه‌ای دم‌آوری را از باریستاهای ماهر ما بیاموزید! راهنمای ما شامل: انتخاب درجه آسیاب مناسب (درشت برای فرنچ پرس، ریز برای اسپرسو)، دمای آب (ایده‌آل ۹۰-۹۶ درجه سانتی‌گراد)، زمان دم‌آوری (۳-۴ دقیقه برای pour-over)، و نگهداری صحیح (ظرف دربسته دور از نور، گرما و رطوبت). چه از فرنچ پرس، pour-over، Aeropress یا دستگاه اسپرسو استفاده کنید، این نکات تجربه قهوه شما را ارتقا می‌بخشند!',
+                icon: 'fa-book'
+            }
+        }
+    };
+
+    const selected = content[type][lang] || content[type]['en'];
+
+    modalIcon.className = `fas ${selected.icon}`;
+    modalTitle.textContent = selected.title;
+    modalDescription.textContent = selected.desc;
+
+    modal.classList.add('show');
+}
+
+function closeModal() {
+    const modal = document.getElementById('infoModal');
+    modal.classList.remove('show');
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('infoModal');
+    if (event.target === modal) {
+        modal.classList.remove('show');
+    }
+}
+
+// Update subscriber count if available
+function updateSubscriberCount() {
+    const count = {{ subscriber_count | default(0) }};
+    document.getElementById('subscriberCount').innerText = count;
+}
+
+// Update subscriber count on load
+updateSubscriberCount();
+</script>
+{% endblock %}

@@ -1,0 +1,618 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.track-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* Banner Styles */
+.track-banner {
+    background: linear-gradient(135deg, #2C1810 0%, #3D2518 50%, #2C1810 100%);
+    border-radius: 24px;
+    padding: 40px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.track-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(198,124,78,0.1) 0%, transparent 70%);
+    transform: rotate(25deg);
+    pointer-events: none;
+}
+
+.track-banner::after {
+    content: '🚚';
+    position: absolute;
+    bottom: 10px;
+    right: 30px;
+    font-size: 80px;
+    opacity: 0.1;
+}
+
+.banner-content {
+    position: relative;
+    z-index: 2;
+}
+
+.banner-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.banner-title i {
+    font-size: 50px;
+    color: #D4AF37;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.banner-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 20px;
+}
+
+.banner-stats {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.banner-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.1);
+    padding: 8px 16px;
+    border-radius: 40px;
+    backdrop-filter: blur(5px);
+}
+
+.banner-stat-item i {
+    color: #D4AF37;
+    font-size: 18px;
+}
+
+.banner-stat-item span {
+    color: white;
+    font-size: 14px;
+}
+
+.banner-stat-item strong {
+    color: #D4AF37;
+    font-size: 18px;
+    margin-left: 5px;
+}
+
+/* Search Card */
+.search-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.search-card:hover {
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+.search-input-group {
+    display: flex;
+    padding: 10px;
+    gap: 12px;
+}
+
+.search-input {
+    flex: 1;
+    padding: 15px 20px;
+    border: 2px solid #E8E0D5;
+    border-radius: 50px;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s ease;
+    background: #faf9f7;
+}
+
+.search-input:focus {
+    border-color: #C67C4E;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(198,124,78,0.1);
+}
+
+.track-btn {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.track-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(198,124,78,0.3);
+}
+
+.track-btn i {
+    font-size: 1rem;
+}
+
+/* Status Card */
+.status-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    padding: 30px;
+    margin-top: 30px;
+    animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.status-icon {
+    font-size: 70px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.status-title {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.order-details {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.order-details p {
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+}
+
+.order-details p strong {
+    color: #2C1810;
+}
+
+.progress-container {
+    margin: 30px 0;
+}
+
+.progress-bar-bg {
+    background: #E8E0D5;
+    border-radius: 10px;
+    height: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.5s ease;
+}
+
+.status-steps {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    position: relative;
+}
+
+.status-steps::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: #E8E0D5;
+    z-index: 1;
+}
+
+.step {
+    text-align: center;
+    flex: 1;
+    position: relative;
+    z-index: 2;
+}
+
+.step-icon {
+    font-size: 28px;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.step-label {
+    font-size: 12px;
+    color: #999;
+    font-weight: 500;
+}
+
+.step.active .step-icon {
+    color: #C67C4E;
+}
+
+.step.active .step-label {
+    color: #C67C4E;
+    font-weight: 600;
+}
+
+.step.completed .step-icon {
+    color: #28A745;
+}
+
+.step.completed .step-label {
+    color: #28A745;
+}
+
+/* Pickup Info */
+.pickup-info {
+    background: linear-gradient(135deg, #2C1810, #3D2518);
+    color: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.pickup-info h5 {
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.pickup-info h5 i {
+    color: #D4AF37;
+    margin-right: 8px;
+}
+
+.pickup-info p {
+    margin: 8px 0;
+    opacity: 0.9;
+}
+
+/* Help Section */
+.help-section {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.help-section p {
+    margin-bottom: 12px;
+    color: #666;
+}
+
+.help-section .track-btn {
+    display: inline-flex;
+    text-decoration: none;
+    padding: 12px 28px;
+}
+
+/* Empty State */
+.no-order-found {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.no-order-found i {
+    font-size: 60px;
+    color: #C67C4E;
+    opacity: 0.3;
+    margin-bottom: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .banner-title {
+        font-size: 1.8rem;
+        flex-direction: column;
+        text-align: center;
+    }
+    .banner-stats {
+        justify-content: center;
+    }
+    .search-input-group {
+        flex-direction: column;
+    }
+    .track-btn {
+        margin-left: 0;
+        justify-content: center;
+    }
+    .status-steps {
+        flex-direction: column;
+        gap: 12px;
+        align-items: center;
+    }
+    .status-steps::before {
+        display: none;
+    }
+    .step {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        justify-content: center;
+    }
+    .order-details p {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    .banner-title {
+        font-size: 1.8rem;
+        flex-direction: column;
+        text-align: center;
+    }
+    .banner-stats {
+        justify-content: center;
+    }
+}
+</style>
+
+<div class="track-container">
+    <!-- Banner -->
+    <div class="track-banner">
+        <div class="banner-content">
+            <div class="banner-title">
+                <i class="fas fa-search"></i>
+                <span>{{ t('track_order') }}</span>
+            </div>
+            <div class="banner-subtitle">
+                {{ t('track_order_desc') }}
+            </div>
+            <div class="banner-stats">
+                <div class="banner-stat-item">
+                    <i class="fas fa-clock"></i>
+                    <span>{{ t('estimated_time') }}: <strong>15-20 min</strong></span>
+                </div>
+                <div class="banner-stat-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>{{ t('pickup_location') }}: <strong>Iskoskuja 3 C 111</strong></span>
+                </div>
+                <div class="banner-stat-item">
+                    <i class="fas fa-phone"></i>
+                    <span>{{ t('support') }}: <strong>+(358) 413114312</strong></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Card -->
+    <div class="search-card">
+        <div class="search-input-group">
+            <input type="text" id="orderNumber" class="search-input" placeholder="{{ t('track_order_placeholder') }}">
+            <button onclick="trackOrder()" class="track-btn">
+                <i class="fas fa-search"></i> {{ t('track_button') }}
+            </button>
+        </div>
+    </div>
+
+    <!-- Order Status -->
+    <div id="orderStatus" style="display: none;">
+        <div class="status-card">
+            <div id="statusContent"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+const lang = '{{ session.lang }}';
+const currencyCode = '{{ session.get("currency", "USD") }}';
+const exchangeRates = {'EUR': 0.92, 'SEK': 10.5, 'AFN': 71.5, 'USD': 1};
+
+function formatPrice(priceUSD) {
+    let rate = exchangeRates[currencyCode] || 1;
+    let num = parseFloat(priceUSD) * rate;
+    if (isNaN(num)) num = 0;
+
+    if (currencyCode === 'EUR') {
+        return num.toFixed(2) + ' €';
+    } else if (currencyCode === 'SEK') {
+        return num.toFixed(2) + ' kr';
+    } else if (currencyCode === 'AFN') {
+        return '\u200E' + Math.round(num).toLocaleString() + ' AFN';
+    } else {
+        return num.toFixed(2) + ' $';
+    }
+}
+
+function getStatusText(status) {
+    const statuses = {
+        'pending': lang === 'fi' ? 'Odottaa - Tilaus vastaanotettu' : (lang === 'sv' ? 'Väntar - Beställning mottagen' : (lang === 'fa' ? 'در انتظار - سفارش دریافت شد' : 'Pending - Order Received')),
+        'preparing': lang === 'fi' ? 'Valmistellaan - Valmistetaan' : (lang === 'sv' ? 'Förbereder - Förbereds' : (lang === 'fa' ? 'در حال آماده‌سازی' : 'Preparing - Being Prepared')),
+        'processing': lang === 'fi' ? 'Käsitellään - Valmistetaan' : (lang === 'sv' ? 'Bearbetar - Förbereds' : (lang === 'fa' ? 'در حال پردازش' : 'Processing - Being Prepared')),
+        'ready': lang === 'fi' ? 'Valmis - Noudettavissa' : (lang === 'sv' ? 'Klar - Redo för upphämtning' : (lang === 'fa' ? 'آماده - آماده تحویل' : 'Ready - Ready for Pickup')),
+        'completed': lang === 'fi' ? 'Valmistunut - Noudettavissa' : (lang === 'sv' ? 'Slutförd - Redo för upphämtning' : (lang === 'fa' ? 'تکمیل شده - آماده تحویل' : 'Completed - Ready for Pickup')),
+        'cancelled': lang === 'fi' ? 'Peruttu' : (lang === 'sv' ? 'Avbruten' : (lang === 'fa' ? 'لغو شده' : 'Cancelled'))
+    };
+    return statuses[status] || status;
+}
+
+function getStepLabels() {
+    return {
+        placed: lang === 'fi' ? 'Tilaus tehty' : (lang === 'sv' ? 'Beställning lagd' : (lang === 'fa' ? 'سفارش ثبت شد' : 'Order Placed')),
+        preparing: lang === 'fi' ? 'Valmistellaan' : (lang === 'sv' ? 'Förbereder' : (lang === 'fa' ? 'در حال آماده‌سازی' : 'Preparing')),
+        ready: lang === 'fi' ? 'Valmis' : (lang === 'sv' ? 'Klar' : (lang === 'fa' ? 'آماده' : 'Ready'))
+    };
+}
+
+async function trackOrder() {
+    const orderNumber = document.getElementById('orderNumber').value.trim().toUpperCase();
+    const alertText = lang === 'fi' ? 'Syötä tilausnumerosi' : (lang === 'sv' ? 'Ange ditt ordernummer' : (lang === 'fa' ? 'لطفاً شماره سفارش خود را وارد کنید' : 'Please enter your order number'));
+
+    if (!orderNumber) {
+        alert(alertText);
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/track-order/${orderNumber}`);
+        const data = await response.json();
+
+        if (data.error) {
+            const notFoundText = lang === 'fi' ? 'Tilausta ei löytynyt' : (lang === 'sv' ? 'Order hittades inte' : (lang === 'fa' ? 'سفارش یافت نشد' : 'Order not found'));
+            alert(notFoundText);
+            return;
+        }
+
+        document.getElementById('orderStatus').style.display = 'block';
+
+        let statusIcon = '';
+        let statusColor = '';
+        let activeStep = '';
+        let completedSteps = [];
+
+        switch(data.status) {
+            case 'pending':
+                statusIcon = '🕐';
+                statusColor = '#FFC107';
+                activeStep = 'placed';
+                completedSteps = ['placed'];
+                break;
+            case 'processing':
+            case 'preparing':
+                statusIcon = '👨‍🍳';
+                statusColor = '#17A2B8';
+                activeStep = 'preparing';
+                completedSteps = ['placed', 'preparing'];
+                break;
+            case 'ready':
+            case 'completed':
+                statusIcon = '✅';
+                statusColor = '#28A745';
+                activeStep = 'ready';
+                completedSteps = ['placed', 'preparing', 'ready'];
+                break;
+            case 'cancelled':
+                statusIcon = '❌';
+                statusColor = '#DC3545';
+                activeStep = 'cancelled';
+                completedSteps = [];
+                break;
+            default:
+                statusIcon = '📋';
+                statusColor = '#C67C4E';
+                activeStep = 'placed';
+                completedSteps = ['placed'];
+        }
+
+        let progressPercent = data.status === 'pending' ? '25%' :
+                             (data.status === 'preparing' || data.status === 'processing') ? '50%' :
+                             (data.status === 'ready' || data.status === 'completed') ? '100%' : '0%';
+
+        const stepLabels = getStepLabels();
+        const statusText = getStatusText(data.status);
+        const orderNumberLabel = lang === 'fi' ? 'Tilausnumero' : (lang === 'sv' ? 'Ordernummer' : (lang === 'fa' ? 'شماره سفارش' : 'Order Number'));
+        const totalLabel = lang === 'fi' ? 'Kokonaissumma' : (lang === 'sv' ? 'Totalt belopp' : (lang === 'fa' ? 'مبلغ کل' : 'Total Amount'));
+        const placedLabel = lang === 'fi' ? 'Tehty' : (lang === 'sv' ? 'Lagd' : (lang === 'fa' ? 'ثبت شده در' : 'Placed On'));
+        const pickupLocationLabel = lang === 'fi' ? 'Noutopiste' : (lang === 'sv' ? 'Upphämtningsplats' : (lang === 'fa' ? 'مکان تحویل' : 'Pickup Location'));
+        const estimatedTimeLabel = lang === 'fi' ? 'Arvioitu valmistumisaika' : (lang === 'sv' ? 'Beräknad klar tid' : (lang === 'fa' ? 'زمان تقریبی آماده‌سازی' : 'Estimated Ready Time'));
+        const needHelpLabel = lang === 'fi' ? 'Tarvitsetko apua?' : (lang === 'sv' ? 'Behöver du hjälp?' : (lang === 'fa' ? 'نیاز به کمک دارید؟' : 'Need help?'));
+        const orderMoreLabel = lang === 'fi' ? 'Tilaa lisää kahvia' : (lang === 'sv' ? 'Beställ mer kaffe' : (lang === 'fa' ? 'سفارش قهوه بیشتر' : 'Order More Coffee'));
+
+        // Build steps HTML
+        const steps = [
+            { key: 'placed', icon: '🕐', label: stepLabels.placed },
+            { key: 'preparing', icon: '👨‍🍳', label: stepLabels.preparing },
+            { key: 'ready', icon: '✅', label: stepLabels.ready }
+        ];
+
+        let stepsHtml = steps.map(step => {
+            let isActive = step.key === activeStep;
+            let isCompleted = completedSteps.includes(step.key);
+            let stepClass = isActive ? 'active' : (isCompleted ? 'completed' : '');
+            return `
+                <div class="step ${stepClass}">
+                    <span class="step-icon">${step.icon}</span>
+                    <span class="step-label">${step.label}</span>
+                </div>
+            `;
+        }).join('');
+
+        document.getElementById('statusContent').innerHTML = `
+            <div class="status-icon">${statusIcon}</div>
+            <div class="status-title" style="color: ${statusColor};">${statusText}</div>
+
+            <div class="order-details">
+                <p><strong>📋 ${orderNumberLabel}:</strong> <span>${data.order_number}</span></p>
+                <p><strong>💰 ${totalLabel}:</strong> <span>${formatPrice(data.total_amount)}</span></p>
+                <p><strong>📅 ${placedLabel}:</strong> <span>${new Date(data.created_at).toLocaleString()}</span></p>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-bar-bg">
+                    <div class="progress-fill" style="width: ${progressPercent}; background: ${statusColor};"></div>
+                </div>
+                <div class="status-steps">
+                    ${stepsHtml}
+                </div>
+            </div>
+
+            <div class="pickup-info">
+                <h5><i class="fas fa-map-marker-alt"></i> ${pickupLocationLabel}</h5>
+                <p>Iskoskuja 3 C 111, Vantaa</p>
+                <p>⏰ ${estimatedTimeLabel}: 15-20 min</p>
+            </div>
+
+            <div class="help-section">
+                <p><i class="fas fa-phone"></i> ${needHelpLabel} <strong>+(358) 413114312</strong></p>
+                <a href="/menu" class="track-btn">
+                    ☕ ${orderMoreLabel}
+                </a>
+            </div>
+        `;
+    } catch (error) {
+        const errorText = lang === 'fi' ? 'Tilausta ei löytynyt. Tarkista tilausnumerosi.' : (lang === 'sv' ? 'Order hittades inte. Kontrollera ditt ordernummer.' : (lang === 'fa' ? 'سفارش یافت نشد. لطفاً شماره سفارش خود را بررسی کنید.' : 'Order not found. Please check your order number.'));
+        alert(errorText);
+    }
+}
+
+// Auto-fill order number from URL parameter
+const urlParams = new URLSearchParams(window.location.search);
+const orderParam = urlParams.get('order') || urlParams.get('order_number');
+if (orderParam) {
+    document.getElementById('orderNumber').value = orderParam;
+    trackOrder();
+}
+</script>
+{% endblock %}
