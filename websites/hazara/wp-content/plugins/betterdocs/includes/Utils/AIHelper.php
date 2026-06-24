@@ -1,0 +1,477 @@
+<?php
+
+namespace WPDeveloper\BetterDocs\Utils;
+
+use WPDeveloper\BetterDocs\Core\Settings;
+
+class AIHelper {
+
+    /**
+     * Settings instance
+     *
+     * @var Settings
+     */
+    private $settings;
+
+    public function __construct( Settings $settings ) {
+        $this->settings = $settings;
+    }
+
+    /**
+     * Get OpenAI API key from settings
+     *
+     * @return string
+     */
+    public function get_api_key() {
+        return $this->settings->get( 'ai_autowrite_api_key', '' );
+    }
+
+    /**
+     * Check if OpenAI API key is configured
+     *
+     * @return bool
+     */
+    public function has_api_key() {
+        $api_key = $this->get_api_key();
+        return ! empty( $api_key );
+    }
+
+    /**
+     * Validate OpenAI API key
+     *
+     * @param string $api_key Optional API key to validate, uses stored key if not provided
+     * @return array Array with 'valid' boolean and 'message' string
+     */
+    public function validate_api_key( $api_key = '' ) {
+        if ( empty( $api_key ) ) {
+            $api_key = $this->get_api_key();
+        }
+
+        if ( empty( $api_key ) ) {
+            return array(
+                'valid' => false,
+                'message' => 'Please Insert your <a href="/admin.php?page=betterdocs-settings">OpenAI API Key</a> to use AI features.'
+            );
+        }
+
+        $ch = curl_init( 'https://api.openai.com/v1/models' ); //phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_init
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true ); //phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+        curl_setopt(  //phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+            $ch,
+            CURLOPT_HTTPHEADER,
+            array(
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $api_key
+            )
+        );
+
+        $response = curl_exec( $ch ); //phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_exec
+        $httpCode = curl_getinfo( $ch, CURLINFO_HTTP_CODE ); //phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_getinfo
+        curl_close( $ch ); //phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_close
+
+        if ( 200 == $httpCode ) {
+            return array(
+                'valid' => true,
+                'message' => 'Valid API Key'
+            );
+        } else {
+            $responseData = json_decode( $response, true );
+            $messageData  = $responseData[ 'error' ] ?? '';
+            return array(
+                'valid' => false,
+                'message' => $messageData[ 'message' ] ?? 'Invalid API Key'
+            );
+        }
+    }
+
+    /**
+     * Make a request to OpenAI API
+     *
+     * @param array $messages Array of messages for the chat completion
+     * @param array $options Optional parameters (model, max_tokens, temperature, etc.)
+     * @return string|\WP_Error API response content or error
+     */
+    public function make_openai_request( $messages, $options = array() ) {
+        $api_key    = $this->get_api_key();
+        $max_tokens = $this->settings->get( 'article_summary_max_token', 1500 );
+        $model      = $this->settings->get( 'article_summary_model', 'gpt-4o-mini' );
+
+        if ( empty( $api_key ) ) {
+            return new \WP_Error( 'no_api_key', 'OpenAI API key is not configured.' );
+        }
+
+        // Default options
+        $defaults = array(
+            'model' => $model,
+            'max_tokens' => $max_tokens,
+            'temperature' => 0.7,
+            'timeout' => 50
+        );
+
+        $options = wp_parse_args( $options, $defaults );
+
+        $api_endpoint = 'https://api.openai.com/v1/chat/completions';
+
+        $request_body = array(
+            'model' => $options[ 'model' ],
+            'messages' => $messages,
+            'max_tokens' => $options[ 'max_tokens' ],
+            'temperature' => $options[ 'temperature' ]
+        );
+
+        $request_options = array(
+            'headers' => array(
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . $api_key
+            ),
+            'body' => json_encode( $request_body ), //phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
+            'timeout' => $options[ 'timeout' ]
+        );
+
+        $response = wp_remote_post( $api_endpoint, $request_options );
+
+        if ( is_wp_error( $response ) ) {
+            return new \WP_Error( 'api_error', 'Failed to connect to OpenAI API: ' . $response->get_error_message() );
+        }
+
+        $body = wp_remote_retrieve_body( $response );
+        $data = json_decode( $body, true );
+
+        if ( ! empty( $data[ 'error' ] ) ) {
+            return new \WP_Error( 'openai_error', $data[ 'error' ][ 'message' ] );
+        }
+
+        if ( empty( $data[ 'choices' ][ 0 ][ 'message' ][ 'content' ] ) ) {
+            return new \WP_Error( 'no_content', 'No content received from OpenAI.' );
+        }
+
+        return $data[ 'choices' ][ 0 ][ 'message' ][ 'content' ];
+    }
+
+    /**
+     * Analyze article quality using OpenAI
+     *
+     * @param string $content Article content to analyze
+     * @param string $title Article title (optional)
+     * @return array|\WP_Error Analysis result with score and feedback
+     */
+    public function analyze_article_quality( $content, $title = '' ) {
+        if ( empty( $content ) ) {
+            return new \WP_Error( 'empty_content', 'Article content cannot be empty.' );
+        }
+
+        // Create analysis prompt
+        $prompt = $this->build_quality_analysis_prompt( $content, $title );
+
+        $messages = array(
+            array(
+                'role' => 'system',
+                'content' => 'You are an expert content analyst specializing in documentation quality assessment. Provide detailed, actionable feedback to help improve article quality.'
+            ),
+            array(
+                'role' => 'user',
+                'content' => $prompt
+            )
+        );
+
+        $options = array(
+            'max_tokens' => 2000,
+            'temperature' => 0.3 // Lower temperature for more consistent analysis
+        );
+
+        $response = $this->make_openai_request( $messages, $options );
+
+        if ( is_wp_error( $response ) ) {
+            return $response;
+        }
+
+        // Parse the AI response into structured data
+        return $this->parse_quality_analysis_response( $response );
+    }
+
+    /**
+     * Build the prompt for article quality analysis
+     *
+     * @param string $content Article content
+     * @param string $title Article title
+     * @return string Formatted prompt
+     */
+    private function build_quality_analysis_prompt( $content, $title = '' ) {
+        $title_section = ! empty( $title ) ? "Title: {$title}\n\n" : '';
+
+        $prompt = "Please analyze the following documentation article for quality and provide a comprehensive assessment:\n\n";
+        $prompt .= $title_section;
+        $prompt .= "Content:\n{$content}\n\n";
+        $prompt .= "Please evaluate the article based on these criteria and provide your response in the following JSON format:\n\n";
+        $prompt .= "{\n";
+        $prompt .= '  "overall_score": 91,';
+        $prompt .= '  "scores": {';
+        $prompt .= '    "clarity": 90,';
+        $prompt .= '    "completeness": 92,';
+        $prompt .= '    "relevance": 95,';
+        $prompt .= '    "structure": 87,';
+        $prompt .= '    "readability": 88';
+        $prompt .= '  },';
+        $prompt .= '  "feedback": {';
+        $prompt .= '    "strengths": ["Clear headings", "Good use of examples"],';
+        $prompt .= '    "improvements": ["Add more detailed explanations in section 2", "Include troubleshooting steps"],';
+        $prompt .= '    "suggestions": ["Consider adding screenshots", "Break down complex paragraphs"]';
+        $prompt .= '  },';
+        $prompt .= '  "priority": "medium"';
+        $prompt .= "}\n\n";
+        $prompt .= "Scoring criteria (0-100):\n";
+        $prompt .= "- Clarity: How clear and understandable is the content?\n";
+        $prompt .= "- Completeness: Does it cover the topic thoroughly?\n";
+        $prompt .= "- Relevance: Is the content relevant to the stated purpose?\n";
+        $prompt .= "- Structure: Is the content well-organized with proper headings?\n";
+        $prompt .= "- Readability: Is it easy to read and follow?\n\n";
+        $prompt .= "Priority levels: low (80+), medium (60-79), high (below 60)\n";
+        $prompt .= "Provide specific, actionable feedback that content creators can implement.";
+
+        return $prompt;
+    }
+
+    /**
+     * Parse AI response into structured quality analysis data
+     *
+     * @param string $response Raw AI response
+     * @return array|\WP_Error Parsed analysis data
+     */
+    private function parse_quality_analysis_response( $response ) {
+        // Try to extract JSON from the response
+        $json_start = strpos( $response, '{' );
+        $json_end   = strrpos( $response, '}' );
+
+        if ( false === $json_start || false === $json_end ) {
+            return new \WP_Error( 'parse_error', 'Could not find valid JSON in AI response.' );
+        }
+
+        $json_string = substr( $response, $json_start, $json_end - $json_start + 1 );
+        $data        = json_decode( $json_string, true );
+
+        if ( json_last_error() !== JSON_ERROR_NONE ) {
+            return new \WP_Error( 'json_error', 'Invalid JSON in AI response: ' . json_last_error_msg() );
+        }
+
+        // Validate required fields
+        $required_fields = array( 'overall_score', 'scores', 'feedback' );
+        foreach ( $required_fields as $field ) {
+            if ( ! isset( $data[ $field ] ) ) {
+                return new \WP_Error( 'missing_field', "Missing required field: {$field}" );
+            }
+        }
+
+        // Ensure scores are within valid range
+        $data[ 'overall_score' ] = max( 0, min( 100, intval( $data[ 'overall_score' ] ) ) );
+
+        if ( isset( $data[ 'scores' ] ) && is_array( $data[ 'scores' ] ) ) {
+            foreach ( $data[ 'scores' ] as $key => $score ) {
+                $data[ 'scores' ][ $key ] = max( 0, min( 100, intval( $score ) ) );
+            }
+        }
+
+        // Set default priority if not provided
+        if ( ! isset( $data[ 'priority' ] ) ) {
+            $overall_score = $data[ 'overall_score' ];
+            if ( $overall_score >= 80 ) {
+                $data[ 'priority' ] = 'low';
+            } elseif ( $overall_score >= 60 ) {
+                $data[ 'priority' ] = 'medium';
+            } else {
+                $data[ 'priority' ] = 'high';
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * Save article quality score as post meta
+     *
+     * @param int $post_id Post ID
+     * @param array $quality_data Quality analysis data
+     * @return bool Success status
+     */
+    public function save_article_quality_score( $post_id, $quality_data ) {
+        if ( empty( $post_id ) || ! is_array( $quality_data ) ) {
+            return false;
+        }
+
+        // Save the complete analysis data
+        $saved = update_post_meta( $post_id, '_betterdocs_article_quality_analysis', $quality_data );
+
+        // Save just the overall score for easy querying
+        update_post_meta( $post_id, '_betterdocs_article_quality_score', $quality_data[ 'overall_score' ] );
+
+        // Save analysis timestamp
+        update_post_meta( $post_id, '_betterdocs_article_quality_analyzed_at', current_time( 'mysql' ) );
+
+        return false !== $saved;
+    }
+
+    /**
+     * Get article quality score from post meta
+     *
+     * @param int $post_id Post ID
+     * @return array|false Quality analysis data or false if not found
+     */
+    public function get_article_quality_score( $post_id ) {
+        if ( empty( $post_id ) ) {
+            return false;
+        }
+
+        $quality_data = get_post_meta( $post_id, '_betterdocs_article_quality_analysis', true );
+
+        if ( empty( $quality_data ) ) {
+            return false;
+        }
+
+        // Add timestamp if available
+        $analyzed_at = get_post_meta( $post_id, '_betterdocs_article_quality_analyzed_at', true );
+        if ( $analyzed_at ) {
+            $quality_data[ 'analyzed_at' ] = $analyzed_at;
+        }
+
+        return $quality_data;
+    }
+
+    /**
+     * Check if article needs re-analysis based on last modified date
+     *
+     * @param int $post_id Post ID
+     * @return bool True if re-analysis is needed
+     */
+    public function needs_reanalysis( $post_id ) {
+        $analyzed_at = get_post_meta( $post_id, '_betterdocs_article_quality_analyzed_at', true );
+
+        if ( empty( $analyzed_at ) ) {
+            return true; // Never analyzed
+        }
+
+        $post = get_post( $post_id );
+        if ( ! $post ) {
+            return false;
+        }
+
+        // Check if post was modified after last analysis
+        $post_modified      = strtotime( $post->post_modified );
+        $analyzed_timestamp = strtotime( $analyzed_at );
+
+        return $post_modified > $analyzed_timestamp;
+    }
+
+    /**
+     * Create a system message for OpenAI
+     *
+     * @param string $content System message content
+     * @return array Message array
+     */
+    public function create_system_message( $content ) {
+        return array(
+            'role' => 'system',
+            'content' => $content
+        );
+    }
+
+    /**
+     * Create a user message for OpenAI
+     *
+     * @param string $content User message content
+     * @return array Message array
+     */
+    public function create_user_message( $content ) {
+        return array(
+            'role' => 'user',
+            'content' => $content
+        );
+    }
+
+    /**
+     * Create messages array for article summarization
+     *
+     * @param string $title Article title
+     * @param string $content Article content
+     * @return array Messages array
+     */
+    public function create_summary_messages( $title, $content ) {
+        $system_message = $this->create_system_message(
+            'You are a helpful assistant that creates concise, informative summaries of documentation articles. Always format your response in clean HTML with paragraph tags. Do not use markdown formatting, code blocks, or backticks. Return only the HTML content without any wrapper formatting.'
+        );
+
+        $user_prompt = "Please provide a concise summary of the following article titled '{$title}'. The summary should be 2-3 paragraphs long, highlighting the main points and key takeaways. Format the response in HTML with proper paragraph tags. Do not wrap the response in markdown code blocks or use any markdown formatting.\n\nArticle content:\n{$content}";
+
+        $user_message = $this->create_user_message( $user_prompt );
+
+        return array( $system_message, $user_message );
+    }
+
+    /**
+     * Create messages array for content generation
+     *
+     * @param string $prompt User prompt
+     * @param string $keywords Optional keywords
+     * @return array Messages array
+     */
+    public function create_content_messages( $prompt, $keywords = '' ) {
+        $system_message = $this->create_system_message(
+            'You are a helpful assistant who writes documentation for users.'
+        );
+
+        $user_message = $this->create_user_message( $prompt );
+
+        return array( $system_message, $user_message );
+    }
+
+    /**
+     * Sanitize and prepare content for AI processing
+     *
+     * @param string $content Raw content
+     * @param int $max_length Maximum length to keep
+     * @return string Sanitized content
+     */
+    public function prepare_content_for_ai( $content, $max_length = 4000 ) {
+        // Strip HTML tags and decode entities
+        $content = wp_strip_all_tags( $content );
+        $content = html_entity_decode( $content, ENT_QUOTES, 'UTF-8' );
+
+        // Remove extra whitespace
+        $content = preg_replace( '/\s+/', ' ', $content );
+        $content = trim( $content );
+
+        // Limit length
+        if ( strlen( $content ) > $max_length ) {
+            $content = substr( $content, 0, $max_length );
+            // Try to cut at a word boundary
+            $last_space = strrpos( $content, ' ' );
+            if ( false !== $last_space && $last_space > $max_length * 0.8 ) {
+                $content = substr( $content, 0, $last_space );
+            }
+            $content .= '...';
+        }
+
+        return $content;
+    }
+
+    /**
+     * Check if AI features are enabled
+     *
+     * @return bool
+     */
+    public function is_ai_enabled() {
+        return $this->settings->get( 'enable_write_with_ai', true ) && $this->has_api_key();
+    }
+
+    /**
+     * Get AI usage statistics (placeholder for future implementation)
+     *
+     * @return array Usage statistics
+     */
+    public function get_usage_stats() {
+        // This could be implemented to track API usage, costs, etc.
+        return array(
+            'requests_today' => 0,
+            'tokens_used' => 0,
+            'cost_estimate' => 0
+        );
+    }
+}

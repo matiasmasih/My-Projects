@@ -1,0 +1,378 @@
+/* review notice */
+.wpnotice-thumbnail-wrapper img {
+    display: block;
+}
+
+.notice-schedulepress-optin {
+    display: block !important;
+}
+
+/* review notice */
+.wpsp-notice {
+    background-color: #f7f6d4;
+    padding: 10px 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.15);
+    max-width: 90%;
+    color: #9a7223;
+}
+
+.wpsp-notice h5 {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.wpsp-error-notice {
+    background-color: #fff5f5;
+    color: #e8606d;
+    padding: 30px;
+    border-radius: 3px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.wpsp-error-notice h3 {
+    color: #e24c4b;
+    margin: 15px 0;
+}
+
+.wpsp-success-notice h3 {
+    color: #6c62ff;
+    margin: 15px 0;
+}
+
+.wpsp-success-notice {
+    background-color: #f5f5f5;
+    color: #26a9b4;
+    padding: 20px;
+    border-radius: 3px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    display: block;
+}
+
+.notice-schedulepress-review {
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 3px;
+    margin: 15px;
+    border-left: 4px solid #00a0d2;
+    display: flex;
+    align-items: center;
+}
+
+.notice-schedulepress-review:after {
+    content: '';
+    display: table;
+    clear: both;
+}
+
+.wpdeveloper-notice-thumbnail {
+    width: 90px;
+    float: left;
+    padding: 5px;
+    text-align: center;
+    border-right: 4px solid transparent;
+}
+
+.wpdeveloper-notice-thumbnail img {
+    width: 72px;
+    opacity: 0.85;
+    transition: all 0.3s;
+}
+
+.wpdeveloper-notice-thumbnail img:hover {
+    opacity: 1;
+}
+
+.wpsp-review-text {
+    overflow: hidden;
+}
+
+.wpsp-review-text h3 {
+    font-size: 24px;
+    margin: 0 0 5px;
+    font-weight: 400;
+    line-height: 1.3;
+}
+
+.wpsp-review-text p {
+    font-size: 13px;
+    margin: 0 0 5px;
+}
+
+.schedulepress-notice-links {
+    margin: 8px 0 0 0;
+    padding: 0;
+}
+
+.schedulepress-notice-links li {
+    display: inline-flex;
+    margin-right: 15px;
+    align-items: center;
+}
+
+.schedulepress-notice-links li a {
+    display: inline-block;
+    color: #10738b;
+    text-decoration: none;
+    position: relative;
+}
+
+.wpdeveloper-notice-message {
+    padding: 10px 0;
+}
+.wpdeveloper-upsale-notice .wpdeveloper-notice-message {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+}
+.wpdeveloper-upsale-notice .wpdeveloper-notice-message + .notice-dismiss {
+    top: 18px;
+}
+.wpdeveloper-upsale-notice #plugin-install-core {
+    margin-left: 10px;
+}
+.notice.notice-has-thumbnail {
+    padding-left: 0px;
+}
+
+.wpdeveloper-upsale-notice {
+    display: flex;
+}
+.wpsp-upsale-notice .wpdeveloper-notice-thumbnail {
+    padding: 0;
+    width: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.wpsp-upsale-notice .wpdeveloper-notice-thumbnail img {
+    width: 50px;
+    padding: 8px;
+}
+a.wpsp-notice-cta {
+    margin-left: 10px !important;
+}
+
+.wpsp-dashboard-body .notice.wpsp-usage-notice {
+    display: flex;
+    align-content: center;
+    align-items: center;
+}
+.wpsp-usage-notice-img .wpsp-logo-inline {
+    width: 60px;
+    display: block;
+    box-shadow: 1px 0 0 0 rgba(0, 0, 0, 0.1);
+    margin-right: 10px;
+    padding: 15px 5px 5px 0;
+}
+.wpscp-facebook-app-notice {
+    margin-bottom: 20px;
+}
+.wpscp-twitter-app-notice {
+    margin-bottom: 20px;
+}
+
+.button.button-primary.btn-wpsp {
+    background-color: #6c62ff;
+}
+
+.notice.notice-has-thumbnail.wpdeveloper-freedom30-notice {
+    display: grid;
+    grid-template-columns: 50px 1fr;
+    align-items: center;
+    position: relative;
+}
+.notice-has-thumbnail.wpdeveloper-freedom30-notice .wpdeveloper-notice-thumbnail {
+    width: 40px;
+    padding-left: 10px;
+}
+.notice-has-thumbnail.wpdeveloper-freedom30-notice .wpdeveloper-notice-thumbnail img {
+    width: 40px;
+    display: block;
+}
+.notice-has-thumbnail.wpdeveloper-freedom30-notice .wpdeveloper-notice-message {
+    padding: 10px 0px;
+}
+.notice-has-thumbnail.wpdeveloper-freedom30-notice .wpdeveloper-notice-message p {
+    margin: 0;
+    padding: 0;
+}
+
+
+.notice-schedulepress-black_friday_23 {
+    padding: 16px 0;
+    display: flex !important;
+}
+#wpnotice-schedulepress-black_friday_23.notice-info {
+    border-left-color: #6D64FF;
+}
+#wpnotice-schedulepress-black_friday_23 .wpnotice-thumbnail-wrapper {
+    padding-left: 30px !important;
+    padding-right: 28px !important;
+}
+#wpnotice-schedulepress-black_friday_23 .wpnotice-content-wrapper a {
+    text-transform: capitalize;
+    margin-right: 16px;
+}
+#wpnotice-schedulepress-black_friday_23 .wpnotice-content-wrapper button {
+    text-transform: capitalize;
+}
+#wpnotice-schedulepress-black_friday_23 .wpnotice-content-wrapper button:hover {
+    background-color: transparent;
+}
+
+
+/*
+* Black Friday Notice css 2025
+*/
+#wpnotice-schedulepress-wpsp_black_friday_2025 {
+    border-left-color: #B0ACFB;
+    padding: 10px 40px 10px 20px;
+}
+#wpnotice-schedulepress-wpsp_black_friday_2025 .wpnotice-content-wrapper .wpsp-notice-action-button > a.button-primary,
+#wpnotice-schedulepress-wpsp_black_friday_2025 .wpnotice-content-wrapper .wpsp-notice-action-button > a.button-primary:focus,
+#wpnotice-schedulepress-wpsp_black_friday_2025 .wpnotice-content-wrapper .wpsp-notice-action-button > a.button-primary:hover {
+    background-color: #3B4045;
+    color: #fff;
+    box-shadow: 0px 1px 0px 0px #000000;
+    border: none;
+    border-radius: 6px;
+    padding: 2px 16px;
+}
+
+#wpnotice-schedulepress-wpsp_black_friday_2025 .wpnotice-content-wrapper .wpsp-notice-action-button .wpsp-notice-action-dismiss {
+    background: none;
+    border: none;
+    color: #424242;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    display: inline-block;
+    margin-left: 5px;
+}
+
+
+#wpnotice-schedulepress-wpsp_black_friday_2025 .wpnotice-content-wrapper {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    width: 100%;
+    flex-direction: column;
+}
+#wpnotice-schedulepress-wpsp_black_friday_2025 .wpnotice-content-wrapper p{
+    font-size: 14px;
+    margin-top: 0;
+    padding-top: 0;
+    text-transform: capitalize;
+}
+@media screen and (max-width: 574px) {
+    #wpnotice-schedulepress-wpsp_black_friday_2025 {
+        display: none !important;
+    }
+}
+
+
+
+/*
+* Holidays Deal css
+*/
+#wpnotice-schedulepress-wpsp_holidays_deal, #wpnotice-notificationx-nx_black_friday_2024 {
+    border-left: 1px solid #c3c4c7;
+    padding: 10px 40px 10px 20px;
+    gap: 30px !important;
+}
+#wpnotice-schedulepress-wpsp_holidays_deal .wpnotice-content-wrapper .nx-notice-action-button > a.button-primary,
+#wpnotice-schedulepress-wpsp_holidays_deal .wpnotice-content-wrapper .nx-notice-action-button > a.button-primary:focus,
+#wpnotice-schedulepress-wpsp_holidays_deal .wpnotice-content-wrapper .nx-notice-action-button > a.button-primary:hover
+{
+    background-color: #5626E7;
+    border-color: #5626E7;
+}
+#wpnotice-schedulepress-wpsp_holidays_deal .wpnotice-content-wrapper .nx-notice-action-button {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+}
+#wpnotice-schedulepress-wpsp_holidays_deal .wpnotice-content-wrapper .nx-notice-action-button .nx-notice-action-dismiss {
+    color: #5626E7;
+    font-size: 14px;
+}
+#wpnotice-schedulepress-wpsp_holidays_deal .wpnotice-content-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+#wpnotice-schedulepress-wpsp_holidays_deal .wpnotice-content-wrapper {
+    align-items: start;
+    flex-direction: column;
+    gap: 5px;
+}
+#wpnotice-schedulepress-wpsp_holidays_deal .wpnotice-content-wrapper p {
+    font-size: 15px;
+    margin: 0;
+}
+.notice-schedulepress-wpsp_holidays_deal.is-dismissible .wpnotice-thumbnail-wrapper img {
+    width: auto !important;
+    max-width: 160px !important;
+    padding-left: 12px;
+}
+@media screen and (max-width: 767px) {
+    #wpnotice-schedulepress-wpsp_holidays_deal {
+        display: none !important;
+    }
+}
+
+/*
+ * Wpsp Spring Campaign 2026 Notice
+ */
+#wpnotice-schedulepress-wpsp_spring_campaign_2026 {
+    border-left-color: #5252DC;
+    padding: 10px 40px 10px 20px;
+}
+#wpnotice-schedulepress-wpsp_spring_campaign_2026 .wpnotice-content-wrapper {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    width: 100%;
+    flex-direction: column;
+    gap: 5px;
+}
+#wpnotice-schedulepress-wpsp_spring_campaign_2026 .wpnotice-content-wrapper p {
+    font-size: 14px;
+    margin-top: 0;
+    padding-top: 0;
+}
+#wpnotice-schedulepress-wpsp_spring_campaign_2026 .wpnotice-content-wrapper .wpsp-notice-action-button > a.button-primary,
+#wpnotice-schedulepress-wpsp_spring_campaign_2026 .wpnotice-content-wrapper .wpsp-notice-action-button > a.button-primary:focus,
+#wpnotice-schedulepress-wpsp_spring_campaign_2026 .wpnotice-content-wrapper .wpsp-notice-action-button > a.button-primary:hover {
+    background-color: #5252DC;
+    color: #ffffff;
+    box-shadow: 0px 1px 0px 0px #000000;
+    border: none;
+    border-radius: 6px;
+    padding: 2px 16px;
+}
+#wpnotice-schedulepress-wpsp_spring_campaign_2026 .wpnotice-content-wrapper .wpsp-notice-action-button .wpsp-notice-action-dismiss {
+    background: none;
+    border: none;
+    color: #424242;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    display: inline-block;
+    margin-left: 5px;
+}
+@media screen and (max-width: 574px) {
+    #wpnotice-schedulepress-wpsp_spring_campaign_2026 {
+        display: none !important;
+    }
+}
