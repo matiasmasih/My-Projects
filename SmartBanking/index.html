@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>SmartBank System</title>
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* YOUR EXISTING STYLES - NO CHANGES */
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --danger: #ef4444;
+        --danger-dark: #dc2626;
+        --light: #f8fafc;
+        --dark: #1e293b;
+        --gray: #64748b;
+        --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --radius: 12px;
+        --transition: all 0.3s ease;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        transition: background 0.5s ease;
+        color: var(--dark);
+      }
+
+      /* Default background */
+      body.default-bg {
+        background: linear-gradient(
+            rgba(13, 27, 42, 0.75),
+            rgba(41, 128, 185, 0.75)
+          ),
+          url("images/banking_image0.jpg") no-repeat center center fixed;
+        background-size: cover;
+      }
+
+      body.dashboard-bg {
+        background: linear-gradient(
+            rgba(13, 27, 42, 0.75),
+            rgba(41, 128, 185, 0.75)
+          ),
+          url("images/banking_image1.jpg") no-repeat center center fixed;
+        background-size: cover;
+      }
+
+      body.create-account-bg {
+        background: linear-gradient(
+            rgba(13, 27, 42, 0.75),
+            rgba(41, 128, 185, 0.75)
+          ),
+          url("images/banking_image2.jpg") no-repeat center center fixed;
+        background-size: cover;
+      }
+
+      body.deposit-bg {
+        background: linear-gradient(
+            rgba(13, 27, 42, 0.75),
+            rgba(41, 128, 185, 0.75)
+          ),
+          url("images/banking_image3.jpg") no-repeat center center fixed;
+        background-size: cover;
+      }
+
+      body.withdraw-bg {
+        background: linear-gradient(
+            rgba(13, 27, 42, 0.75),
+            rgba(41, 128, 185, 0.75)
+          ),
+          url("images/banking_image4.jpg") no-repeat center center fixed;
+        background-size: cover;
+      }
+
+      body.transfer-bg {
+        background: linear-gradient(
+            rgba(13, 27, 42, 0.75),
+            rgba(41, 128, 185, 0.75)
+          ),
+          url("images/banking_image5.jpg") no-repeat center center fixed;
+        background-size: cover;
+      }
+
+      body.account-details-bg {
+        background: linear-gradient(
+            rgba(13, 27, 42, 0.75),
+            rgba(41, 128, 185, 0.75)
+          ),
+          url("images/banking_image6.jpg") no-repeat center center fixed;
+        background-size: cover;
+      }
+      header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        box-shadow: var(--shadow);
+        padding: 1rem 2rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .header-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .logo {
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .logo i {
+        color: var(--primary);
+        font-size: 1.8rem;
+      }
+
+      .menu {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .menu button {
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        padding: 10px 16px;
+        border-radius: var(--radius);
+        cursor: pointer;
+        transition: var(--transition);
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .menu button:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+      }
+
+      .menu .logout {
+        background: var(--danger);
+      }
+
+      .menu .logout:hover {
+        background: var(--danger-dark);
+      }
+
+      /* Dashboard card - 80% width */
+      .dashboard {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(6px);
+        box-shadow: var(--shadow);
+        border-radius: var(--radius);
+        width: 80%;
+        margin: 3rem auto;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      /* Content cards - 60% width */
+      .content-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(6px);
+        box-shadow: var(--shadow);
+        border-radius: var(--radius);
+        width: 60%;
+        margin: 3rem auto;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      /* Form styling with 60% width */
+      .form-container {
+        width: 100%;
+        margin: 0 auto;
+      }
+
+      .form-row {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .form-group {
+        flex: 1;
+        text-align: left;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--dark);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+      }
+
+      th,
+      td {
+        border-bottom: 1px solid #e2e8f0;
+        padding: 12px;
+        font-size: 0.9rem;
+      }
+
+      th {
+        background: #f1f5f9;
+        font-weight: 600;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 12px;
+        margin: 6px 0 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-family: "Poppins", sans-serif;
+        transition: var(--transition);
+      }
+
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
+
+      button.action,
+      .btn {
+        width: 100%;
+        padding: 12px;
+        background: var(--primary);
+        border: none;
+        color: #fff;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: var(--transition);
+        font-family: "Poppins", sans-serif;
+      }
+
+      button.action:hover,
+      .btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+      }
+
+      /* Bank Dashboard */
+      #bankAppPage {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 100vh;
+        width: 100%;
+        padding: 2rem;
+        color: white;
+        text-align: center;
+      }
+
+      .stats {
+        display: flex;
+        justify-content: space-between;
+        gap: 1.5rem;
+        margin-top: 2rem;
+        width: 100%;
+      }
+
+      .stat-card {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(8px);
+        border-radius: 16px;
+        padding: 1.5rem 1rem;
+        flex: 1;
+        min-width: 0;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+        transition: transform 0.3s ease;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .stat-card i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        color: #93c5fd;
+      }
+
+      .stat-card h3 {
+        font-size: 1.5rem;
+        margin: 0.3rem 0;
+      }
+
+      .stat-card p {
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+
+      .history-card {
+        margin-top: 2rem;
+        width: 100%;
+      }
+
+      .message {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+        text-align: left;
+      }
+
+      .success {
+        background: #dcfce7;
+        color: #166534;
+        border-left: 4px solid #22c55e;
+      }
+
+      @media (max-width: 768px) {
+        .header-content {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .menu {
+          width: 100%;
+          justify-content: space-between;
+          margin-top: 1rem;
+        }
+
+        .stats {
+          flex-direction: column;
+        }
+
+        .form-container {
+          width: 100%;
+        }
+
+        .form-row {
+          flex-direction: column;
+          gap: 0;
+        }
+
+        .dashboard {
+          width: 95%;
+        }
+
+        .content-card {
+          width: 95%;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="default-bg">
+    <!-- ✅ FIXED: Authentication check instead of automatic redirect -->
+    <script>
+      // Check if user is logged in
+      const isLoggedIn = sessionStorage.getItem("isLoggedIn");
+      if (!isLoggedIn) {
+        window.location.href = "login.html";
+      }
+    </script>
+
+    <!-- The rest of your banking application -->
+    <header>
+      <div class="header-content">
+        <div class="logo"><i class="fas fa-university"></i> SmartBank</div>
+        <div class="menu">
+          <button onclick="showSection('dashboard')">
+            <i class="fas fa-home"></i> Dashboard
+          </button>
+          <button onclick="showSection('create-account')">
+            <i class="fas fa-user-plus"></i> Create Account
+          </button>
+          <button onclick="showSection('deposit')">
+            <i class="fas fa-arrow-down"></i> Deposit
+          </button>
+          <button onclick="showSection('withdraw')">
+            <i class="fas fa-arrow-up"></i> Withdraw
+          </button>
+          <button onclick="showSection('transfer')">
+            <i class="fas fa-exchange-alt"></i> Transfer
+          </button>
+          <button onclick="showSection('account-details')">
+            <i class="fas fa-list"></i> Accounts
+          </button>
+          <button id="clearBtn" class="logout">
+            <i class="fas fa-trash"></i> Clear All
+          </button>
+          <button id="logoutBtn" class="logout">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="page">
+      <!-- Dashboard -->
+      <div class="cards-wrap">
+        <div class="dashboard" id="dashboard" style="display: none">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              gap: 1rem;
+              flex-wrap: wrap;
+              margin-bottom: 1rem;
+            "
+          >
+            <h2>Account Dashboard</h2>
+            <div style="color: var(--gray)">(Data stored in localStorage)</div>
+          </div>
+
+          <div class="stats">
+            <div class="stat-card">
+              <i class="fas fa-wallet"></i>
+              <h3 id="totalBalance">€0.00</h3>
+              <p>Total Balance</p>
+            </div>
+            <div class="stat-card">
+              <i class="fas fa-piggy-bank"></i>
+              <h3 id="totalAccounts">0</h3>
+              <p>Total Accounts</p>
+            </div>
+            <div class="stat-card">
+              <i class="fas fa-exchange-alt"></i>
+              <h3 id="recentTransactions">0</h3>
+              <p>Recent Transactions</p>
+            </div>
+          </div>
+
+          <div class="history-card">
+            <h4 style="margin-bottom: 0.5rem">Recent History</h4>
+            <div
+              style="
+                background: rgba(255, 255, 255, 0.9);
+                padding: 0.75rem;
+                border-radius: 8px;
+              "
+            >
+              <table id="recentHistoryTable">
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Type</th>
+                    <th>Account</th>
+                    <th>Amount</th>
+                    <th>Note</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Create Account -->
+      <div id="create-account" class="content-card" style="display: none">
+        <h3><i class="fas fa-plus-circle"></i> Create New Account</h3>
+        <div class="form-container">
+          <form id="createAccountForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="first_name">First Name</label>
+                <input
+                  type="text"
+                  id="first_name"
+                  placeholder="First Name"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="last_name">Last Name</label>
+                <input
+                  type="text"
+                  id="last_name"
+                  placeholder="Last Name"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="email_acc">Email Address</label>
+                <input
+                  type="email"
+                  id="email_acc"
+                  placeholder="Email Address"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="mobile_no">Phone Number</label>
+                <input
+                  type="text"
+                  id="mobile_no"
+                  placeholder="Phone Number"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="initial_depo">Initial Deposit (€)</label>
+              <input
+                type="number"
+                id="initial_depo"
+                placeholder="Initial Deposit (€)"
+                min="0"
+                step="0.01"
+                required
+              />
+            </div>
+
+            <button type="submit" class="btn">
+              <i class="fas fa-save"></i> Create Account
+            </button>
+          </form>
+          <div
+            id="newAccountInfo"
+            class="message success"
+            style="display: none"
+          ></div>
+        </div>
+      </div>
+
+      <!-- Deposit -->
+      <div id="deposit" class="content-card" style="display: none">
+        <h2><i class="fas fa-arrow-down"></i> Deposit</h2>
+        <div class="form-container">
+          <div class="form-group">
+            <label for="depositAccount">Select Account</label>
+            <select id="depositAccount"></select>
+          </div>
+          <div class="form-group">
+            <label for="depositAmount">Amount (€)</label>
+            <input id="depositAmount" type="number" placeholder="Amount (€)" />
+          </div>
+          <button class="action" id="depositBtn">Deposit</button>
+        </div>
+      </div>
+
+      <!-- Withdraw -->
+      <div id="withdraw" class="content-card" style="display: none">
+        <h2><i class="fas fa-arrow-up"></i> Withdraw</h2>
+        <div class="form-container">
+          <div class="form-group">
+            <label for="withdrawAccount">Select Account</label>
+            <select id="withdrawAccount"></select>
+          </div>
+          <div class="form-group">
+            <label for="withdrawAmount">Amount (€)</label>
+            <input id="withdrawAmount" type="number" placeholder="Amount (€)" />
+          </div>
+          <button class="action" id="withdrawBtn">Withdraw</button>
+        </div>
+      </div>
+
+      <!-- Transfer -->
+      <div id="transfer" class="content-card" style="display: none">
+        <h2><i class="fas fa-exchange-alt"></i> Transfer</h2>
+        <div class="form-container">
+          <div class="form-group">
+            <label for="fromAccount">From Account</label>
+            <select id="fromAccount"></select>
+          </div>
+          <div class="form-group">
+            <label for="toAccount">To Account</label>
+            <select id="toAccount"></select>
+          </div>
+          <div class="form-group">
+            <label for="transferAmount">Amount (€)</label>
+            <input id="transferAmount" type="number" placeholder="Amount (€)" />
+          </div>
+          <button class="action" id="transferBtn">Transfer</button>
+        </div>
+      </div>
+
+      <!-- Account Details -->
+      <div id="account-details" class="content-card" style="display: none">
+        <h2><i class="fas fa-list"></i> All Accounts</h2>
+        <table id="accountsTable">
+          <thead>
+            <tr>
+              <th>Holder</th>
+              <th>Account #</th>
+              <th>Balance (€)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      // --- LocalStorage Helpers ---
+      const getAccounts = () =>
+        JSON.parse(localStorage.getItem("accounts")) || [];
+      const saveAccounts = (accs) =>
+        localStorage.setItem("accounts", JSON.stringify(accs));
+
+      const getTransactions = () =>
+        JSON.parse(localStorage.getItem("transactions")) || [];
+      const saveTransactions = (txs) =>
+        localStorage.setItem("transactions", JSON.stringify(txs));
+
+      // --- Generate FI Account Number ---
+      function generateAccountNumber() {
+        // Generates a 14-digit number starting with FI
+        const randomNum = Math.floor(
+          10000000000000 + Math.random() * 90000000000000
+        );
+        return "FI" + randomNum.toString().slice(0, 12);
+      }
+
+      // --- Refresh Account Lists in Dropdowns and Table ---
+      function refreshAccountLists() {
+        const accounts = getAccounts();
+        const selects = [
+          "#depositAccount",
+          "#withdrawAccount",
+          "#fromAccount",
+          "#toAccount",
+        ];
+        selects.forEach((s) => $(s).empty());
+
+        accounts.forEach((acc) => {
+          selects.forEach((s) =>
+            $(s).append(
+              `<option value="${acc.accountNumber}">
+            ${acc.firstName} ${acc.lastName} (${acc.accountNumber})
+          </option>`
+            )
+          );
+        });
+
+        const table = $("#accountsTable tbody");
+        table.empty();
+        accounts.forEach((acc) =>
+          table.append(
+            `<tr>
+          <td>${acc.firstName} ${acc.lastName}</td>
+          <td>${acc.accountNumber}</td>
+          <td>€${acc.balance.toFixed(2)}</td>
+        </tr>`
+          )
+        );
+      }
+
+      // --- Update Dashboard Statistics ---
+      function updateDashboard() {
+        const accounts = getAccounts();
+        const txs = getTransactions();
+
+        $("#totalAccounts").text(accounts.length);
+        $("#totalBalance").text(
+          "€" + accounts.reduce((sum, a) => sum + a.balance, 0).toFixed(2)
+        );
+        $("#recentTransactions").text(txs.length);
+
+        const table = $("#recentHistoryTable tbody");
+        table.empty();
+        txs
+          .slice(-5)
+          .reverse()
+          .forEach((tx) => {
+            table.append(
+              `<tr>
+            <td>${tx.time}</td>
+            <td>${tx.type}</td>
+            <td>${tx.account}</td>
+            <td>€${tx.amount.toFixed(2)}</td>
+            <td>${tx.note || ""}</td>
+          </tr>`
+            );
+          });
+      }
+
+      // --- Page Section Handling ---
+      function showSection(id) {
+        $(".content-card, .dashboard").hide();
+        $("#" + id).fadeIn(300);
+        $("body")
+          .removeClass(
+            "dashboard-bg create-account-bg deposit-bg withdraw-bg transfer-bg account-details-bg default-bg"
+          )
+          .addClass(id + "-bg");
+        if (id === "dashboard") updateDashboard();
+      }
+
+      // --- Logout Function ---
+      function logout() {
+        if (confirm("Are you sure you want to logout?")) {
+          // ✅ FIXED: Clear sessionStorage on logout
+          sessionStorage.removeItem("isLoggedIn");
+          sessionStorage.removeItem("userEmail");
+          window.location.href = "login.html";
+        }
+      }
+
+      // --- Clear Form Inputs ---
+      function clearFormInputs() {
+        $("#depositAmount, #withdrawAmount, #transferAmount").val("");
+      }
+
+      // --- Input Validation ---
+      function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+      }
+
+      function validatePhone(phone) {
+        const re = /^[\+]?[0-9\s\-\(\)]{8,}$/;
+        return re.test(phone.replace(/\s/g, ""));
+      }
+
+      function isDuplicateEmail(email) {
+        const accounts = getAccounts();
+        return accounts.some(
+          (acc) => acc.email.toLowerCase() === email.toLowerCase()
+        );
+      }
+
+      // --- Main Logic ---
+      $(document).ready(function () {
+        $(".content-card, .dashboard").hide();
+        refreshAccountLists();
+        showSection("dashboard");
+
+        // --- Create Account ---
+        $("#createAccountForm").submit(function (e) {
+          e.preventDefault();
+
+          const firstName = $("#first_name").val().trim();
+          const lastName = $("#last_name").val().trim();
+          const email = $("#email_acc").val().trim();
+          const phone = $("#mobile_no").val().trim();
+          const initialDeposit = parseFloat($("#initial_depo").val()) || 0;
+
+          // Validation
+          if (!firstName || !lastName) {
+            alert("Please enter both first and last name");
+            return;
+          }
+
+          if (!validateEmail(email)) {
+            alert("Please enter a valid email address");
+            return;
+          }
+
+          if (isDuplicateEmail(email)) {
+            alert("An account with this email already exists");
+            return;
+          }
+
+          if (!validatePhone(phone)) {
+            alert("Please enter a valid phone number");
+            return;
+          }
+
+          if (initialDeposit < 0) {
+            alert("Initial deposit cannot be negative");
+            return;
+          }
+
+          const acc = {
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            phone: phone,
+            balance: initialDeposit,
+            accountNumber: generateAccountNumber(),
+            createdAt: new Date().toLocaleString(),
+          };
+
+          const accs = getAccounts();
+          accs.push(acc);
+          saveAccounts(accs);
+          refreshAccountLists();
+
+          $("#newAccountInfo")
+            .html(
+              `<div>✅ Account Created!<br>
+           <strong>${acc.firstName} ${acc.lastName}</strong><br>
+           Account #: ${acc.accountNumber}<br>
+           Balance: €${acc.balance.toFixed(2)}</div>`
+            )
+            .fadeIn();
+          this.reset();
+        });
+
+        // --- Deposit ---
+        $("#depositBtn").click(() => {
+          const accNum = $("#depositAccount").val();
+          const amt = parseFloat($("#depositAmount").val());
+
+          if (!accNum) {
+            alert("Please select an account");
+            return;
+          }
+
+          if (!amt || amt <= 0) {
+            alert("Please enter a valid amount");
+            return;
+          }
+
+          const accs = getAccounts();
+          const acc = accs.find((a) => a.accountNumber === accNum);
+          if (!acc) {
+            alert("Account not found");
+            return;
+          }
+
+          acc.balance += amt;
+          saveAccounts(accs);
+
+          const txs = getTransactions();
+          txs.push({
+            type: "Deposit",
+            account: accNum,
+            amount: amt,
+            time: new Date().toLocaleString(),
+          });
+          saveTransactions(txs);
+
+          refreshAccountLists();
+          clearFormInputs();
+          alert("Deposit successful (€" + amt.toFixed(2) + ")");
+        });
+
+        // --- Withdraw ---
+        $("#withdrawBtn").click(() => {
+          const accNum = $("#withdrawAccount").val();
+          const amt = parseFloat($("#withdrawAmount").val());
+
+          if (!accNum) {
+            alert("Please select an account");
+            return;
+          }
+
+          const accs = getAccounts();
+          const acc = accs.find((a) => a.accountNumber === accNum);
+
+          if (!amt || amt <= 0) {
+            alert("Please enter a valid amount");
+            return;
+          }
+
+          if (!acc || acc.balance < amt) {
+            alert("Invalid amount or insufficient funds");
+            return;
+          }
+
+          acc.balance -= amt;
+          saveAccounts(accs);
+
+          const txs = getTransactions();
+          txs.push({
+            type: "Withdraw",
+            account: accNum,
+            amount: amt,
+            time: new Date().toLocaleString(),
+          });
+          saveTransactions(txs);
+
+          refreshAccountLists();
+          clearFormInputs();
+          alert("Withdrawal successful (€" + amt.toFixed(2) + ")");
+        });
+
+        // --- Transfer ---
+        $("#transferBtn").click(() => {
+          const from = $("#fromAccount").val();
+          const to = $("#toAccount").val();
+          const amt = parseFloat($("#transferAmount").val());
+
+          if (!from || !to) {
+            alert("Please select both from and to accounts");
+            return;
+          }
+
+          if (from === to) {
+            alert("Cannot transfer to the same account");
+            return;
+          }
+
+          if (!amt || amt <= 0) {
+            alert("Please enter a valid amount");
+            return;
+          }
+
+          const accs = getAccounts();
+          const f = accs.find((a) => a.accountNumber === from);
+          const t = accs.find((a) => a.accountNumber === to);
+
+          if (!f || !t) {
+            alert("One or both accounts not found");
+            return;
+          }
+
+          if (f.balance < amt) {
+            alert("Insufficient funds");
+            return;
+          }
+
+          f.balance -= amt;
+          t.balance += amt;
+          saveAccounts(accs);
+
+          const txs = getTransactions();
+          txs.push({
+            type: "Transfer",
+            account: `${from} → ${to}`,
+            amount: amt,
+            time: new Date().toLocaleString(),
+          });
+          saveTransactions(txs);
+
+          refreshAccountLists();
+          clearFormInputs();
+          alert("Transfer successful (€" + amt.toFixed(2) + ")");
+        });
+
+        // --- Clear All Data ---
+        $("#clearBtn").click(() => {
+          if (
+            confirm("Are you sure to clear all data? This cannot be undone.")
+          ) {
+            localStorage.clear();
+            location.reload();
+          }
+        });
+
+        // --- Logout ---
+        $("#logoutBtn").click(() => logout());
+      });
+    </script>
+  </body>
+</html>

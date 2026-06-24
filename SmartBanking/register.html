@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register - SmartBank</title>
+
+    <!-- Icons & Fonts -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: linear-gradient(
+            rgba(13, 27, 42, 0.75),
+            rgba(41, 128, 185, 0.75)
+          ),
+          url("images/banking_image_registration.jpg") no-repeat center center
+            fixed;
+        background-size: cover;
+        color: #fff;
+      }
+
+      .register-box {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        padding: 2rem 2.5rem;
+        width: 360px;
+        text-align: center;
+      }
+
+      .register-box h2 {
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+      }
+
+      .register-box p {
+        color: #cbd5e1;
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .register-box .form-group {
+        text-align: left;
+        margin-bottom: 1rem;
+      }
+
+      .register-box label {
+        font-size: 0.9rem;
+        margin-bottom: 0.3rem;
+        display: block;
+      }
+
+      .register-box input {
+        width: 100%;
+        padding: 10px 12px;
+        border: none;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.95);
+        font-size: 15px;
+      }
+
+      .register-box button {
+        width: 100%;
+        padding: 12px;
+        background: #2563eb;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: 0.3s;
+      }
+
+      .register-box button:hover {
+        background: #1e3a8a;
+      }
+
+      .register-box .link {
+        margin-top: 1rem;
+      }
+
+      .register-box .link a {
+        color: #93c5fd;
+        text-decoration: none;
+      }
+
+      .register-box .link a:hover {
+        text-decoration: underline;
+      }
+
+      .message {
+        margin-top: 1rem;
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="register-box">
+      <h2><i class="fas fa-user-plus"></i> Create Account</h2>
+      <p>Join SmartBank today</p>
+
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="registerEmail">Email Address</label>
+          <input
+            type="email"
+            id="registerEmail"
+            placeholder="Enter your email"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="registerPhone">Phone Number</label>
+          <input
+            type="tel"
+            id="registerPhone"
+            placeholder="+358 401234567"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="registerPassword">Password</label>
+          <input
+            type="password"
+            id="registerPassword"
+            placeholder="Create a password"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="registerPasswordConfirm">Confirm Password</label>
+          <input
+            type="password"
+            id="registerPasswordConfirm"
+            placeholder="Confirm your password"
+            required
+          />
+        </div>
+
+        <button type="submit"><i class="fas fa-user-plus"></i> Register</button>
+
+        <div class="link">
+          <p>
+            Already have an account?
+            <a href="login.html">Login here</a>
+          </p>
+        </div>
+      </form>
+
+      <div id="registerMessage" class="message"></div>
+    </div>
+
+    <script>
+      document
+        .getElementById("registerForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const email = document.getElementById("registerEmail").value.trim();
+          const phone = document.getElementById("registerPhone").value.trim();
+          const password = document
+            .getElementById("registerPassword")
+            .value.trim();
+          const confirm = document
+            .getElementById("registerPasswordConfirm")
+            .value.trim();
+          const message = document.getElementById("registerMessage");
+
+          // Validation
+          if (!email || !phone || !password || !confirm) {
+            message.textContent = "⚠️ Please fill in all fields.";
+            message.style.color = "orange";
+            return;
+          }
+
+          if (password !== confirm) {
+            message.textContent = "❌ Passwords do not match.";
+            message.style.color = "red";
+            return;
+          }
+
+          const users = JSON.parse(localStorage.getItem("users")) || [];
+
+          if (users.some((u) => u.email === email)) {
+            message.textContent = "⚠️ This email is already registered.";
+            message.style.color = "orange";
+            return;
+          }
+
+          users.push({ email, phone, password });
+          localStorage.setItem("users", JSON.stringify(users));
+
+          message.textContent = "✅ Registration successful! Redirecting...";
+          message.style.color = "lightgreen";
+
+          setTimeout(() => {
+            window.location.href = "login.html";
+          }, 1500);
+        });
+    </script>
+  </body>
+</html>
