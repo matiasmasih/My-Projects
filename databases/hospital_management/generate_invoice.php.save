@@ -1,0 +1,72 @@
+<?php
+session_start();
+include 'config.php';
+
+// Only admin or manager
+if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role_id'], [1,2])) {
+    header("Location: login.php");
+    exit;
+}
+
+// Get appointment ID from URL
+$appointment_id = isset($_GET['appointment_id']) ? (int)$_GET['appointment_id'] : 0;
+if ($appointment_id <= 0) {
+    die("Invalid appointment ID.");
+}
+
+// Fetch appointment info
+$stmt = $pdo->prepare("
+    SELECT
+        a.id,
+        a.reason,
+        a.duration_minutes,
+        p.id AS patient_id,
+        p.first_name,
+        p.last_name
+    FROM appointments a
+    JOIN patients p ON a.patient_id = p.id
+    WHERE a.id = ?
+");
+$stmt->execute([$appointment_id]);
+$appointment = $stmt->fetch();
+
+if (!$appointment) {
+    die("Appointment not found.");
+}
+
+// Generate invoice number (e.g., INV-2025-0017)
+$invoice_number = "INV-" . date('Y') . "-" . str_pad($appointment_id, 4, "0", STR_PAD_LEFT);
+
+// Calculate total amount (example: $50 per 30 minutes)
+$total_amount = ($appointment['duration_minutes'] / 30) * 50;
+
+// Set due date and notes
+$due_date = date('Y-m-d', strtotime('+7 days')); // 7 days from today
+$notes = "Invoice for appointment: " . $appointment['reason'];
+
+// Insert invoice with notes and due date
+$insert = $pdo->prepare("
+    INSERT INTO invoices (invoice_number, patient_id, issued_by, total_amount, status, notes, due_date, created_at)
+    VALUES (?, ?, ?, ?, 'draft', ?, ?, NOW())
+");
+$insert->execute([
+    $invoice_number,
+    $appointment['patient_id'],
+    $_SESSION['user_id'],
+    $total_amount,
+    $notes,
+    $due_date
+]);
+
+$invoice_id = $pdo->lastInsertId();
+
+// Redirect to view the invoice
+header("Location: view_invoice.php?id=$invoice_id");
+exit;
+?>
+
+
+
+
+
+
