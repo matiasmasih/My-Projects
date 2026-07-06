@@ -42,8 +42,9 @@ updates:
       - "dependencies"
       - "security"
 
-  - package-ecosystem: "composer"
-    directory: "/hospital_management"
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
       interval: "weekly"
     commit-message:
@@ -51,4 +52,3 @@ updates:
     labels:
       - "dependencies"
       - "security"
-
