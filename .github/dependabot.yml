@@ -1,0 +1,64 @@
+version: 2
+updates:
+  # Python dependencies
+  - package-ecosystem: "pip"
+    directory: "/databases/coffee_shop/coffee_shop"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "⬆️"
+    labels:
+      - "dependencies"
+      - "security"
+
+  - package-ecosystem: "pip"
+    directory: "/coffee_shop"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "⬆️"
+    labels:
+      - "dependencies"
+      - "security"
+
+  # PHP/Composer dependencies
+  - package-ecosystem: "composer"
+    directory: "/databases/hospital_management/hospital_management"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "⬆️"
+    labels:
+      - "dependencies"
+      - "security"
+
+  - package-ecosystem: "composer"
+    directory: "/databases/hospital_management"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "⬆️"
+    labels:
+      - "dependencies"
+      - "security"
+
+  - package-ecosystem: "composer"
+    directory: "/hospital_management"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "⬆️"
+    labels:
+      - "dependencies"
+      - "security"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "⬆️"
+    labels:
+      - "dependencies"
+      - "security"
