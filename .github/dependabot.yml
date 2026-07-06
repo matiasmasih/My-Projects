@@ -52,13 +52,3 @@ updates:
       - "dependencies"
       - "security"
 
-  # GitHub Actions
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "⬆️"
-    labels:
-      - "dependencies"
-      - "security"
