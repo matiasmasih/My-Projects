@@ -19,7 +19,7 @@ itsdangerous==2.2.0
 Jinja2==3.1.6
 joserfc>=1.7.0
 MarkupSafe==3.0.3
-pillow==12.2.0
+pillow==12.3.0
 pycparser==3.0
 pydyf==0.12.1
 PyMySQL==1.2.0
