@@ -49,12 +49,12 @@ Database:   hospital_management
 
 ## Database
 
-    mysql -u root -pMatias413114312 hospital_management
+    mysql -u root -p hospital_management
 
 ## Reset any password
 
     php -r "echo password_hash('NewPassword123', PASSWORD_DEFAULT), PHP_EOL;"
-    mysql -u root -pMatias413114312 hospital_management -e "UPDATE users SET password_hash='HASH_HERE' WHERE email='user@example.com';"
+    mysql -u root -p hospital_management -e "UPDATE users SET password_hash='HASH_HERE' WHERE email='user@example.com';"
 
 ## Common fixes
 
@@ -69,7 +69,7 @@ Database:   hospital_management
 ## Backup
 
     sudo tar -czf ~/hospital_backup_$(date +%Y%m%d).tar.gz /var/www/html/hospital_management/
-    mysqldump -u root -pMatias413114312 hospital_management > ~/hospital_db_$(date +%Y%m%d).sql
+    mysqldump -u root -p hospital_management > ~/hospital_db_$(date +%Y%m%d).sql
 
 ## Project stats
 
