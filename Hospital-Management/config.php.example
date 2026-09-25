@@ -1,0 +1,33 @@
+<?php
+// ============================================
+// DATABASE CONFIGURATION
+// ============================================
+// Copy this file to config.php and fill in your own values.
+
+$servername = "localhost";
+$username = "root";
+$password = "YOUR_DB_PASSWORD_HERE";
+$dbname = "hospital_management";
+
+try {
+    $pdo = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8mb4", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Database connection failed: " . $e->getMessage());
+}
+
+// ============================================
+// HOSPITAL SETTINGS (used on invoices & receipts)
+// ============================================
+$hospital = [
+    'name'        => 'MediCare Hospital',
+    'address'     => 'Vaahtokuja 5 E50, 00100 Helsinki, Finland',
+    'phone'       => '+358 40 123 4567',
+    'email'       => 'info@medicare-hospital.fi',
+    'business_id' => '1234567-8',
+    'vat_number'  => 'FI12345678',
+    'iban'        => 'FI21 1234 5600 0007 85',
+    'bic'         => 'NDEAFIHH',
+    'bank_name'   => 'Nordea Bank',
+];
+?>
