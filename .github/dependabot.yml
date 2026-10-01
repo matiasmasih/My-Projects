@@ -2,7 +2,7 @@ version: 2
 updates:
   # Python dependencies
   - package-ecosystem: "pip"
-    directory: "/databases/coffee_shop/coffee_shop"
+    directory: "/coffee_shop/coffee_shop"
     schedule:
       interval: "weekly"
     commit-message:
@@ -23,7 +23,7 @@ updates:
 
   # PHP/Composer dependencies
   - package-ecosystem: "composer"
-    directory: "/databases/hospital_management/hospital_management"
+    directory: "/hospital_management/hospital_management"
     schedule:
       interval: "weekly"
     commit-message:
@@ -33,7 +33,7 @@ updates:
       - "security"
 
   - package-ecosystem: "composer"
-    directory: "/databases/hospital_management"
+    directory: "/hospital_management"
     schedule:
       interval: "weekly"
     commit-message:
