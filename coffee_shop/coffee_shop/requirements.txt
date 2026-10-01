@@ -27,7 +27,7 @@ pyphen==0.17.2
 python-dotenv==1.2.2
 requests==2.34.2
 secure-smtplib==0.1.1
-soupsieve==2.8.4
+soupsieve==2.10
 stripe==15.3.0
 tinycss2==1.5.1
 tinyhtml5==2.1.0
