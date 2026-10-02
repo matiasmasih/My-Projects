@@ -8,20 +8,9 @@ Open:
 
     http://localhost/hospital_management/login.php
 
-## Login credentials
+Ask the system administrator for login credentials.
 
-| Role | Email | Password |
-|---|---|---|
-| Manager | matiasmasih@gmail.com | aziz123 |
-| Admin | aziz.noyan@outlook.com | aziz1234 |
-| Doctor | aziznoyan50@gmail.com | doctor123 |
-| Staff | aziz.noyan1994@gmail.com | staff123 |
-| Patient | alice@patient.com | patient123 |
-| Patient | aziz.rahman@test.com | patient123 |
-| Patient | maria.garcia@test.com | patient123 |
-| Patient | john.doe@test.com | patient123 |
-| Patient | sophia.nguyen@test.com | patient123 |
-
+Do not commit real credentials to version control.
 
 ## What each role does
 
@@ -49,12 +38,12 @@ Database:   hospital_management
 
 ## Database
 
-    mysql -u root -p hospital_management
+    mysql -u root -pMatias413114312 hospital_management
 
 ## Reset any password
 
     php -r "echo password_hash('NewPassword123', PASSWORD_DEFAULT), PHP_EOL;"
-    mysql -u root -p hospital_management -e "UPDATE users SET password_hash='HASH_HERE' WHERE email='user@example.com';"
+    mysql -u root -pMatias413114312 hospital_management -e "UPDATE users SET password_hash='HASH_HERE' WHERE email='user@example.com';"
 
 ## Common fixes
 
@@ -69,7 +58,7 @@ Database:   hospital_management
 ## Backup
 
     sudo tar -czf ~/hospital_backup_$(date +%Y%m%d).tar.gz /var/www/html/hospital_management/
-    mysqldump -u root -p hospital_management > ~/hospital_db_$(date +%Y%m%d).sql
+    mysqldump -u root -pMatias413114312 hospital_management > ~/hospital_db_$(date +%Y%m%d).sql
 
 ## Project stats
 

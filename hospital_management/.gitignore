@@ -19,5 +19,6 @@ Thumbs.db
 *.swp
 *.swo
 .*.swp
-# Database dumps
+# Database dumps — ignore by default, but allow the /database/ folder
 *.sql
+!database/*.sql
