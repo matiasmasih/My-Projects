@@ -7,8 +7,8 @@
 
 $host = 'localhost';
 $db   = 'LibraryProDB';
-$user = 'library_app';
-$pass = 'Library@2026';
+$user = 'your_db_user';
+$pass = 'your_db_password';
 $charset = 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";

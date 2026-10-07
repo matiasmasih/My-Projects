@@ -1,0 +1,14 @@
+# Local config with real credentials
+config.php
+
+# Backups
+*.bak
+*.swp
+*.swo
+*.tar.gz
+*.sql
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*~
