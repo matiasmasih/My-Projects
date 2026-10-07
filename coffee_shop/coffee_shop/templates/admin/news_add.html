@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-edit"></i> Publish New Article</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label>Title</label>
+                            <input type="text" name="title" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label>Category</label>
+                            <select name="category" class="form-select" required>
+                                <option value="offers">Exclusive Offers</option>
+                                <option value="giveaway">Free Coffee Giveaway</option>
+                                <option value="early-access">Early Access</option>
+                                <option value="tips">Brewing Tips</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label>Image URL (optional)</label>
+                            <input type="text" name="image_url" class="form-control" placeholder="/static/images/coffee-news.jpg">
+                        </div>
+                        <div class="mb-3">
+                            <label>Content</label>
+                            <textarea name="content" class="form-control" rows="10" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-publish"></i> Publish Article
+                        </button>
+                        <a href="/admin/news" class="btn btn-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

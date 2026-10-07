@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Receipt - Bean & Brew Coffee</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        .receipt {
+            max-width: 480px;
+            margin: 0 auto;
+            background: white;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #C67C4E;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #2C1810;
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #666;
+            margin: 5px 0 0;
+            font-size: 12px;
+        }
+
+        .info {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+
+        .info p {
+            margin: 5px 0;
+        }
+
+        .info strong {
+            color: #2C1810;
+        }
+
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+            font-size: 12px;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+            color: #666;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 6px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        td:last-child, th:last-child {
+            text-align: right;
+        }
+
+        .total-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            font-size: 12px;
+        }
+
+        .grand-total {
+            border-top: 2px solid #C67C4E;
+            margin-top: 10px;
+            padding-top: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            color: #C67C4E;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 12px;
+            border-top: 1px dashed #ddd;
+            font-size: 10px;
+            color: #888;
+        }
+
+        .footer p {
+            margin: 4px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt">
+        <div class="header">
+            <h1>☕ Bean & Brew Coffee</h1>
+            <p>Handcrafted coffee since 2026</p>
+        </div>
+
+        <div class="info">
+            <p><strong>Order #:</strong> {{ order.order_number }}</p>
+            <p><strong>Date:</strong> {{ order.created_at.strftime('%d/%m/%Y %H:%M') if order.created_at else 'N/A' }}</p>
+            <p><strong>Customer:</strong> {{ current_user.full_name or current_user.username }}</p>
+            <p><strong>Status:</strong> {{ order.status }}</p>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>x{{ item.quantity }}</td>
+                    <td>${{ "%.2f"|format(item.price_at_time * item.quantity) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="total-line">
+            <span>Subtotal</span>
+            <span>${{ "%.2f"|format(order.total_amount) }}</span>
+        </div>
+        <div class="total-line">
+            <span>Tax (10%)</span>
+            <span>${{ "%.2f"|format(order.total_amount * 0.1) }}</span>
+        </div>
+        <div class="total-line">
+            <span>Delivery Fee</span>
+            <span>$2.50</span>
+        </div>
+        <div class="total-line grand-total">
+            <span>TOTAL</span>
+            <span>${{ "%.2f"|format(order.total_amount * 1.1 + 2.5) }}</span>
+        </div>
+
+        <div class="info">
+            <p><strong>Delivery:</strong> {{ order.delivery_address if order.delivery_address and order.delivery_address != 'pickup' else 'Pickup at store' }}</p>
+            <p><strong>Payment:</strong> {{ order.payment_method or 'Pay on arrival' }}</p>
+        </div>
+
+        <div class="footer">
+            <p>Thank you for choosing Bean & Brew Coffee! ☕</p>
+            <p>📞 +(358) 413114312 | 📧 matiasmasih@gmail.com</p>
+            <p>📍 Iskoskuja 3 C 111, Vantaa</p>
+        </div>
+    </div>
+</body>
+</html>

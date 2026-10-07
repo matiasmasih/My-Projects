@@ -1,0 +1,46 @@
+<style>
+  #clock {
+    position: fixed;
+    /* Asetetaan kellon sijainti kiinteäksi */
+    top: 0;
+    /* Asetetaan kellon sijainti yläreunaan */
+    right: 0;
+    /* Asetetaan kellon sijainti oikealle */
+    padding: 5px;
+    font-size: 20px;
+    color: white;
+    font-family: 'Newsreader', serif;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Lisätty taustaväri */
+  }
+</style>
+</head>
+
+<body>
+
+  <div id="clock"></div>
+
+  <script>
+    // Kello
+    function updateClock() {
+      var now = new Date();
+      var hours = now.getHours();
+      var minutes = now.getMinutes();
+      var seconds = now.getSeconds();
+      var timeString = padZero(hours) + ":" + padZero(minutes) + ":" + padZero(seconds);
+      document.getElementById('clock').textContent = timeString;
+    }
+
+    function padZero(number) {
+      if (number < 10) {
+        return "0" + number;
+      }
+      return number;
+    }
+
+    // Päivitä kello joka sekunti
+    setInterval(updateClock, 1000);
+
+    // Päivitä kello heti sivun latauksen yhteydessä
+    updateClock();
+  </script>

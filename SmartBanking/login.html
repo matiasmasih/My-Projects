@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartBank Login</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(
+            rgba(13, 27, 42, 0.75),
+            rgba(41, 128, 185, 0.75)
+          ),
+          url("images/banking_image_login.jpg") no-repeat center center fixed;
+        background-size: cover;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: #fff;
+      }
+
+      /* 🌟 Transparent / Glass effect box */
+      .login-box {
+        background: rgba(255, 255, 255, 0.12); /* transparent white layer */
+        backdrop-filter: blur(15px); /* frosted glass effect */
+        -webkit-backdrop-filter: blur(15px);
+        border-radius: 16px;
+        padding: 2.5rem 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 420px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .login-box h2 {
+        margin-bottom: 1.5rem;
+        color: #fff;
+        font-weight: 600;
+      }
+
+      .input-group {
+        text-align: left;
+        margin-bottom: 1rem;
+      }
+
+      label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 0.4rem;
+        color: #f1f5f9;
+      }
+
+      input[type="email"],
+      input[type="password"] {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        border: none;
+        outline: none;
+        background: rgba(255, 255, 255, 0.85);
+        color: #1e293b;
+        transition: 0.3s;
+        font-family: "Poppins", sans-serif;
+      }
+
+      input:focus {
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+      }
+
+      .remember-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.2rem;
+        font-size: 0.9rem;
+        color: #e2e8f0;
+      }
+
+      .remember-me {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      button {
+        width: 100%;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      button:hover {
+        background: #1d4ed8;
+        transform: translateY(-2px);
+      }
+
+      .footer {
+        margin-top: 1.5rem;
+        font-size: 0.9rem;
+        color: #e2e8f0;
+      }
+
+      .footer a {
+        color: #93c5fd;
+        text-decoration: none;
+        transition: 0.3s;
+      }
+
+      .footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="login-box">
+      <h2><i class="fas fa-university"></i> SmartBank Login</h2>
+      <form id="loginForm">
+        <div class="input-group">
+          <label for="email">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            placeholder="Enter your email"
+            required
+          />
+        </div>
+
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="Enter your password"
+            required
+          />
+        </div>
+
+        <div class="remember-row">
+          <div class="remember-me">
+            <input type="checkbox" id="rememberMe" />
+            <label for="rememberMe">Remember me</label>
+          </div>
+          <a href="forgot_password.html" style="text-decoration: none"
+            >Forgot Password?</a
+          >
+        </div>
+
+        <button type="submit"><i class="fas fa-sign-in-alt"></i> Login</button>
+      </form>
+
+      <div class="footer">
+        Don't have an account? <a href="register.html">Register</a>
+      </div>
+    </div>
+
+    <script>
+      // Check localStorage for remembered email
+      window.addEventListener("DOMContentLoaded", () => {
+        const rememberedEmail = localStorage.getItem("rememberedEmail");
+        if (rememberedEmail) {
+          document.getElementById("email").value = rememberedEmail;
+          document.getElementById("rememberMe").checked = true;
+        }
+      });
+
+      // Form submit handler
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const email = document.getElementById("email").value.trim();
+          const password = document.getElementById("password").value.trim();
+          const remember = document.getElementById("rememberMe").checked;
+
+          if (remember) {
+            localStorage.setItem("rememberedEmail", email);
+          } else {
+            localStorage.removeItem("rememberedEmail");
+          }
+
+          // Replace this with your real login logic
+          if (email && password) {
+            alert("Login successful!");
+
+            // Set sessionStorage for authentication
+            sessionStorage.setItem("isLoggedIn", "true");
+
+            window.location.href = "index.html"; // redirect to main dashboard
+          } else {
+            alert("Please enter valid credentials.");
+          }
+        });
+    </script>
+  </body>
+</html>

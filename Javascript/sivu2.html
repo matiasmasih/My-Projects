@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="muotoilu.css">
+    <link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@300&family=Cinzel&family=Jura&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@300;900&family=Orbitron:wght@600&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia">
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@1,6..72,300&family=Tangerine:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+.vari1{color:green;}
+.vari2{color:black;}
+.vari3{color:red;}
+.vari4{color:blue;}
+.vari5{color:tomato;}
+.vari6{color:purple;}
+
+#img {
+  display: block;
+  width: 10%;
+  padding: 20px 10px;
+  margin: 10px;
+}
+#custom-button {
+  background-color: #5e4263d9;
+  color: #ffffff;
+  text-align: center;
+  font-size: 20px;
+  padding: 12px;
+  margin: -5px 5px 0px 10px;
+  border: 1px solid green;
+  box-shadow: 5px 5px 5px rgb(128, 128, 128);
+  font-family: 'Newsreader', serif;
+}
+button {
+  background-color: #5e4263d9;
+  color: #ffffff;
+  text-align: center;
+  font-size: 20px;
+  padding: 12px;
+  margin: 10px 0px 15px 0px;
+  border: 1px solid green;
+  box-shadow: 5px 5px 5px rgb(128, 128, 128);
+  font-family: 'Newsreader', serif;
+}
+.oma {
+    font-size: 150%;
+}
+
+.container {
+  width: 30%;
+  border: 1px solid green;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 5px 5px 5px rgb(128, 128, 128);
+  background-color: #5e4263d9;
+  color: yellow;
+  font-family: 'Newsreader';
+}
+
+.message-box {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: wheat;
+  border: 1px solid #d6e9c6;
+  border-radius: 4px;
+  color: red;
+}
+
+.kellotaulu {
+  background-color: #5e4263d9;
+  width: 10%;
+  border: 1px solid green;
+  padding: 10px;
+  margin: -5px 5px 0px 10px;
+  font-size: 110%;
+  color: white;
+  box-shadow: 5px 5px 5px rgb(128, 128, 128);
+  font-family: 'Newsreader', serif;
+  text-align: center;
+}
+#clock {
+  position: absolute;
+  top: 20px;
+  right: 15px;
+  padding: 5px;
+  font-size: 20px;
+  color: white;
+  font-family: 'Newsreader', serif;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1> JavaScript sivu2.html</h1>
+<div id="clock"></div>
+<script>
+function updateClock() {
+  var now = new Date();
+  var hours = now.getHours();
+  var minutes = now.getMinutes();
+  var seconds = now.getSeconds();
+  var timeString = padZero(hours) + ":" + padZero(minutes) + ":" + padZero(seconds);
+document.getElementById('clock').textContent = timeString;
+}
+function padZero(number) {
+  if (number < 10) {
+  return "0" + number;
+}
+  return number;
+}
+ setInterval(updateClock, 1000);
+ updateClock();
+</script>
+</div>
+<div class="row">
+<div class="col-3 col-s-3 menu">
+    <ul>
+    <a href="index.html" id="eiviiva"><li> Tehtävä 1 - 6 </li></a>
+    <a href="sivu1.html" id="eiviiva"><li> Tehtävä 7 - 12 </li></a>
+    <a href="sivu2.html" id="eiviiva"><li> Tehtävä 13 - 18 </li></a>
+    </ul>
+</div>
+<div class="col-9 col-s-9">
+<!------------------------------------------------------------------->
+    <h3> Tehtävä 13 </h3>
+    <p> Lyhyesti, mitä koodaus tekee. </p>
+<div id="koodi"><pre>
+
+&LTdiv>
+    &LTimg id="img">
+    &LTbutton onclick="noppaSivu()" id="custom-button"> Heitä noppaa &LT/button>
+&LT/div>
+
+&LTscript>
+
+function omaSatunnainen1(min, max) {
+     return Math.floor(Math.random() * (max - min + 1)) + 1;
+        }
+function noppaSivu() {
+    var noppa = omaSatunnainen1(1, 6);
+    var noppaKuva = document.getElementById("img");
+
+if (noppa == 1) {
+    noppaKuva.src = "Image/kuva1.jpg";
+    noppaKuva.alt = "noppaa 1";
+    }
+else if (noppa == 2) {
+    noppaKuva.src = "Image/kuva2.jpg";
+    noppaKuva.alt = "noppaa 2";
+    }
+else if (noppa == 3) {
+    noppaKuva.src = "Image/kuva3.jpg";
+    noppaKuva.alt = "noppaa 3";
+    }
+else if (noppa == 4) {
+    noppaKuva.src = "Image/kuva4.jpg";
+    noppaKuva.alt = "noppaa 4";
+    }
+else if (noppa == 5) {
+    noppaKuva.src = "Image/kuva5.jpg";
+    noppaKuva.alt = "noppaa 5";
+    }
+else if (noppa == 6) {
+    noppaKuva.src = "Image/kuva6.jpg";
+    noppaKuva.alt = "noppaa 6";
+    }
+}
+&LT/script>
+
+</pre></div>
+
+<div>
+    <img id="img">
+    <button onclick="noppaSivu()" id="custom-button"> Heitä noppaa </button>
+</div>
+
+<script>
+
+function omaSatunnainen1(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + 1;
+}
+function noppaSivu() {
+    var noppa = omaSatunnainen1(1, 6);
+    var noppaKuva = document.getElementById("img");
+
+if (noppa == 1) {
+    noppaKuva.src = "Image/kuva1.jpg";
+    noppaKuva.alt = "noppaa 1";
+    }
+else if (noppa == 2) {
+    noppaKuva.src = "Image/kuva2.jpg";
+    noppaKuva.alt = "noppaa 2";
+    }
+else if (noppa == 3) {
+    noppaKuva.src = "Image/kuva3.jpg";
+    noppaKuva.alt = "noppaa 3";
+    }
+else if (noppa == 4) {
+    noppaKuva.src = "Image/kuva4.jpg";
+    noppaKuva.alt = "noppaa 4";
+    }
+else if (noppa == 5) {
+    noppaKuva.src = "Image/kuva5.jpg";
+    noppaKuva.alt = "noppaa 5";
+    }
+else if (noppa == 6) {
+    noppaKuva.src = "Image/kuva6.jpg";
+    noppaKuva.alt = "noppaa 6";
+    }
+}
+</script>
+
+<!------------------- END ------------------------------------------->
+
+<!------------------------------------------------------------------->
+    <h3> Tehtävä 14 </h3>
+    <p> Lyhyesti, mitä koodaus tekee. </p>
+<div id="koodi"><pre>
+
+  &LTbutton id="tervehdysButton">Sanova tervehdys&LT/button>
+  &LTdiv id="tervehdys">&LT/div>
+
+  &LTscript>
+    var nykyinenAika = new Date();
+    var tunnit = nykyinenAika.getHours();
+
+    document.getElementById("tervehdysButton").addEventListener("click", function () {
+    if (tunnit >= 5 && tunnit < 10) {
+        document.getElementById("tervehdys").innerHTML = "&LTspan class='vari1 oma'>Hyvää huomenta!&LT/span>";
+    }
+    else if (tunnit >= 10 && tunnit < 14) {
+        document.getElementById("tervehdys").innerHTML = "&LTspan class='vari3 oma'>Hyvää päivää!&LT/span>";
+    }
+    else if (tunnit >= 14 && tunnit < 17) {
+        document.getElementById("tervehdys").innerHTML = "&LTspan class='vari4 oma'>Hyvää iltapäivää!&LT/span>";
+    }
+    else if (tunnit >= 17 && tunnit < 23) {
+        document.getElementById("tervehdys").innerHTML = "&LTspan class='vari5 oma'>Hyvää iltaa!&LT/span>";
+    }
+    else {
+        document.getElementById("tervehdys").innerHTML = "&LTspan class='vari6 oma'>Hyvää yötä!&LT/span>";
+    }
+  });
+  &LT/script>
+
+</pre></div>
+
+<button id="tervehdysButton">Sanova tervehdys</button>
+<div id="tervehdys"></div>
+
+<script>
+var nykyinenAika = new Date();
+var tunnit = nykyinenAika.getHours();
+
+    document.getElementById("tervehdysButton").addEventListener("click", function () {
+if (tunnit >= 5 && tunnit < 10) {
+    document.getElementById("tervehdys").innerHTML = "<span class='vari1 oma'>Hyvää huomenta!</span>";
+  }
+else if (tunnit >= 10 && tunnit < 14) {
+    document.getElementById("tervehdys").innerHTML = "<span class='vari3 oma'>Hyvää päivää!</span>";
+  }
+else if (tunnit >= 14 && tunnit < 17) {
+    document.getElementById("tervehdys").innerHTML = "<span class='vari4 oma'>Hyvää iltapäivää!</span>";
+  }
+else if (tunnit >= 17 && tunnit < 23) {
+    document.getElementById("tervehdys").innerHTML = "<span class='vari5 oma'>Hyvää iltaa!</span>";
+  }
+else {
+    document.getElementById("tervehdys").innerHTML = "<span class='vari6 oma'>Hyvää yötä!</span>";
+  }
+});
+</script>
+<!------------------- END ------------------------------------------->
+
+<!------------------------------------------------------------------->
+    <h3> Tehtävä 15 </h3>
+    <p> Lyhyesti, mitä koodaus tekee. </p>
+<div id="koodi"><pre>
+
+   &LTdiv class="container">
+    &LTform id="myForm" action="/lomakefunktio.php" onsubmit="return tarkistaEmail()" method="post">
+        &LTlabel for="name">Nimi:&LT/label>&LTbr>
+        &LTinput type="text" id="name" name="name">&LTbr>&LTbr>
+        &LTlabel for="email">Sähköposti:&LT/label>&LTbr>
+        &LTinput type="email" id="email" name="email">&LTbr>&LTbr>
+        &LTinput type="submit" value="Lähetä">
+    &LT/form>
+
+    &LTdiv id="messageBox" class="message-box" style="display: none;">
+        Lomake lähetetty onnistuneesti!
+    &LT/div>
+&LT/div>
+
+&LTscript>
+    document.getElementById("myForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        var form = event.target;
+        var inputs = form.getElementsByTagName("input");
+        var name = form.querySelector('#name').value;
+        var email = form.querySelector('#email').value;
+
+        if (name.trim() === "") {
+            alert("Nimi puutuu ja ole hyvä anna Nimi.");
+            return;
+        }
+        else if (email.trim() === "") {
+            alert("sähköposti puutuu ja ole hyvä anna sähköposti.")
+            return;
+        }
+        for (var i = 0; i < inputs.length; i++) {
+            inputs[i].value = "";
+            alert("Kiitos yhteydenotostasi ja otamme pikaisesti yhteyttä sinuun.");
+        }
+        document.getElementById("messageBox").style.display = "block";
+        setTimeout(function () {
+            document.getElementById("messageBox").style.display = "none";
+        }, 3000);
+    });
+
+&LT/script>
+
+</pre></div>
+
+<div class="container">
+<form id="myForm" action="/lomakefunktio.php" onsubmit="return tarkistaEmail()" method="post">
+  <label for="name">Nimi:</label><br>
+  <input type="text" id="name" name="name"><br><br>
+  <label for="email">Sähköposti:</label><br>
+  <input type="email" id="email" name="email"><br><br>
+  <input type="submit" value="Lähetä">
+</form>
+
+<div id="messageBox" class="message-box" style="display: none;">
+  Lomake lähetetty onnistuneesti!
+</div>
+</div>
+
+<script>
+  document.getElementById("myForm").addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    var form = event.target;
+    var inputs = form.getElementsByTagName("input");
+    var name = form.querySelector('#name').value;
+    var email = form.querySelector('#email').value;
+
+if (name.trim() === "") {
+     alert("Nimi puutuu ja ole hyvä anna Nimi.");
+        return;
+    }
+else if (email.trim() === "") {
+    alert("sähköposti puutuu ja ole hyvä anna sähköposti.")
+        return;
+    }
+for (var i = 0; i < inputs.length; i++) {
+    inputs[i].value = "";
+        alert("Kiitos yhteydenotostasi ja otamme pikaisesti yhteyttä sinuun.");
+    }
+  document.getElementById("messageBox").style.display = "block";
+    setTimeout(function () {
+        document.getElementById("messageBox").style.display = "none";
+    }, 3000);
+});
+
+</script>
+<!------------------- END ------------------------------------------->
+
+<!------------------------------------------------------------------->
+    <h3> Tehtävä 16 </h3>
+    <p> Lyhyesti, mitä koodaus tekee. </p>
+<div id="koodi"><pre>
+
+&LTbutton onclick="handleButtonClick()" id="custom-button"> Klikkaa tähän &LT/button>
+&LTh2 id="dateDisplay">&LT/h2>
+
+&LTscript>
+function handleButtonClick() {
+  var currentDate = new Date();
+  var dayOfWeek = currentDate.toLocaleDateString('fi-FI', { weekday: 'long' });
+  var month = currentDate.getMonth();
+
+  var suomenkielisetKuukaudet = ["Tammikuu", "Helmikuu", "Maaliskuu", "Huhtikuu", "Toukokuu",
+  "Kesäkuu", "Heinäkuu", "Elokuu", "Syyskuu", "Lokakuu", "Marraskuu", "Joulukuu"];
+
+  var kuukausi = suomenkielisetKuukaudet[month];
+
+  var message = kuukausi + " " + dayOfWeek;
+
+  var dateDisplay = document.getElementById("dateDisplay");
+  dateDisplay.innerText = message;
+  dateDisplay.style.color = "blue";
+}
+&LT/script>
+
+</pre></div>
+
+<button onclick="handleButtonClick()" id="custom-button"> Klikkaa tähän </button>
+<h2 id="dateDisplay"></h2>
+
+<script>
+  function handleButtonClick() {
+    var currentDate = new Date();
+    var dayOfWeek = currentDate.toLocaleDateString('fi-FI', { weekday: 'long' });
+    var month = currentDate.getMonth();
+
+    var suomenkielisetKuukaudet = ["Tammikuu", "Helmikuu", "Maaliskuu", "Huhtikuu", "Toukokuu",
+            "Kesäkuu", "Heinäkuu", "Elokuu", "Syyskuu", "Lokakuu", "Marraskuu", "Joulukuu"];
+
+    var kuukausi = suomenkielisetKuukaudet[month];
+
+    var message = kuukausi + " " + dayOfWeek;
+
+    var dateDisplay = document.getElementById("dateDisplay");
+    dateDisplay.innerText = message;
+    dateDisplay.style.color = "blue";
+}
+</script>
+
+<!------------------- END ------------------------------------------->
+
+<!------------------------------------------------------------------->
+    <h3> Tehtävä 17 </h3>
+    <p> Lyhyesti, mitä koodaus tekee. </p>
+<div id="koodi"><pre>
+  &LTbutton onclick="updateDateTime()"id="custom-button">Klikkaa tähän&LT/button>
+  &LTh2 id="currentDateTime">&LT/h2>
+  &LTscript>
+function updateDateTime() {
+   var now = new Date();
+   var day = now.getDate();
+   var monthIndex = now.getMonth();
+   var year = now.getFullYear();
+   var dayIndex = now.getDay();
+   var hours = now.getHours();
+   var minutes = now.getMinutes();
+    var months = ['Tammikuu', 'Helmikuu', 'Maaliskuu', 'Huhtikuu', 'Toukokuu', 'Kesäkuu', 'Heinäkuu', 'Elokuu',
+    'Syyskuu', 'Lokakuu', 'Marraskuu', 'Joulukuu'];
+    var days = ['sunnuntai', 'maanantai', 'tiistai', 'keskiviikko', 'torstai', 'perjantai', 'lauantai'];
+
+  var formattedDateTime = day + '. ' + months[monthIndex] + ' ' + year + ' ' +
+ days[dayIndex] + ' klo ' + hours + ':' + (minutes < 10 ? '0' : '') + minutes;
+
+var dateDisplay = document.getElementById('currentDateTime');
+  dateDisplay.innerText = formattedDateTime;
+   dateDisplay.style.color = "blue";
+}
+&LT/script>
+
+</pre></div>
+
+<button onclick="updateDateTime()"id="custom-button">Klikkaa tähän</button>
+<h2 id="currentDateTime"></h2>
+
+<script>
+    function updateDateTime() {
+        var now = new Date();
+        var day = now.getDate();
+        var monthIndex = now.getMonth();
+        var year = now.getFullYear();
+        var dayIndex = now.getDay();
+        var hours = now.getHours();
+        var minutes = now.getMinutes();
+
+        var months = ['Tammikuu', 'Helmikuu', 'Maaliskuu', 'Huhtikuu', 'Toukokuu', 'Kesäkuu', 'Heinäkuu', 'Elokuu', 
+        'Syyskuu', 'Lokakuu', 'Marraskuu', 'Joulukuu'];
+        var days = ['sunnuntai', 'maanantai', 'tiistai', 'keskiviikko', 'torstai', 'perjantai', 'lauantai'];
+
+        var formattedDateTime = day + '. ' + months[monthIndex] + ' ' + year + ' ' +
+         days[dayIndex] + ' klo ' + hours + ':' + (minutes < 10 ? '0' : '') + minutes;
+        var dateDisplay = document.getElementById('currentDateTime');
+        dateDisplay.innerText = formattedDateTime;
+        dateDisplay.style.color = "blue";
+    }
+</script>
+
+<!------------------- END ------------------------------------------->
+
+<!------------------------------------------------------------------->
+    <h3> Tehtävä 18 </h3>
+    <p> Lyhyesti, mitä koodaus tekee. </p>
+<div id="koodi"><pre>
+
+&LTbody onload="aloitaKello()">
+  &LTdiv class="kellotaulu" id="txt"> &LT/div>
+
+&LTscript>
+function aloitaKello() {
+   var aika = new Date();
+   var h = aika.getHours();
+   var m = aika.getMinutes();
+   var s = aika.getSeconds();
+   m = otaAika(m);
+   s = otaAika(s);
+ document.getElementById('txt').innerHTML =
+   h + ":" + m + ":" + s;
+   var t = setTimeout(aloitaKello, 500);
+ }
+
+function otaAika(i) {
+  if (i < 10) { i = "0" + i };
+return i;
+}
+ &LT/script>
+
+</pre></div>
+
+<body onload="aloitaKello()">
+
+<div class="kellotaulu" id="txt"> </div>
+<script>
+ function aloitaKello() {
+  var aika = new Date();
+  var h = aika.getHours();
+  var m = aika.getMinutes();
+  var s = aika.getSeconds();
+  m = otaAika(m);
+  s = otaAika(s);
+ document.getElementById('txt').innerHTML =
+   h + ":" + m + ":" + s;
+   var t = setTimeout(aloitaKello, 500);
+}
+
+function otaAika(i) {
+ if (i < 10) { i = "0" + i };
+return i;
+}
+</script>
+
+<!------------------- END ------------------------------------------->
+
+
+<!---------- ÄLÄ HUKKAA -------------------------------------------->
+</div>
+</div>
+<div class="footer">
+    <p> © 2023 Aziz Rahman Noyan . Kaikki oikeudet pidätetään. </p>
+</div>
+
+</body>
+
+</html>

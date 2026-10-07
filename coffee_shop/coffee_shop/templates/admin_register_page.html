@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.admin-register-container {
+    background: linear-gradient(135deg, #2C1810 0%, #1A0F0A 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.admin-register-card {
+    background: white;
+    border-radius: 32px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+    max-width: 500px;
+    width: 100%;
+    overflow: hidden;
+}
+.admin-register-header {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    padding: 40px;
+    text-align: center;
+    color: white;
+}
+.admin-register-header i {
+    font-size: 60px;
+    color: #D4AF37;
+    margin-bottom: 15px;
+}
+.admin-register-body {
+    padding: 40px;
+}
+.form-control-admin {
+    border: 2px solid #E0E0E0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    width: 100%;
+}
+.btn-admin-register {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 50px;
+    font-weight: 600;
+    width: 100%;
+}
+.info-text {
+    background: #f0f0f0;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: #666;
+}
+</style>
+
+<div class="admin-register-container">
+    <div class="admin-register-card">
+        <div class="admin-register-header">
+            <i class="fas fa-user-shield"></i>
+            <h1>{{ t("register_admin") }}</h1>
+            <p>Create Administrator Account</p>
+        </div>
+        <div class="admin-register-body">
+            <div class="info-text">
+                <i class="fas fa-lock me-2"></i>
+                This registration is for administrators only.
+            </div>
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Username</label>
+                    <input type="text" name="username" class="form-control-admin" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Email</label>
+                    <input type="email" name="email" class="form-control-admin" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Password</label>
+                    <input type="password" name="password" class="form-control-admin" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Confirm Password</label>
+                    <input type="password" name="confirm_password" class="form-control-admin" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Admin Registration Key</label>
+                    <input type="password" name="admin_key" class="form-control-admin" placeholder="Enter the admin key" required>
+                </div>
+                <button type="submit" class="btn-admin-register">
+                    <i class="fas fa-user-shield me-2"></i>{{ t("register_as_admin") }}
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelector('form').addEventListener('submit', function(e) {
+    const password = document.querySelector('input[name="password"]').value;
+    const confirm = document.querySelector('input[name="confirm_password"]').value;
+    if (password !== confirm) {
+        e.preventDefault();
+        alert('Passwords do not match!');
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,812 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+:root {
+    --primary: #C67C4E;
+    --primary-dark: #A0522D;
+    --primary-light: #E8A87C;
+    --secondary: #D4AF37;
+    --secondary-dark: #B8942E;
+    --dark: #2C1810;
+    --dark-light: #3D2518;
+    --light: #FAF7F2;
+    --white: #FFFFFF;
+    --gray: #6B6B6B;
+    --success: #4A7C59;
+    --warning: #FFC107;
+    --info: #17a2b8;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--light);
+}
+
+.dashboard-container {
+    background: linear-gradient(135deg, var(--light) 0%, #F0E8DC 100%);
+    min-height: calc(100vh - 300px);
+    padding: 40px 0;
+}
+
+/* Banner Styles */
+.dashboard-banner {
+    background: linear-gradient(135deg, #2C1810 0%, #3D2518 50%, #2C1810 100%);
+    border-radius: 24px;
+    padding: 40px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.dashboard-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(198,124,78,0.1) 0%, transparent 70%);
+    transform: rotate(25deg);
+    pointer-events: none;
+}
+
+.dashboard-banner::after {
+    content: '☕';
+    position: absolute;
+    bottom: 10px;
+    right: 30px;
+    font-size: 80px;
+    opacity: 0.1;
+    font-family: Arial;
+}
+
+.banner-content {
+    position: relative;
+    z-index: 2;
+}
+
+.banner-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.banner-title i {
+    font-size: 50px;
+    color: var(--secondary);
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.banner-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 20px;
+}
+
+.banner-stats {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.banner-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.1);
+    padding: 8px 16px;
+    border-radius: 40px;
+    backdrop-filter: blur(5px);
+}
+
+.banner-stat-item i {
+    color: var(--secondary);
+    font-size: 18px;
+}
+
+.banner-stat-item span {
+    color: white;
+    font-size: 14px;
+}
+
+.banner-stat-item strong {
+    color: var(--secondary);
+    font-size: 18px;
+    margin-left: 5px;
+}
+
+.dashboard-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.dashboard-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 5px;
+}
+
+.dashboard-header p {
+    color: var(--gray);
+}
+
+/* Filter Bar */
+.filter-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    background: var(--white);
+    border-radius: 16px;
+    padding: 15px 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    border: 1px solid #E0E0E0;
+}
+
+.filter-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 8px 20px;
+    border-radius: 30px;
+    background: #f5f5f5;
+    border: none;
+    color: var(--gray);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.filter-btn.active {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    box-shadow: 0 2px 8px rgba(198,124,78,0.3);
+}
+
+.date-picker {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.date-picker input {
+    background: white;
+    border: 1px solid #E0E0E0;
+    border-radius: 30px;
+    padding: 8px 12px;
+    color: var(--dark);
+}
+
+.date-picker button {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border: none;
+    border-radius: 30px;
+    padding: 8px 20px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    border: 1px solid #E0E0E0;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    border-color: var(--primary);
+}
+
+.stat-icon {
+    width: 45px;
+    height: 45px;
+    background: rgba(198,124,78,0.1);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.stat-icon i {
+    font-size: 22px;
+    color: var(--primary);
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: var(--gray);
+    margin-bottom: 10px;
+}
+
+.stat-trend {
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.trend-up { color: var(--success); }
+.trend-down { color: #dc3545; }
+
+/* Charts Grid */
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.chart-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    border: 1px solid #E0E0E0;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.chart-header h3 {
+    color: var(--dark);
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chart-header i {
+    color: var(--primary);
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+/* Products Table */
+.products-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    border: 1px solid #E0E0E0;
+}
+
+.products-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.products-header h3 {
+    color: var(--dark);
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.products-table {
+    width: 100%;
+}
+
+.product-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.product-row:last-child {
+    border-bottom: none;
+}
+
+.product-rank {
+    width: 30px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.product-info {
+    flex: 2;
+}
+
+.product-name {
+    color: var(--dark);
+    font-weight: 500;
+}
+
+.product-category {
+    font-size: 11px;
+    color: var(--gray);
+    margin-top: 3px;
+}
+
+.product-stats {
+    display: flex;
+    gap: 30px;
+}
+
+.stat-col {
+    text-align: right;
+    min-width: 80px;
+}
+
+.stat-col .label {
+    font-size: 11px;
+    color: var(--gray);
+}
+
+.stat-col .value {
+    color: var(--dark);
+    font-weight: 600;
+}
+
+.trend-badge {
+    background: rgba(74,124,89,0.1);
+    color: var(--success);
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 50px;
+    color: var(--gray);
+}
+
+.empty-state i {
+    font-size: 50px;
+    color: var(--secondary);
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+@media (max-width: 1200px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    .filter-bar {
+        flex-direction: column;
+    }
+    .product-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .product-stats {
+        justify-content: space-around;
+        width: 100%;
+    }
+    .banner-title {
+        font-size: 1.8rem;
+        flex-direction: column;
+        text-align: center;
+    }
+    .banner-stats {
+        justify-content: center;
+    }
+}
+</style>
+
+<div class="dashboard-container">
+    <div class="container">
+        <!-- New Banner Section -->
+        <div class="dashboard-banner">
+            <div class="banner-content">
+                <div class="banner-title">
+                    <i class="fas fa-chart-line"></i>
+                    <span>{{ t('sales_dashboard') }}</span>
+                </div>
+                <div class="banner-subtitle">
+                    {{ t('sales_dashboard_desc') }}
+                </div>
+                <div class="banner-stats" id="bannerStats">
+                    <div class="banner-stat-item">
+                        <i class="fas fa-calendar"></i>
+                        <span>{{ t('period') }}: <strong id="bannerPeriod">{{ t('this_week') }}</strong></span>
+                    </div>
+                    <div class="banner-stat-item">
+                        <i class="fas fa-coffee"></i>
+                        <span>{{ t('total_sales') }}: <strong id="bannerTotalSales">$0</strong></span>
+                    </div>
+                    <div class="banner-stat-item">
+                        <i class="fas fa-smile"></i>
+                        <span>{{ t('happy_customers') }}: <strong id="bannerCustomers">0</strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <button class="filter-btn active" data-period="week">{{ t('this_week') }}</button>
+                <button class="filter-btn" data-period="month">{{ t('this_month') }}</button>
+                <button class="filter-btn" data-period="year">{{ t('this_year') }}</button>
+                <button class="filter-btn" data-period="all">{{ t('all_time') }}</button>
+            </div>
+            <div class="date-picker">
+                <input type="date" id="startDate" placeholder="{{ t('start_date') }}">
+                <span>→</span>
+                <input type="date" id="endDate" placeholder="{{ t('end_date') }}">
+                <button onclick="applyCustomDate()">{{ t('apply') }}</button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+                <div class="stat-value" id="totalRevenue">$0</div>
+                <div class="stat-label">{{ t('total_revenue') }}</div>
+                <div class="stat-trend"><i class="fas fa-arrow-up trend-up"></i><span class="trend-up" id="revenueTrend">+12.5%</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+                <div class="stat-value" id="totalOrders">0</div>
+                <div class="stat-label">{{ t('total_orders') }}</div>
+                <div class="stat-trend"><i class="fas fa-arrow-up trend-up"></i><span class="trend-up" id="ordersTrend">+8.3%</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-value" id="totalCustomers">0</div>
+                <div class="stat-label">{{ t('total_customers') }}</div>
+                <div class="stat-trend"><i class="fas fa-arrow-up trend-up"></i><span class="trend-up" id="customersTrend">+5.2%</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="stat-value" id="avgOrderValue">$0</div>
+                <div class="stat-label">{{ t('avg_order_value') }}</div>
+                <div class="stat-trend"><i class="fas fa-arrow-up trend-up"></i><span class="trend-up" id="avgTrend">+3.1%</span></div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3><i class="fas fa-chart-line"></i> {{ t('sales_trend') }}</h3>
+                    <i class="fas fa-calendar"></i>
+                </div>
+                <div class="chart-container">
+                    <canvas id="lineChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3><i class="fas fa-chart-bar"></i> {{ t('revenue_overview') }}</h3>
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="chart-container">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3><i class="fas fa-chart-pie"></i> {{ t('category_distribution') }}</h3>
+                    <i class="fas fa-chart-simple"></i>
+                </div>
+                <div class="chart-container">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3><i class="fas fa-chart-donut"></i> {{ t('top_products') }}</h3>
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="chart-container">
+                    <canvas id="doughnutChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="products-card">
+            <div class="products-header">
+                <h3><i class="fas fa-trophy"></i> {{ t('top_selling_products') }}</h3>
+                <i class="fas fa-arrow-trend-up" style="color: var(--secondary);"></i>
+            </div>
+            <div id="topProductsList">
+                <div class="empty-state">
+                    <i class="fas fa-chart-line"></i>
+                    <p>{{ t('loading_data') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let lineChart = null;
+let barChart = null;
+let pieChart = null;
+let doughnutChart = null;
+
+// Translation helper for category names
+function getCategoryTranslation(category) {
+    const lang = '{{ session.lang }}';
+    const translations = {
+        'coffee': {'en': 'Coffee', 'fi': 'Kahvi', 'sv': 'Kaffe', 'fa': 'قهوه'},
+        'tea': {'en': 'Tea', 'fi': 'Tee', 'sv': 'Te', 'fa': 'چای'},
+        'pastry': {'en': 'Pastry', 'fi': 'Leivonnainen', 'sv': 'Bakverk', 'fa': 'شیرینی'},
+        'beverage': {'en': 'Beverage', 'fi': 'Juoma', 'sv': 'Dryck', 'fa': 'نوشیدنی'},
+        'other_drinks': {'en': 'Other Drinks', 'fi': 'Muut juomat', 'sv': 'Andra drycker', 'fa': 'نوشیدنی‌های دیگر'}
+    };
+    if (translations[category] && translations[category][lang]) {
+        return translations[category][lang];
+    }
+    // Fallback: capitalize the category name
+    return category.charAt(0).toUpperCase() + category.slice(1).replace('_', ' ');
+}
+
+// Translation helper for period text
+function getPeriodText(period) {
+    const lang = '{{ session.lang }}';
+    const periods = {
+        'week': {'en': 'This Week', 'fi': 'Tämä viikko', 'sv': 'Denna vecka', 'fa': 'این هفته'},
+        'month': {'en': 'This Month', 'fi': 'Tämä kuukausi', 'sv': 'Denna månad', 'fa': 'این ماه'},
+        'year': {'en': 'This Year', 'fi': 'Tämä vuosi', 'sv': 'Detta år', 'fa': 'امسال'},
+        'all': {'en': 'All Time', 'fi': 'Kaikki aika', 'sv': 'All tid', 'fa': 'همه زمان'},
+        'custom': {'en': 'Custom Range', 'fi': 'Mukautettu', 'sv': 'Anpassad', 'fa': 'سفارشی'}
+    };
+    return periods[period]?.[lang] || periods[period]?.['en'] || period;
+}
+
+async function loadDashboard(period = 'week', startDate = null, endDate = null) {
+    let url = `/api/admin/sales-data?period=${period}`;
+    if (startDate && endDate) {
+        url = `/api/admin/sales-data?start=${startDate}&end=${endDate}`;
+    }
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        document.getElementById('totalRevenue').innerText = '$' + data.total_revenue.toFixed(2);
+        document.getElementById('totalOrders').innerText = data.total_orders;
+        document.getElementById('totalCustomers').innerText = data.total_customers;
+        document.getElementById('avgOrderValue').innerText = '$' + data.avg_order_value.toFixed(2);
+
+        // Update banner stats
+        document.getElementById('bannerTotalSales').innerText = '$' + data.total_revenue.toFixed(2);
+        document.getElementById('bannerCustomers').innerText = data.total_customers;
+        document.getElementById('bannerPeriod').innerText = getPeriodText(period);
+
+        if (lineChart) lineChart.destroy();
+        const ctxLine = document.getElementById('lineChart').getContext('2d');
+        lineChart = new Chart(ctxLine, {
+            type: 'line',
+            data: {
+                labels: data.sales_labels,
+                datasets: [{
+                    label: '{{ t("sales") }} ($)',
+                    data: data.sales_data,
+                    borderColor: '#C67C4E',
+                    backgroundColor: 'rgba(198,124,78,0.05)',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#D4AF37',
+                    pointBorderColor: 'white',
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'top', labels: { boxWidth: 12 } },
+                    tooltip: { callbacks: { label: (ctx) => `$${ctx.raw.toFixed(2)}` } }
+                },
+                scales: {
+                    y: { grid: { color: '#E0E0E0' }, ticks: { callback: (v) => '$' + v } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        if (barChart) barChart.destroy();
+        const ctxBar = document.getElementById('barChart').getContext('2d');
+        barChart = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: data.sales_labels,
+                datasets: [{
+                    label: '{{ t("revenue") }} ($)',
+                    data: data.sales_data,
+                    backgroundColor: '#C67C4E',
+                    borderRadius: 8,
+                    barPercentage: 0.6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: { callbacks: { label: (ctx) => `$${ctx.raw.toFixed(2)}` } }
+                },
+                scales: {
+                    y: { grid: { color: '#E0E0E0' }, ticks: { callback: (v) => '$' + v } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        if (pieChart) pieChart.destroy();
+        const ctxPie = document.getElementById('pieChart').getContext('2d');
+        const categoryLabels = data.category_labels.map(l => getCategoryTranslation(l));
+        pieChart = new Chart(ctxPie, {
+            type: 'pie',
+            data: {
+                labels: categoryLabels,
+                datasets: [{
+                    data: data.category_data,
+                    backgroundColor: ['#C67C4E', '#D4AF37', '#4A7C59', '#17a2b8', '#6c757d'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'right', labels: { boxWidth: 12 } },
+                    tooltip: { callbacks: { label: (ctx) => `${ctx.label}: $${ctx.raw.toFixed(2)}` } }
+                }
+            }
+        });
+
+        if (doughnutChart) doughnutChart.destroy();
+        const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
+        const top5Products = data.top_products.slice(0, 5);
+        doughnutChart = new Chart(ctxDoughnut, {
+            type: 'doughnut',
+            data: {
+                labels: top5Products.map(p => p.name),
+                datasets: [{
+                    data: top5Products.map(p => p.revenue),
+                    backgroundColor: ['#C67C4E', '#D4AF37', '#4A7C59', '#17a2b8', '#A0522D'],
+                    borderWidth: 0,
+                    cutout: '60%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } },
+                    tooltip: { callbacks: { label: (ctx) => `${ctx.label}: $${ctx.raw.toFixed(2)}` } }
+                }
+            }
+        });
+
+        const productsContainer = document.getElementById('topProductsList');
+        if (data.top_products && data.top_products.length > 0) {
+            productsContainer.innerHTML = data.top_products.map((p, index) => `
+                <div class="product-row">
+                    <div class="product-rank">#${index + 1}</div>
+                    <div class="product-info">
+                        <div class="product-name">${p.name}</div>
+                        <div class="product-category">${getCategoryTranslation(p.category)}</div>
+                    </div>
+                    <div class="product-stats">
+                        <div class="stat-col">
+                            <div class="label">{{ t('sold') }}</div>
+                            <div class="value">${p.total_quantity}</div>
+                        </div>
+                        <div class="stat-col">
+                            <div class="label">{{ t('revenue') }}</div>
+                            <div class="value">$${p.revenue.toFixed(2)}</div>
+                        </div>
+                        <div class="stat-col">
+                            <div class="trend-badge">↑ ${p.trend}%</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            productsContainer.innerHTML = '<div class="empty-state"><i class="fas fa-chart-line"></i><p>{{ t("no_sales_data") }}</p></div>';
+        }
+    } catch (error) {
+        console.error('Error loading dashboard:', error);
+    }
+}
+
+function applyCustomDate() {
+    const start = document.getElementById('startDate').value;
+    const end = document.getElementById('endDate').value;
+    if (start && end) {
+        loadDashboard('custom', start, end);
+    } else {
+        alert('{{ t("select_both_dates") }}');
+    }
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        if (this.dataset.period) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            loadDashboard(this.dataset.period);
+        }
+    });
+});
+
+loadDashboard();
+</script>
+{% endblock %}

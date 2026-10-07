@@ -1,0 +1,33 @@
+{
+    "cSpell.words": [
+        "Chernev",
+        "chunker",
+        "configf",
+        "datetime",
+        "DATETIME",
+        "DDTHH",
+        "dont",
+        "ECMP",
+        "fwdlw",
+        "hmmss",
+        "Hmmss",
+        "inclusivity",
+        "Iskren",
+        "isodate",
+        "longp",
+        "minl",
+        "minp",
+        "momentjs",
+        "Noda",
+        "postformat",
+        "preparse",
+        "regexes",
+        "shortp",
+        "SSSZ",
+        "untruncate",
+        "unupdate",
+        "YYYYDDD",
+        "YYYYYYMMDD"
+    ],
+    "sqltools.connections": []
+}

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Application</title>
+    <style>
+        /* General body and header styles */
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+    
+        body {
+            font-family: Arial, sans-serif;
+            color: #090909;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+    
+        /* Login and Register Background */
+        .login-container,
+        .register-container {
+            background-image: url('pexels-carlos-oliva-3586966.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+        }
+    
+        #bankAppPage {
+            background-image: url('pexels-carlos-oliva-3586966.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            padding: 20px;
+            flex: 1;
+        }
+    
+        /* Form Styling */
+        .login-form,
+        .register-form {
+            background-color: rgba(123, 193, 237, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+    
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            color: #101010;
+        }
+    
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="password"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 5px 0 20px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+        }
+    
+        button[type="submit"],
+        button.logout-btn {
+            width: 30%;
+            background-color: #38ef0a;
+            color: black;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    
+        button[type="submit"]:hover,
+        button.logout-btn:hover {
+            background-color: #f81707;
+            color: rgb(252, 251, 251);
+        }
+    
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+    
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    
+        a {
+            color: #694ef0;
+        }
+    
+        a:hover {
+            text-decoration: underline;
+        }
+    
+        /* Header and Menu Styles */
+        .header {
+            background-color: #0c4c4e;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+    
+        .menu {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+    
+        .menu button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            background-color: #ffffff;
+            color: rgb(0, 0, 0);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+    
+        .menu button:hover {
+            background-color: #07ccf8;
+        }
+    
+        #exitBtn {
+            width: 15%;
+        }
+    
+        /* Content Section Styles */
+        .container {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    
+        .content {
+            width: 100%;
+            max-width: 600px;
+            display: none;
+            background-color: rgb(181, 190, 191);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    
+        .content h2 {
+            color: #01680b;
+        }
+    
+        /* Centering Pages */
+        .center-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+    </style>
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <!-- Header with Menu -->
+    <div class="header">
+        <h2>Welcome to the Bank System</h2>
+        <div class="menu" id="menu" style="display:none;">
+            <button onclick="showSection('createAccount')">Create New Account</button>
+            <button onclick="showSection('deposit')">Deposit</button>
+            <button onclick="showSection('withdraw')">Withdraw</button>
+            <button onclick="showSection('transfer')">Transfer</button>
+            <button onclick="showSection('accountDetails')">Account Details</button>
+            <button id="exitBtn" class="logout-btn">Exit</button>
+        </div>
+    </div>
+   
+    <!-- Login Page -->
+    <div id="loginContainer" class="login-container center-page">
+        <div class="login-form">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <label for="loginEmail">Email Address:</label>
+                <input type="email" id="loginEmail" name="email" required>
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" name="password" required>
+                <label>
+                    <input type="checkbox" id="rememberMe"> Remember Me 
+                </label>
+                <button type="submit">Login</button>
+                <p>Don't have an account? <a href="#" onclick="showRegisterPage()">Register here</a></p>
+            </form>
+            <div id="loginMessage" class="message"></div>
+        </div>
+    </div>
+
+
+    <!-- Registration Page -->
+    <div id="registerPage" class="register-container center-page" style="display:none;">
+        <div class="register-form">
+            <h2>Register</h2>
+            <form id="registerForm">
+                <label for="registerEmail">Email Address:</label>
+                <input type="email" id="registerEmail" name="email" required>
+                <label for="registerPhone">Phone Number:</label>
+                <input type="tel" id="registerPhone" name="phone" required>
+                <label for="registerPassword">Password:</label>
+                <input type="password" id="registerPassword" name="password" required>
+                <label for="registerPasswordConfirm">Confirm Password:</label>
+                <input type="password" id="registerPasswordConfirm" name="password_confirm" required>
+                <button type="submit">Register</button>
+                <p>Already have an account? <a href="#" onclick="showLoginPage()">Login here</a></p>
+            </form>
+            <div id="registerMessage" class="message"></div>
+        </div>
+    </div>
+
+    <!-- Bank Application Page -->
+    <div id="bankAppPage" style="display:none;">
+        <div class="container">
+            <div id="createAccount" class="content">
+                <h2>Create New Account</h2>
+                <form id="createAccountForm">
+                    <label for="first_name">First Name:</label>
+                    <input type="text" id="first_name" name="first_name" required>
+
+                    <label for="last_name">Last Name:</label>
+                    <input type="text" id="last_name" name="last_name" required>
+
+                    <label for="email">Email Address:</label>
+                    <input type="email" id="email" name="email" required>
+
+                    <label for="mobile_no">Phone Number:</label>
+                    <input type="text" id="mobile_no" name="mobile_no" required>
+
+                    <label for="initial_depo">Initial Deposit:</label>
+                    <input type="number" id="initial_depo" name="initial_depo" required>
+                    <button type="submit">Create Account</button>
+                </form>
+                <div id="newAccountInfo" class="message"></div>
+            </div>
+
+            <div id="deposit" class="content">
+                <h2>Deposit</h2>
+                <form id="depositForm">
+                    <label for="deposit_acc_no">Account Number:</label>
+                    <input type="text" id="deposit_acc_no" name="deposit_acc_no" required>
+                    <label for="deposit_amount">Amount:</label>
+                    <input type="number" id="deposit_amount" name="deposit_amount" required>
+                    <button type="submit">Deposit</button>
+                </form>
+                <div id="depositMessage" class="message"></div>
+            </div>
+
+            <div id="withdraw" class="content">
+                <h2>Withdraw</h2>
+                <form id="withdrawForm">
+                    <label for="withdraw_acc_no">Account Number:</label>
+                    <input type="text" id="withdraw_acc_no" name="withdraw_acc_no" required>
+                    <label for="withdraw_amount">Amount:</label>
+                    <input type="number" id="withdraw_amount" name="withdraw_amount" required>
+                    <button type="submit">Withdraw</button>
+                </form>
+                <div id="withdrawMessage" class="message"></div>
+            </div>
+
+            <div id="transfer" class="content">
+                <h2>Transfer</h2>
+                <form id="transferForm">
+                    <label for="transfer_from_acc_no">From Account Number:</label>
+                    <input type="text" id="transfer_from_acc_no" name="transfer_from_acc_no" required>
+                    <label for="transfer_to_acc_no">To Account Number:</label>
+                    <input type="text" id="transfer_to_acc_no" name="transfer_to_acc_no" required>
+                    <label for="transfer_amount">Amount:</label>
+                    <input type="number" id="transfer_amount" name="transfer_amount" required>
+                    <button type="submit">Transfer</button>
+                </form>
+                <div id="transferMessage" class="message"></div>
+            </div>
+
+            <div id="accountDetails" class="content">
+                <h2>Account Details</h2>
+                <form id="accountDetailsForm">
+                    <label for="accountDetails_acc_no">Account Number:</label>
+                    <input type="text" id="accountDetails_acc_no" name="accountDetails_acc_no" required>
+                    <button type="submit">Get Details</button>
+                </form>
+                <div id="accountDetailsInfo" class="message"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const accounts = {};
+        const accountDetails = {};
+
+        function showRegisterPage() {
+            $('#registerPage').show();
+            $('#loginContainer').hide();
+        }
+
+        function showRegisterPage() {
+          $('#loginContainer').hide();
+          $('#registerPage').show();
+        }
+
+
+        function showSection(section) {
+            $('.content').hide();
+            $('#' + section).show();
+        }
+
+        $(document).ready(function () {
+            // Check if email is saved in local storage and pre-fill it
+            if (localStorage.getItem('rememberMeEmail')) {
+                $('#loginEmail').val(localStorage.getItem('rememberMeEmail'));
+                $('#rememberMe').prop('checked', true);
+            }
+
+            // Login form submission
+            $('#loginForm').on('submit', function (e) {
+                e.preventDefault();
+                const email = $('#loginEmail').val();
+                const password = $('#loginPassword').val();
+                const rememberMe = $('#rememberMe').is(':checked');
+
+                // Dummy login validation
+                if (email in accounts && accounts[email].password === password) {
+                    $('#loginMessage').html('<div class="success">Login successful!</div>');
+                    $('#loginContainer').hide();
+                    $('#menu').show();
+                    $('#bankAppPage').show();
+
+                    // Save email to local storage if Remember Me is checked
+                    if (rememberMe) {
+                        localStorage.setItem('rememberMeEmail', email);
+                    } else {
+                        localStorage.removeItem('rememberMeEmail');
+                    }
+                } else {
+                    $('#loginMessage').html('<div class="error">Invalid email or password!</div>');
+                }
+            });
+
+            // Registration form submission
+            $('#registerForm').on('submit', function (e) {
+                e.preventDefault();
+                const email = $('#registerEmail').val();
+                const phone = $('#registerPhone').val();
+                const password = $('#registerPassword').val();
+                const passwordConfirm = $('#registerPasswordConfirm').val();
+
+                if (password !== passwordConfirm) {
+                    $('#registerMessage').html('<div class="error">Passwords do not match!</div>');
+                    return;
+                }
+
+                // Check if the email or phone number is already registered
+                if (email in accounts) {
+                    $('#registerMessage').html('<div class="error">This email is already registered!</div>');
+                    return;
+                }
+
+                if (Object.values(accounts).some(account => account.phone === phone)) {
+                    $('#registerMessage').html('<div class="error">This phone number is already registered!</div>');
+                    return;
+                }
+
+                accounts[email] = { password, phone };
+                $('#registerMessage').html('<div class="success">Registration successful! You can log in now.</div>');
+                $('#registerPage').hide();
+                $('#loginContainer').show();
+            });
+
+
+            // Create Account form submission
+            $('#createAccountForm').on('submit', function (e) {
+                e.preventDefault();
+                const first_name = $('#first_name').val();
+                const last_name = $('#last_name').val();
+                const email = $('#email').val();
+                const mobile_no = $('#mobile_no').val();
+                const initial_depo = parseFloat($('#initial_depo').val());
+                const acc_no = new Date().getTime(); // Simple unique account number
+
+                // Generate a random 4-digit PIN
+                const pin = Math.floor(1000 + Math.random() * 9000);
+
+                // Store account details including new fields
+                accountDetails[acc_no] = { first_name, last_name, email, mobile_no, balance: initial_depo, pin: pin.toString() };
+                $('#newAccountInfo').html(`<div class="success">Account created! Account Number: ${acc_no}. PIN: ${pin}</div>`);
+                $('#createAccountForm')[0].reset();
+            });
+
+            // Deposit form submission
+            $('#depositForm').on('submit', function (e) {
+                e.preventDefault();
+                const acc_no = $('#deposit_acc_no').val();
+                const amount = parseFloat($('#deposit_amount').val());
+
+                if (accountDetails[acc_no]) {
+                    accountDetails[acc_no].balance += amount;
+                    $('#depositMessage').html(`<div class="success">Deposited $${amount.toFixed(2)}. New Balance: $${accountDetails[acc_no].balance.toFixed(2)}</div>`);
+                } else {
+                    $('#depositMessage').html('<div class="error">Account not found!</div>');
+                }
+            });
+
+            // Withdraw form submission
+            $('#withdrawForm').on('submit', function (e) {
+                e.preventDefault();
+                const acc_no = $('#withdraw_acc_no').val();
+                const amount = parseFloat($('#withdraw_amount').val());
+
+                if (accountDetails[acc_no]) {
+                    if (accountDetails[acc_no].balance >= amount) {
+                        accountDetails[acc_no].balance -= amount;
+                        $('#withdrawMessage').html(`<div class="success">Withdrew $${amount.toFixed(2)}. New Balance: $${accountDetails[acc_no].balance.toFixed(2)}</div>`);
+                    } else {
+                        $('#withdrawMessage').html('<div class="error">Insufficient funds!</div>');
+                    }
+                } else {
+                    $('#withdrawMessage').html('<div class="error">Account not found!</div>');
+                }
+            });
+
+            // Transfer form submission
+            $('#transferForm').on('submit', function (e) {
+                e.preventDefault();
+                const fromAcc_no = $('#transfer_from_acc_no').val();
+                const toAcc_no = $('#transfer_to_acc_no').val();
+                const amount = parseFloat($('#transfer_amount').val());
+
+                if (accountDetails[fromAcc_no] && accountDetails[toAcc_no]) {
+                    if (accountDetails[fromAcc_no].balance >= amount) {
+                        accountDetails[fromAcc_no].balance -= amount;
+                        accountDetails[toAcc_no].balance += amount;
+                        $('#transferMessage').html(`<div class="success">Transferred $${amount.toFixed(2)} from ${fromAcc_no} to ${toAcc_no}.</div>`);
+                    } else {
+                        $('#transferMessage').html('<div class="error">Insufficient funds!</div>');
+                    }
+                } else {
+                    $('#transferMessage').html('<div class="error">One or both accounts not found!</div>');
+                }
+            });
+
+            // Handle Account Details form submission
+            $('#accountDetailsForm').on('submit', function (e) {
+                e.preventDefault();
+                const accountNo = $('#accountDetails_acc_no').val();
+                const enteredPin = prompt("Please enter your PIN:"); // Prompt for PIN
+
+                if (accountDetails[accountNo]) {
+                    if (accountDetails[accountNo].pin === enteredPin) { // PIN validation
+                        const details = accountDetails[accountNo];
+                        $('#accountDetailsInfo').html(`
+                        <div class="success">
+                            Account Number: ${accountNo}<br>
+                            First Name: ${details.first_name}<br>
+                            Last Name: ${details.last_name}<br>
+                            Email: ${details.email}<br>
+                            Phone Number: ${details.mobile_no}<br>
+                            Balance: $${details.balance.toFixed(2)}
+                        </div>
+                    `);
+                    } else {
+                        $('#accountDetailsInfo').html('<div class="error">Incorrect PIN!</div>');
+                    }
+                } else {
+                    $('#accountDetailsInfo').html('<div class="error">Account not found!</div>');
+                }
+            });
+
+            // Logout functionality
+            $('#exitBtn').on('click', function () {
+                $('#bankAppPage').hide();
+                $('#menu').hide();
+                $('#loginContainer').show();
+            });
+        });
+    </script>
+
+</body>
+
+</html>

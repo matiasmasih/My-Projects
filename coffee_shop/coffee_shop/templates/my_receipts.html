@@ -1,0 +1,404 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.receipts-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #faf7f2 0%, #f5efe8 100%);
+    min-height: calc(100vh - 200px);
+}
+
+/* Banner Styles */
+.receipts-banner {
+    background: linear-gradient(135deg, #2C1810 0%, #3D2518 50%, #2C1810 100%);
+    border-radius: 24px;
+    padding: 40px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.receipts-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(198,124,78,0.1) 0%, transparent 70%);
+    transform: rotate(25deg);
+    pointer-events: none;
+}
+
+.receipts-banner::after {
+    content: '🧾';
+    position: absolute;
+    bottom: 10px;
+    right: 30px;
+    font-size: 80px;
+    opacity: 0.1;
+}
+
+.banner-content {
+    position: relative;
+    z-index: 2;
+}
+
+.banner-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.banner-title i {
+    font-size: 50px;
+    color: #D4AF37;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.banner-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 20px;
+}
+
+.banner-stats {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.banner-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.1);
+    padding: 8px 16px;
+    border-radius: 40px;
+    backdrop-filter: blur(5px);
+}
+
+.banner-stat-item i {
+    color: #D4AF37;
+    font-size: 18px;
+}
+
+.banner-stat-item span {
+    color: white;
+    font-size: 14px;
+}
+
+.banner-stat-item strong {
+    color: #D4AF37;
+    font-size: 18px;
+    margin-left: 5px;
+}
+
+/* Modern Card */
+.receipts-card {
+    background: white;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 20px 35px -10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.receipts-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 45px -12px rgba(198,124,78,0.25);
+}
+
+/* Modern Table */
+.receipts-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.receipts-table thead th {
+    background: linear-gradient(135deg, #2C1810, #3D2518);
+    color: white;
+    padding: 18px 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+.receipts-table thead th:first-child {
+    border-top-left-radius: 20px;
+}
+
+.receipts-table thead th:last-child {
+    border-top-right-radius: 20px;
+}
+
+.receipts-table tbody tr {
+    transition: all 0.3s ease;
+    border-bottom: 1px solid #E8E0D5;
+}
+
+.receipts-table tbody tr:hover {
+    background: #fef9f0;
+    transform: scale(1.01);
+}
+
+.receipts-table tbody td {
+    padding: 16px 20px;
+    color: #444;
+    font-size: 0.9rem;
+    vertical-align: middle;
+}
+
+.order-number {
+    font-weight: 700;
+    color: #C67C4E;
+    font-size: 0.95rem;
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.status-pending {
+    background: #FFF3CD;
+    color: #856404;
+}
+
+.status-completed {
+    background: #D4EDDA;
+    color: #155724;
+}
+
+.status-cancelled {
+    background: #F8D7DA;
+    color: #721C24;
+}
+
+/* Download Button */
+.btn-download {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
+.btn-download:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(198,124,78,0.4);
+    color: white;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    background: white;
+    border-radius: 28px;
+}
+
+.empty-state i {
+    font-size: 80px;
+    color: #C67C4E;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    font-size: 1.8rem;
+    color: #2C1810;
+    margin-bottom: 15px;
+}
+
+.empty-state p {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.browse-btn {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.browse-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(198,124,78,0.3);
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .banner-title {
+        font-size: 1.8rem;
+        flex-direction: column;
+        text-align: center;
+    }
+    .banner-stats {
+        justify-content: center;
+    }
+    .receipts-table thead th,
+    .receipts-table tbody td {
+        padding: 12px 15px;
+        font-size: 0.8rem;
+    }
+    .btn-download {
+        padding: 5px 10px;
+        font-size: 0.7rem;
+    }
+    .empty-state h3 {
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .receipts-table thead {
+        display: none;
+    }
+    .receipts-table tbody tr {
+        display: block;
+        margin-bottom: 20px;
+        border: 1px solid #E8E0D5;
+        border-radius: 16px;
+        padding: 15px;
+    }
+    .receipts-table tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border: none;
+    }
+    .receipts-table tbody td:before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: #2C1810;
+        margin-right: 15px;
+    }
+}
+</style>
+
+<div class="receipts-container">
+    <div class="container">
+        <!-- Banner -->
+        <div class="receipts-banner">
+            <div class="banner-content">
+                <div class="banner-title">
+                    <i class="fas fa-receipt"></i>
+                    <span>{{ t('my_receipts') }}</span>
+                </div>
+                <div class="banner-subtitle">
+                    {{ t('view_all_receipts') }}
+                </div>
+                <div class="banner-stats">
+                    <div class="banner-stat-item">
+                        <i class="fas fa-file-invoice"></i>
+                        <span>{{ t('total') }}: <strong>{{ orders|length }}</strong></span>
+                    </div>
+                    <div class="banner-stat-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>{{ t('completed') }}: <strong>{{ orders|selectattr('status', 'equalto', 'completed')|list|length }}</strong></span>
+                    </div>
+                    <div class="banner-stat-item">
+                        <i class="fas fa-coins"></i>
+                        <span>{{ t('total_spent') }}: <strong>
+                            {% set ns = namespace(total=0) %}
+                            {% for order in orders %}
+                                {% if order.status == 'completed' %}
+                                    {% set ns.total = ns.total + order.total_amount %}
+                                {% endif %}
+                            {% endfor %}
+                            {{ format_price(ns.total) }}
+                        </strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        {% if orders %}
+        <div class="receipts-card">
+            <div class="table-responsive">
+                <table class="receipts-table">
+                    <thead>
+                        <tr>
+                            <th>{{ t('order_number') }}</th>
+                            <th>{{ t('date') }}</th>
+                            <th>{{ t('total') }}</th>
+                            <th>{{ t('status') }}</th>
+                            <th>{{ t('action') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td data-label="{{ t('order_number') }}">
+                                <span class="order-number">{{ order.order_number }}</span>
+                            </td>
+                            <td data-label="{{ t('date') }}">
+                                {{ order.created_at.strftime('%d.%m.%Y') if order.created_at else 'N/A' }}
+                            </td>
+                            <td data-label="{{ t('total') }}">
+                                <strong>{{ format_price(order.total_amount) }}</strong>
+                            </td>
+                            <td data-label="{{ t('status') }}">
+                                {% if order.status == 'pending' %}
+                                    <span class="status-badge status-pending">{{ t('pending') }}</span>
+                                {% elif order.status == 'completed' %}
+                                    <span class="status-badge status-completed">{{ t('completed') }}</span>
+                                {% elif order.status == 'cancelled' %}
+                                    <span class="status-badge status-cancelled">{{ t('cancelled') }}</span>
+                                {% else %}
+                                    <span class="status-badge">{{ order.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td data-label="{{ t('action') }}">
+                                <a href="/receipt/{{ order.order_number }}" class="btn-download" target="_blank">
+                                    <i class="fas fa-download"></i> {{ t('download_pdf') }}
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-receipt"></i>
+            <h3>{{ t('no_receipts') }}</h3>
+            <p>{{ t('no_receipts_msg') }}</p>
+            <a href="/menu" class="browse-btn">{{ t('browse_menu') }}</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

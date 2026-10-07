@@ -1,0 +1,438 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+:root {
+    --primary: #C67C4E;
+    --primary-dark: #A0522D;
+    --dark: #2C1810;
+    --gray: #6c757d;
+}
+
+.add-blog-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #faf7f2 0%, #f5efe8 100%);
+    min-height: calc(100vh - 200px);
+}
+
+/* Banner Styles */
+.add-blog-banner {
+    background: linear-gradient(135deg, #2C1810 0%, #3D2518 50%, #2C1810 100%);
+    border-radius: 24px;
+    padding: 40px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.add-blog-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(198,124,78,0.1) 0%, transparent 70%);
+    transform: rotate(25deg);
+    pointer-events: none;
+}
+
+.add-blog-banner::after {
+    content: '✍️';
+    position: absolute;
+    bottom: 10px;
+    right: 30px;
+    font-size: 80px;
+    opacity: 0.1;
+}
+
+.banner-content {
+    position: relative;
+    z-index: 2;
+}
+
+.banner-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.banner-title i {
+    font-size: 50px;
+    color: #D4AF37;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.banner-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 20px;
+}
+
+.banner-stats {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.banner-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.1);
+    padding: 8px 16px;
+    border-radius: 40px;
+    backdrop-filter: blur(5px);
+}
+
+.banner-stat-item i {
+    color: #D4AF37;
+    font-size: 18px;
+}
+
+.banner-stat-item span {
+    color: white;
+    font-size: 14px;
+}
+
+.banner-stat-item strong {
+    color: #D4AF37;
+    font-size: 18px;
+    margin-left: 5px;
+}
+
+/* Modern Card */
+.blog-card {
+    background: white;
+    border-radius: 32px;
+    box-shadow: 0 20px 35px -10px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.blog-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 45px -12px rgba(198,124,78,0.25);
+}
+
+/* Card Header - Removed title to avoid duplication */
+.card-header-modern {
+    background: linear-gradient(135deg, var(--dark), #3D2518);
+    padding: 20px 30px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-header-modern::before {
+    content: '✍️';
+    position: absolute;
+    right: -20px;
+    top: -20px;
+    font-size: 100px;
+    opacity: 0.08;
+}
+
+.card-header-modern i {
+    font-size: 40px;
+    color: var(--primary);
+    margin-bottom: 10px;
+    display: inline-block;
+}
+
+.card-header-modern p {
+    color: rgba(255,255,255,0.8);
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* Card Body */
+.card-body-modern {
+    padding: 35px;
+}
+
+/* Form Groups */
+.form-group-modern {
+    margin-bottom: 25px;
+}
+
+.form-group-modern label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: var(--dark);
+    font-size: 0.9rem;
+}
+
+.form-group-modern label i {
+    margin-right: 8px;
+    color: var(--primary);
+}
+
+/* Input Styles */
+.input-modern, .select-modern, .textarea-modern {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid #E8E0D5;
+    border-radius: 16px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #fefcf9;
+}
+
+.input-modern:focus, .select-modern:focus, .textarea-modern:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(198,124,78,0.1);
+    background: white;
+}
+
+.textarea-modern {
+    resize: vertical;
+    min-height: 200px;
+}
+
+/* Category Select */
+.select-modern {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C67C4E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 18px center;
+    background-size: 16px;
+}
+
+/* Button Group */
+.button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn-publish {
+    flex: 1;
+    padding: 14px 25px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-publish:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(198,124,78,0.4);
+}
+
+.btn-cancel {
+    flex: 1;
+    padding: 14px 25px;
+    background: linear-gradient(135deg, var(--gray), #5a6268);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-cancel:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(108,117,125,0.3);
+    color: white;
+}
+
+/* Image URL input with preview */
+.image-preview {
+    margin-top: 15px;
+    display: none;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 2px solid #E8E0D5;
+}
+
+.image-preview img {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+}
+
+/* Character counter */
+.char-counter {
+    text-align: right;
+    font-size: 0.75rem;
+    color: #999;
+    margin-top: 5px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .banner-title {
+        font-size: 1.8rem;
+        flex-direction: column;
+        text-align: center;
+    }
+    .banner-stats {
+        justify-content: center;
+    }
+    .add-blog-container {
+        padding: 30px 15px;
+    }
+    .card-body-modern {
+        padding: 25px;
+    }
+    .card-header-modern {
+        padding: 15px 20px;
+    }
+    .card-header-modern i {
+        font-size: 30px;
+    }
+    .button-group {
+        flex-direction: column;
+    }
+    .btn-publish, .btn-cancel {
+        width: 100%;
+    }
+}
+</style>
+
+<div class="add-blog-container">
+    <div class="container">
+        <!-- Banner -->
+        <div class="add-blog-banner">
+            <div class="banner-content">
+                <div class="banner-title">
+                    <i class="fas fa-feather-alt"></i>
+                    <span>{{ t('write_new_story') }}</span>
+                </div>
+                <div class="banner-subtitle">
+                    {{ t('share_coffee_knowledge') }}
+                </div>
+                <div class="banner-stats">
+                    <div class="banner-stat-item">
+                        <i class="fas fa-language"></i>
+                        <span>{{ t('auto_translate') }}: <strong>4 {{ t('languages') }}</strong></span>
+                    </div>
+                    <div class="banner-stat-item">
+                        <i class="fas fa-globe"></i>
+                        <span>{{ t('publish_globally') }}: <strong>{{ t('yes') }}</strong></span>
+                    </div>
+                    <div class="banner-stat-item">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ t('estimated_time') }}: <strong>2-3 {{ t('minutes') }}</strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="blog-card">
+            <div class="card-header-modern">
+                <i class="fas fa-feather-alt"></i>
+                <p>{{ t('share_coffee_knowledge') }}</p>
+            </div>
+            <div class="card-body-modern">
+                <form method="POST" id="blogForm">
+                    <div class="form-group-modern">
+                        <label><i class="fas fa-heading"></i> {{ t('title') }} ({{ t('english') }})</label>
+                        <input type="text" name="title" class="input-modern" placeholder="{{ t('enter_title') }}" required>
+                        <div class="char-counter"><span id="titleCount">0</span> {{ t('characters') }}</div>
+                    </div>
+
+                    <div class="form-group-modern">
+                        <label><i class="fas fa-tag"></i> {{ t('category') }}</label>
+                        <select name="category" class="select-modern" required>
+                            <option value="news">📰 {{ t('news_updates') }}</option>
+                            <option value="tips">☕ {{ t('brewing_tips') }}</option>
+                            <option value="offers">🎁 {{ t('special_offers') }}</option>
+                            <option value="giveaway">🎉 {{ t('giveaways') }}</option>
+                            <option value="lifestyle">🌟 {{ t('coffee_lifestyle') }}</option>
+                            <option value="history">📖 {{ t('coffee_history') }}</option>
+                            <option value="health">💚 {{ t('health_benefits') }}</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group-modern">
+                        <label><i class="fas fa-image"></i> {{ t('image_url') }}</label>
+                        <input type="text" name="image_url" class="input-modern" id="imageUrl" placeholder="https://example.com/coffee.jpg {{ t('or') }} /static/images/your-image.jpg">
+                        <div class="image-preview" id="imagePreview">
+                            <img id="previewImg" src="" alt="{{ t('preview') }}">
+                        </div>
+                        <small class="text-muted">{{ t('leave_empty_default') }}</small>
+                    </div>
+
+                    <div class="form-group-modern">
+                        <label><i class="fas fa-paragraph"></i> {{ t('content') }} ({{ t('english') }})</label>
+                        <textarea name="content" class="textarea-modern" id="blogContent" placeholder="{{ t('write_article_auto_translate') }}" required></textarea>
+                        <div class="char-counter"><span id="contentCount">0</span> {{ t('characters') }}</div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn-publish">
+                            <i class="fas fa-globe"></i> {{ t('publish_auto_translate') }}
+                        </button>
+                        <a href="/blog" class="btn-cancel">
+                            <i class="fas fa-times"></i> {{ t('cancel') }}
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Character counter for title
+const titleInput = document.querySelector('input[name="title"]');
+const titleCount = document.getElementById('titleCount');
+titleInput.addEventListener('input', function() {
+    titleCount.textContent = this.value.length;
+});
+
+// Character counter for content
+const contentInput = document.getElementById('blogContent');
+const contentCount = document.getElementById('contentCount');
+contentInput.addEventListener('input', function() {
+    contentCount.textContent = this.value.length;
+});
+
+// Image preview
+const imageUrlInput = document.getElementById('imageUrl');
+const imagePreview = document.getElementById('imagePreview');
+const previewImg = document.getElementById('previewImg');
+
+imageUrlInput.addEventListener('input', function() {
+    const url = this.value.trim();
+    if (url) {
+        previewImg.src = url;
+        imagePreview.style.display = 'block';
+        previewImg.onerror = function() {
+            previewImg.src = '/static/images/coffee-placeholder.jpg';
+        };
+    } else {
+        imagePreview.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

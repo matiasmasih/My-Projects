@@ -1,0 +1,432 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+/* Animation Keyframes */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.hero {
+    position: relative;
+    background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.4)), url('https://images.pexels.com/photos/312418/pexels-photo-312418.jpeg?w=1920&h=1080&fit=crop');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    animation: shimmer 8s infinite;
+}
+
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+.hero h1 {
+    font-size: 4.8rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #FFFFFF, #D4AF37, #FFFFFF);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 20px;
+    animation: fadeInUp 0.8s ease, shimmer 3s linear infinite;
+}
+
+.hero-tagline {
+    font-size: 1.3rem;
+    color: rgba(255,255,255,0.95);
+    margin-bottom: 15px;
+    animation: fadeInUp 0.8s ease 0.2s both;
+}
+
+.hero-slogan {
+    font-size: 1.2rem;
+    color: #D4AF37;
+    font-style: italic;
+    margin-bottom: 35px;
+    animation: fadeInUp 0.8s ease 0.4s both;
+}
+
+.hero .btn {
+    padding: 14px 40px;
+    font-size: 1rem;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    border: none;
+    transition: all 0.4s ease;
+    animation: fadeInUp 0.8s ease 0.6s both;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.hero .btn:hover::before {
+    left: 100%;
+}
+
+.hero .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(198,124,78,0.5);
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    position: relative;
+    display: inline-block;
+}
+
+.section-title:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #C67C4E, #D4AF37);
+    border-radius: 3px;
+    animation: pulse 2s infinite;
+}
+
+.product-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    height: 100%;
+    animation: fadeInUp 0.6s ease backwards;
+    animation-delay: calc(0.1s * var(--delay, 1));
+}
+
+.product-card:nth-child(1) { --delay: 1; }
+.product-card:nth-child(2) { --delay: 2; }
+.product-card:nth-child(3) { --delay: 3; }
+
+.product-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 25px 45px rgba(0,0,0,0.15);
+}
+
+.product-image {
+    height: 250px;
+    overflow: hidden;
+    position: relative;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.7s ease;
+}
+
+.product-card:hover .product-image img {
+    transform: scale(1.1);
+}
+
+.product-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: linear-gradient(135deg, #D4AF37, #C9A84C);
+    color: #2C1810;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    z-index: 1;
+    animation: pulse 1.5s infinite;
+}
+
+.product-info {
+    padding: 20px;
+}
+
+.product-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #2C1810;
+}
+
+.product-price {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #C67C4E;
+}
+
+.btn-add {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-add::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.4s ease;
+}
+
+.btn-add:hover::before {
+    left: 100%;
+}
+
+.btn-add:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(198,124,78,0.4);
+}
+
+.feature-box {
+    text-align: center;
+    padding: 20px;
+    transition: all 0.4s ease;
+    animation: fadeInUp 0.6s ease backwards;
+    animation-delay: calc(0.1s * var(--feature-delay, 1));
+}
+
+.feature-box:nth-child(1) { --feature-delay: 1; }
+.feature-box:nth-child(2) { --feature-delay: 2; }
+.feature-box:nth-child(3) { --feature-delay: 3; }
+.feature-box:nth-child(4) { --feature-delay: 4; }
+
+.feature-box:hover {
+    transform: translateY(-8px);
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(212,175,55,0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    transition: all 0.4s ease;
+}
+
+.feature-box:hover .feature-icon {
+    transform: scale(1.1) rotate(5deg);
+    background: rgba(212,175,55,0.25);
+    box-shadow: 0 0 20px rgba(212,175,55,0.3);
+}
+
+.feature-icon i {
+    font-size: 35px;
+    color: #D4AF37;
+    transition: transform 0.3s ease;
+}
+
+.feature-box:hover .feature-icon i {
+    transform: scale(1.1);
+}
+
+/* Floating animation for decorative elements */
+.floating {
+    animation: float 3s ease-in-out infinite;
+}
+
+.delay-1 { animation-delay: 0s; }
+.delay-2 { animation-delay: 0.5s; }
+.delay-3 { animation-delay: 1s; }
+
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+    .hero-tagline {
+        font-size: 1rem;
+    }
+    .hero-slogan {
+        font-size: 0.9rem;
+    }
+    .section-title {
+        font-size: 1.8rem;
+    }
+}
+</style>
+
+<div class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1>Bean & Brew Coffee</h1>
+            <div class="hero-tagline">{% if session.lang == 'fi' %}Käsintehtyä kahvia vuodesta 2026{% elif session.lang == 'sv' %}Hantverkskaffe sedan 2015{% elif session.lang == 'fa' %}قهوه دست ساز از سال ۲۰۲۶{% else %}Handcrafted coffee since 2015{% endif %}</div>
+            <div class="hero-slogan floating delay-2">✨ {% if session.lang == 'fi' %}Jokainen kuppi kertoo tarinan ✨{% elif session.lang == 'sv' %}✨ Varje kopp berättar en historia ✨{% elif session.lang == 'fa' %}✨ هر فنجان یک داستان را روایت می‌کند ✨{% else %}✨ Every cup tells a story ✨{% endif %}</div>
+            <a href="/menu" class="btn btn-primary btn-lg">{% if session.lang == 'fi' %}Tutustu Menuun{% elif session.lang == 'sv' %}Upptäck Menyn{% elif session.lang == 'fa' %}مشاهده منو{% else %}Explore Menu{% endif %} <i class="fas fa-arrow-right"></i></a>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="section-title">{% if session.lang == 'fi' %}Suositellut Juomat{% elif session.lang == 'sv' %}Populära Drycker{% elif session.lang == 'fa' %}نوشیدنی‌های ویژه{% else %}Featured Drinks{% endif %}</h2>
+        <p class="text-muted">{% if session.lang == 'fi' %}Asiakkaidemme suosikit{% elif session.lang == 'sv' %}Kundernas favoriter{% elif session.lang == 'fa' %}محبوب‌ترین‌های مشتریان{% else %}Customer favorites{% endif %}</p>
+    </div>
+    <div class="row">
+        {% for product in featured_products[:3] %}
+        <div class="col-md-4 mb-4">
+            <div class="product-card">
+                <div class="product-image">
+                    <div class="product-badge floating">🔥 {% if session.lang == 'fi' %}Suosittu{% elif session.lang == 'sv' %}Populär{% elif session.lang == 'fa' %}محبوب{% else %}Popular{% endif %}</div>
+                    <img src="{{ product.image_url or '/static/images/coffee-placeholder.jpg' }}" alt="{{ product.name }}">
+                </div>
+                <div class="product-info">
+                    <h5 class="product-title">{{ product.name }}</h5>
+                    <p class="text-muted small">{{ product.description[:80] }}...</p>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="product-price">{{ format_price(product.price) }}</span>
+                        <button class="btn-add add-to-cart" data-product-id="{{ product.id }}">
+                            <i class="fas fa-shopping-cart"></i> {% if session.lang == 'fi' %}Lisää{% elif session.lang == 'sv' %}Lägg till{% elif session.lang == 'fa' %}افزودن{% else %}Add{% endif %}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="bg-dark text-white py-5">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 mb-4">
+                <div class="feature-box">
+                    <div class="feature-icon floating delay-1"><i class="fas fa-coffee"></i></div>
+                    <h5>{% if session.lang == 'fi' %}Premium Kahvi{% elif session.lang == 'sv' %}Premium Kaffe{% elif session.lang == 'fa' %}قهوه درجه یک{% else %}Premium Coffee{% endif %}</h5>
+                    <p class="small">100% Arabica</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="feature-box">
+                    <div class="feature-icon floating delay-2"><i class="fas fa-clock"></i></div>
+                    <h5>{% if session.lang == 'fi' %}Avoinna Päivittäin{% elif session.lang == 'sv' %}Öppet Dagligen{% elif session.lang == 'fa' %}باز روزانه{% else %}Open Daily{% endif %}</h5>
+                    <p class="small">7AM - 9PM</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="feature-box">
+                    <div class="feature-icon floating delay-3"><i class="fas fa-wifi"></i></div>
+                    <h5>{% if session.lang == 'fi' %}Ilmainen WiFi{% elif session.lang == 'sv' %}Gratis WiFi{% elif session.lang == 'fa' %}وای فای رایگان{% else %}Free WiFi{% endif %}</h5>
+                    <p class="small">{% if session.lang == 'fi' %}Pysy yhteydessä{% elif session.lang == 'sv' %}Håll kontakten{% elif session.lang == 'fa' %}متصل بمانید{% else %}Stay connected{% endif %}</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="feature-box">
+                    <div class="feature-icon floating delay-1"><i class="fas fa-gift"></i></div>
+                    <h5>{% if session.lang == 'fi' %}Kanta-asiakasohjelma{% elif session.lang == 'sv' %}Lojalitetsprogram{% elif session.lang == 'fa' %}برنامه وفاداری{% else %}Loyalty Program{% endif %}</h5>
+                    <p class="small">{% if session.lang == 'fi' %}Ansaitse pisteitä{% elif session.lang == 'sv' %}Tjäna poäng{% elif session.lang == 'fa' %}امتیاز جمع کنید{% else %}Earn rewards{% endif %}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

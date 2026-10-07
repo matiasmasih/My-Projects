@@ -1,0 +1,858 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.wifi-container {
+    background: linear-gradient(135deg, #faf7f2 0%, #f5efe8 100%);
+    min-height: calc(100vh - 200px);
+    padding: 40px 0;
+}
+
+/* Banner Styles */
+.wifi-banner {
+    background: linear-gradient(135deg, #2C1810 0%, #3D2518 50%, #2C1810 100%);
+    border-radius: 24px;
+    padding: 40px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.wifi-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(198,124,78,0.1) 0%, transparent 70%);
+    transform: rotate(25deg);
+    pointer-events: none;
+}
+
+.wifi-banner::after {
+    content: '📶';
+    position: absolute;
+    bottom: 10px;
+    right: 30px;
+    font-size: 80px;
+    opacity: 0.1;
+}
+
+.banner-content {
+    position: relative;
+    z-index: 2;
+}
+
+.banner-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.banner-title i {
+    font-size: 50px;
+    color: #D4AF37;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    animation: pulse 2s infinite;
+}
+
+.banner-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 20px;
+}
+
+.banner-stats {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.banner-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.1);
+    padding: 8px 16px;
+    border-radius: 40px;
+    backdrop-filter: blur(5px);
+    animation: fadeInUp 0.6s ease forwards;
+    opacity: 0;
+}
+
+.banner-stat-item:nth-child(1) { animation-delay: 0.2s; }
+.banner-stat-item:nth-child(2) { animation-delay: 0.4s; }
+.banner-stat-item:nth-child(3) { animation-delay: 0.6s; }
+
+.banner-stat-item i {
+    color: #D4AF37;
+    font-size: 18px;
+}
+
+.banner-stat-item span {
+    color: white;
+    font-size: 14px;
+}
+
+.banner-stat-item strong {
+    color: #D4AF37;
+    font-size: 18px;
+    margin-left: 5px;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes shine {
+    0% { transform: translateX(-100%) translateY(-100%); }
+    100% { transform: translateX(100%) translateY(100%); }
+}
+
+@keyframes wifiPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* Network Card */
+.network-card {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    border-radius: 32px;
+    padding: 40px;
+    color: white;
+    text-align: center;
+    margin-bottom: 40px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    position: relative;
+    overflow: hidden;
+    animation: slideInLeft 0.8s ease forwards;
+    opacity: 0;
+}
+
+.network-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+    animation: shine 3s infinite;
+}
+
+.network-card i {
+    font-size: 40px;
+    margin-bottom: 15px;
+    color: #D4AF37;
+    animation: float 3s ease-in-out infinite;
+}
+
+.network-card h4 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+}
+
+.network-card code {
+    background: rgba(255,255,255,0.2);
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    color: white;
+    display: inline-block;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.network-card code:hover {
+    transform: scale(1.05);
+    background: rgba(255,255,255,0.3);
+}
+
+.network-divider {
+    width: 60px;
+    height: 2px;
+    background: rgba(255,255,255,0.3);
+    margin: 25px auto;
+}
+
+/* QR Card */
+.qr-card {
+    background: white;
+    border-radius: 32px;
+    padding: 40px;
+    text-align: center;
+    margin-bottom: 50px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.05);
+    animation: slideInRight 0.8s ease forwards;
+    opacity: 0;
+    animation-delay: 0.3s;
+}
+
+.qr-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 45px rgba(0,0,0,0.15);
+}
+
+.qr-card i {
+    font-size: 50px;
+    color: #C67C4E;
+    margin-bottom: 20px;
+    animation: float 3s ease-in-out infinite;
+}
+
+.qr-card h4 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2C1810;
+    margin-bottom: 10px;
+}
+
+.qr-card p {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.qr-card img {
+    transition: transform 0.3s ease;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.qr-card img:hover {
+    transform: scale(1.05) rotate(-2deg);
+}
+
+/* Feature Cards - Like Newsletter */
+.feature-card {
+    background: white;
+    padding: 35px 25px;
+    border-radius: 28px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    min-height: 280px;
+    border: 1px solid rgba(198,124,78,0.08);
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.feature-card:hover::before {
+    left: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 45px rgba(198,124,78,0.25);
+    border-color: rgba(198,124,78,0.2);
+}
+
+.feature-card .flip-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover .flip-icon {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 10px 25px rgba(198,124,78,0.3);
+}
+
+.feature-card .flip-icon i {
+    font-size: 32px;
+    color: white;
+}
+
+.feature-card h5 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2C1810;
+    margin-bottom: 12px;
+}
+
+.feature-card .short-desc {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.feature-card .read-more {
+    display: inline-block;
+    color: #C67C4E;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover .read-more {
+    transform: translateX(5px);
+    color: #A0522D;
+}
+
+/* Tips Card */
+.tips-card {
+    background: linear-gradient(135deg, #2C1810, #1A0F0A);
+    border-radius: 28px;
+    padding: 35px;
+    margin-top: 50px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    animation: fadeInUp 0.8s ease forwards;
+    opacity: 0;
+    animation-delay: 0.5s;
+}
+
+.tips-card::before {
+    content: '"';
+    position: absolute;
+    bottom: -30px;
+    right: 20px;
+    font-size: 150px;
+    opacity: 0.05;
+    font-family: serif;
+}
+
+.tips-card h5 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tips-card h5 i {
+    animation: pulse 2s infinite;
+}
+
+.tips-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.tips-card li {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    padding: 8px 12px;
+    border-radius: 12px;
+}
+
+.tips-card li:hover {
+    background: rgba(255,255,255,0.05);
+    transform: translateX(5px);
+}
+
+.tips-card li i {
+    color: #D4AF37;
+    font-size: 18px;
+    transition: all 0.3s ease;
+}
+
+.tips-card li:hover i {
+    transform: scale(1.2);
+}
+
+/* WiFi Signal Animation */
+.wifi-signal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-bottom: 20px;
+}
+
+.wifi-bar {
+    width: 6px;
+    background: #D4AF37;
+    border-radius: 3px;
+    animation: wifiPulse 1.5s ease-in-out infinite;
+}
+
+.wifi-bar:nth-child(1) { height: 15px; animation-delay: 0s; }
+.wifi-bar:nth-child(2) { height: 25px; animation-delay: 0.2s; }
+.wifi-bar:nth-child(3) { height: 35px; animation-delay: 0.4s; }
+.wifi-bar:nth-child(4) { height: 45px; animation-delay: 0.6s; }
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    max-width: 550px;
+    width: 90%;
+    border-radius: 28px;
+    overflow: hidden;
+    animation: slideIn 0.3s ease;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    color: white;
+    padding: 20px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header i {
+    font-size: 32px;
+}
+
+.modal-header .close {
+    font-size: 32px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: white;
+    transition: transform 0.3s ease;
+}
+
+.modal-header .close:hover {
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    padding: 30px;
+}
+
+.modal-body h3 {
+    color: #2C1810;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+.modal-body ul {
+    list-style: none;
+    padding: 0;
+}
+
+.modal-body ul li {
+    padding: 10px 0;
+    border-bottom: 1px solid #f0ede8;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #555;
+}
+
+.modal-body ul li:last-child {
+    border-bottom: none;
+}
+
+.modal-body ul li i {
+    color: #C67C4E;
+    width: 24px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .banner-title {
+        font-size: 1.8rem;
+        flex-direction: column;
+        text-align: center;
+    }
+    .banner-stats {
+        justify-content: center;
+    }
+    .network-card {
+        padding: 25px;
+    }
+    .network-card code {
+        font-size: 0.9rem;
+        padding: 8px 16px;
+    }
+    .qr-card {
+        padding: 25px;
+    }
+    .feature-card {
+        min-height: 220px;
+        margin-bottom: 20px;
+        padding: 25px 20px;
+    }
+    .tips-card {
+        padding: 25px;
+    }
+}
+</style>
+
+<div class="wifi-container">
+    <div class="container">
+        <!-- Banner -->
+        <div class="wifi-banner">
+            <div class="banner-content">
+                <div class="banner-title">
+                    <i class="fas fa-wifi"></i>
+                    <span>{{ t('free_wifi') }}</span>
+                </div>
+                <div class="banner-subtitle">
+                    {{ t('wifi_subtitle') }}
+                </div>
+                <div class="banner-stats">
+                    <div class="banner-stat-item">
+                        <i class="fas fa-signal"></i>
+                        <span>{{ t('speed') }}: <strong>100 Mbps</strong></span>
+                    </div>
+                    <div class="banner-stat-item">
+                        <i class="fas fa-plug"></i>
+                        <span>{{ t('charging_stations') }}: <strong>{{ t('available') }}</strong></span>
+                    </div>
+                    <div class="banner-stat-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>{{ t('secure') }}: <strong>{{ t('yes') }}</strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="network-card">
+                    <div class="wifi-signal">
+                        <div class="wifi-bar"></div>
+                        <div class="wifi-bar"></div>
+                        <div class="wifi-bar"></div>
+                        <div class="wifi-bar"></div>
+                    </div>
+                    <i class="fas fa-signal"></i>
+                    <h4>{{ t('network_name') }}</h4>
+                    <code>Bean&Brew_Coffee</code>
+                    <div class="network-divider"></div>
+                    <i class="fas fa-lock"></i>
+                    <h4>{{ t('password') }}</h4>
+                    <code>coffeelove2024</code>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="qr-card">
+                    <i class="fas fa-qrcode"></i>
+                    <h4>{{ t('quick_connect') }}</h4>
+                    <p>{{ t('scan_qr_connect') }}</p>
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=WIFI:S:Bean%26Brew_Coffee;T:WPA;P:coffeelove2024;;" alt="WiFi QR Code" style="width: 180px; height: 180px;">
+                    <p class="small text-muted mt-3">{{ t('available_all_tables') }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="feature-card" onclick="openModal('speed')">
+                    <div class="flip-icon"><i class="fas fa-tachometer-alt"></i></div>
+                    <h5>{{ t('high_speed') }}</h5>
+                    <p class="short-desc">{{ t('high_speed_desc') }}</p>
+                    <span class="read-more">{{ t('learn_more') }} →</span>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-card" onclick="openModal('charging')">
+                    <div class="flip-icon"><i class="fas fa-plug"></i></div>
+                    <h5>{{ t('charging_stations') }}</h5>
+                    <p class="short-desc">{{ t('charging_stations_desc') }}</p>
+                    <span class="read-more">{{ t('learn_more') }} →</span>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-card" onclick="openModal('secure')">
+                    <div class="flip-icon"><i class="fas fa-shield-alt"></i></div>
+                    <h5>{{ t('secure_connection') }}</h5>
+                    <p class="short-desc">{{ t('secure_connection_desc') }}</p>
+                    <span class="read-more">{{ t('learn_more') }} →</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="tips-card">
+                    <h5><i class="fas fa-lightbulb" style="color: #D4AF37;"></i> {{ t('wifi_tips') }}</h5>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> {{ t('tip1') }}</li>
+                        <li><i class="fas fa-check-circle"></i> {{ t('tip2') }}</li>
+                        <li><i class="fas fa-check-circle"></i> {{ t('tip3') }}</li>
+                        <li><i class="fas fa-check-circle"></i> {{ t('tip4') }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Popup -->
+<div id="infoModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <i id="modalIcon" class="fas fa-tachometer-alt"></i>
+            <button class="close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <h3 id="modalTitle"></h3>
+            <ul id="modalList"></ul>
+        </div>
+    </div>
+</div>
+
+<script>
+function openModal(type) {
+    const modal = document.getElementById('infoModal');
+    const modalIcon = document.getElementById('modalIcon');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalList = document.getElementById('modalList');
+
+    const lang = '{{ session.lang }}';
+
+    const content = {
+        'speed': {
+            'en': {
+                title: 'High Speed WiFi',
+                icon: 'fa-tachometer-alt',
+                items: [
+                    '100 Mbps download speed for smooth browsing',
+                    '50 Mbps upload speed for video calls',
+                    'Low latency for gaming and streaming',
+                    'Unlimited data usage with fair use policy'
+                ]
+            },
+            'fi': {
+                title: 'Suuri nopeus WiFi',
+                icon: 'fa-tachometer-alt',
+                items: [
+                    '100 Mbps latausnopeus sujuvaan selailuun',
+                    '50 Mbps lähetysnopeus videopuheluihin',
+                    'Matala viive pelaamiseen ja suoratoistoon',
+                    'Rajoittamaton datankäyttö kohtuullisesti'
+                ]
+            },
+            'sv': {
+                title: 'Hög hastighet WiFi',
+                icon: 'fa-tachometer-alt',
+                items: [
+                    '100 Mbps nedladdningshastighet för smidig surfning',
+                    '50 Mbps uppladdningshastighet för videosamtal',
+                    'Låg latens för spel och streaming',
+                    'Obegränsad dataanvändning med rimlig användningspolicy'
+                ]
+            },
+            'fa': {
+                title: 'وای فای پرسرعت',
+                icon: 'fa-tachometer-alt',
+                items: [
+                    'سرعت دانلود ۱۰۰ مگابیت بر ثانیه برای مرور روان',
+                    'سرعت آپلود ۵۰ مگابیت بر ثانیه برای تماس‌های ویدیویی',
+                    'تأخیر کم برای بازی و استریم',
+                    'مصرف نامحدود داده با سیاست استفاده منصفانه'
+                ]
+            }
+        },
+        'charging': {
+            'en': {
+                title: 'Charging Stations',
+                icon: 'fa-plug',
+                items: [
+                    'USB-C and USB-A ports at every table',
+                    'Standard power outlets for laptops',
+                    'Wireless charging pads available',
+                    'Fast charging support for all devices'
+                ]
+            },
+            'fi': {
+                title: 'Latauspisteet',
+                icon: 'fa-plug',
+                items: [
+                    'USB-C ja USB-A -portit jokaisessa pöydässä',
+                    'Tavalliset pistorasiat kannettaville tietokoneille',
+                    'Langattomat latausalustat saatavilla',
+                    'Pikalataustuki kaikille laitteille'
+                ]
+            },
+            'sv': {
+                title: 'Laddningsstationer',
+                icon: 'fa-plug',
+                items: [
+                    'USB-C och USB-A portar vid varje bord',
+                    'Standarduttag för bärbara datorer',
+                    'Trådlösa laddningsplattor tillgängliga',
+                    'Snabbladdningsstöd för alla enheter'
+                ]
+            },
+            'fa': {
+                title: 'ایستگاه‌های شارژ',
+                icon: 'fa-plug',
+                items: [
+                    'پورت‌های USB-C و USB-A در هر میز',
+                    'پریزهای برق استاندارد برای لپ‌تاپ‌ها',
+                    'پدهای شارژ بی‌سیم موجود',
+                    'پشتیبانی از شارژ سریع برای همه دستگاه‌ها'
+                ]
+            }
+        },
+        'secure': {
+            'en': {
+                title: 'Secure Connection',
+                icon: 'fa-shield-alt',
+                items: [
+                    'WPA2-Enterprise encryption for secure connection',
+                    'Firewall protection against cyber threats',
+                    'Regular security updates and monitoring',
+                    'Your data and privacy are always protected'
+                ]
+            },
+            'fi': {
+                title: 'Turvallinen yhteys',
+                icon: 'fa-shield-alt',
+                items: [
+                    'WPA2-Enterprise-salaus turvallista yhteyttä varten',
+                    'Palomuurisuoja kyberuhkia vastaan',
+                    'Säännölliset tietoturvapäivitykset ja seuranta',
+                    'Tietosi ja yksityisyytesi ovat aina suojattuja'
+                ]
+            },
+            'sv': {
+                title: 'Säker anslutning',
+                icon: 'fa-shield-alt',
+                items: [
+                    'WPA2-Enterprise-kryptering för säker anslutning',
+                    'Brandväggsskydd mot cyberhot',
+                    'Regelbundna säkerhetsuppdateringar och övervakning',
+                    'Dina data och integritet är alltid skyddade'
+                ]
+            },
+            'fa': {
+                title: 'اتصال امن',
+                icon: 'fa-shield-alt',
+                items: [
+                    'رمزگذاری WPA2-Enterprise برای اتصال امن',
+                    'محافظت فایروال در برابر تهدیدات سایبری',
+                    'به‌روزرسانی‌های امنیتی منظم و نظارت',
+                    'داده‌ها و حریم خصوصی شما همیشه محافظت می‌شود'
+                ]
+            }
+        }
+    };
+
+    const selected = content[type][lang] || content[type]['en'];
+
+    modalIcon.className = `fas ${selected.icon}`;
+    modalTitle.textContent = selected.title;
+    
+    modalList.innerHTML = selected.items.map(item => 
+        `<li><i class="fas fa-check-circle"></i> ${item}</li>`
+    ).join('');
+
+    modal.classList.add('show');
+}
+
+function closeModal() {
+    const modal = document.getElementById('infoModal');
+    modal.classList.remove('show');
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('infoModal');
+    if (event.target === modal) {
+        modal.classList.remove('show');
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.admin-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #faf7f2 0%, #f5efe8 100%);
+    min-height: calc(100vh - 200px);
+}
+
+.form-card {
+    background: white;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 20px 35px -10px rgba(0,0,0,0.1);
+}
+
+.form-header {
+    background: linear-gradient(135deg, #2C1810, #3D2518);
+    padding: 25px 30px;
+}
+
+.form-header h2 {
+    color: white;
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.form-header h2 i {
+    margin-right: 10px;
+}
+
+.form-body {
+    padding: 35px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #2C1810;
+}
+
+.form-group label i {
+    margin-right: 8px;
+    color: #C67C4E;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #E8E0D5;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #C67C4E;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(198,124,78,0.1);
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.checkbox-group input {
+    width: 18px;
+    height: 18px;
+    accent-color: #C67C4E;
+}
+
+.btn-submit {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    color: white;
+    border: none;
+    padding: 14px 30px;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(198,124,78,0.4);
+}
+
+.btn-cancel {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 14px 30px;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-cancel:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    color: white;
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    .button-group {
+        flex-direction: column;
+    }
+}
+</style>
+
+<div class="admin-container">
+    <div class="form-card">
+        <div class="form-header">
+            <h2><i class="fas fa-edit"></i> {{ t('edit_team_member') }}</h2>
+        </div>
+        <div class="form-body">
+            <form method="POST">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> {{ t('name') }}</label>
+                    <input type="text" name="name" class="form-control" value="{{ member.name }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-briefcase"></i> {{ t('position') }}</label>
+                    <input type="text" name="position" class="form-control" value="{{ member.position }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-align-left"></i> {{ t('bio') }}</label>
+                    <textarea name="bio" class="form-control" rows="4" required>{{ member.bio }}</textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-sort-numeric-down"></i> {{ t('display_order') }}</label>
+                        <input type="number" name="display_order" class="form-control" value="{{ member.display_order }}">
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" name="is_active" id="is_active" {% if member.is_active %}checked{% endif %}>
+                    <label for="is_active">{{ t('active_status') }}</label>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-save"></i> {{ t('update') }}
+                    </button>
+                    <a href="/admin/team" class="btn-cancel">
+                        <i class="fas fa-times"></i> {{ t('cancel') }}
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

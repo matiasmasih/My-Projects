@@ -1,0 +1,24 @@
+# Ignore real config with password
+config.php
+
+# Ignore uploaded files (patient photos)
+uploads/
+
+# Ignore vendor libraries (regenerated via composer)
+vendor/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*.old
+*.good
+# Vim/editor swap files
+*.swp
+*.swo
+.*.swp
+# Database dumps — ignore by default, but allow the /database/ folder
+*.sql
+!database/*.sql

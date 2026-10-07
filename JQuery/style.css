@@ -1,0 +1,137 @@
+body {
+  font-family: 'Newsreader', sans-serif;
+  background-color: #5e4263d9;
+  color: rgb(13, 213, 106);
+  text-align: center;
+  direction: ltr;
+  background-image: url('Image/cover.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+
+}
+
+header {
+  top: 0px;
+  width: 100%;
+  background-color: #5e4263d9;
+  color: white;
+  text-align: center;
+  padding: 3px;
+  position: relative;
+  border-radius: 9px;
+}
+
+.search-container {
+  text-align: right;
+}
+
+.search-container input[type="text"] {
+  position: absolute;
+  top: 10px;
+  right: 35px;
+}
+
+.menu-icon {
+  position: absolute;
+  text-align: right;
+  font-size: 16px;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  border-radius: 2px;
+  color: white;
+}
+
+nav ul li {
+  display: block;
+}
+
+nav.show ul li{
+  display: none;
+}
+
+nav ul {
+  list-style-type: none;
+  margin: 0px;
+  padding: 5px;
+  background-color: #5e4263d9;
+  color: #fff;
+  position: relative;
+  border-radius: 10%;
+  width: 100%;
+  left: 0;
+}
+
+nav ul li {
+  margin: 10%;
+  display: block;
+  color: #fff;
+  text-align: center;
+  padding: 5px 5px 5px 0.5px;
+  text-decoration: none;
+}
+
+nav ul li:hover {
+  background-color: green;
+  border-radius: 45%;
+}
+
+#panel1,#panel2,#panel3,#panel4,#panel5{
+font-family: 'Newsreader', sans-serif;
+  font-size: 23px;
+  padding: 20px;
+  text-align: ltr;
+  background-color: rgb(7, 246, 246);
+  border: 1px solid black;
+  color: blue;
+  width: 60%;
+  height: 100%;
+  position: relative;
+  display: none;
+
+}
+
+.highlight {
+  background-color: green;
+}
+
+.panel img {
+  width: 100%;
+  height: auto;
+  border: 1px solid black;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 2s ease-in-out;
+}
+
+.panel img.active {
+  opacity: 1;
+}
+
+footer {
+  background-color: #5e4263d9;
+  color: white;
+  text-align: center;
+  padding: 3px;
+  position: fixed;
+  bottom: 2px;
+  width: 98%;
+  border-radius: 9px;
+}
+
+@media only screen and (max-width: 600px) {
+  header {
+    padding: 5px;
+  }
+
+  nav ul li a {
+    padding: 10px;
+  }
+
+  footer {
+    padding: 5px;
+  }
+}

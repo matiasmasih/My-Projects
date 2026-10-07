@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+:root {
+    --primary: #C67C4E;
+    --primary-dark: #A0522D;
+    --dark: #2C1810;
+    --gray: #6c757d;
+}
+
+.edit-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    min-height: 70vh;
+}
+
+/* Modern Card */
+.edit-card {
+    background: white;
+    border-radius: 32px;
+    box-shadow: 0 20px 35px -10px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.edit-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 45px -12px rgba(198,124,78,0.25);
+}
+
+/* Card Header */
+.card-header-modern {
+    background: linear-gradient(135deg, var(--dark), #3D2518);
+    padding: 30px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-header-modern::before {
+    content: '✏️';
+    position: absolute;
+    right: -20px;
+    top: -20px;
+    font-size: 100px;
+    opacity: 0.08;
+}
+
+.card-header-modern i {
+    font-size: 50px;
+    color: var(--primary);
+    margin-bottom: 15px;
+    display: inline-block;
+}
+
+.card-header-modern h3 {
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.card-header-modern p {
+    color: rgba(255,255,255,0.8);
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
+/* Card Body */
+.card-body-modern {
+    padding: 35px;
+}
+
+/* Form Groups */
+.form-group-modern {
+    margin-bottom: 25px;
+}
+
+.form-group-modern label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: var(--dark);
+    font-size: 0.9rem;
+}
+
+.form-group-modern label i {
+    margin-right: 8px;
+    color: var(--primary);
+}
+
+/* Input Styles */
+.input-modern, .select-modern, .textarea-modern {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid #E8E0D5;
+    border-radius: 16px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #fefcf9;
+}
+
+.input-modern:focus, .select-modern:focus, .textarea-modern:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(198,124,78,0.1);
+    background: white;
+}
+
+.textarea-modern {
+    resize: vertical;
+    min-height: 200px;
+}
+
+/* Category Select */
+.select-modern {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C67C4E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 18px center;
+    background-size: 16px;
+}
+
+/* Checkbox Group */
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+.checkbox-group input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+}
+
+.checkbox-group label {
+    margin: 0;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+/* Button Group */
+.button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn-save {
+    flex: 1;
+    padding: 14px 25px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-save:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(198,124,78,0.4);
+}
+
+.btn-cancel {
+    flex: 1;
+    padding: 14px 25px;
+    background: linear-gradient(135deg, var(--gray), #5a6268);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-cancel:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(108,117,125,0.3);
+    color: white;
+}
+
+/* Image URL input with preview */
+.image-preview {
+    margin-top: 15px;
+    display: none;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 2px solid #E8E0D5;
+}
+
+.image-preview img {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+}
+
+/* Character counter */
+.char-counter {
+    text-align: right;
+    font-size: 0.75rem;
+    color: #999;
+    margin-top: 5px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .edit-container {
+        padding: 30px 15px;
+    }
+    .card-body-modern {
+        padding: 25px;
+    }
+    .card-header-modern h3 {
+        font-size: 1.3rem;
+    }
+    .button-group {
+        flex-direction: column;
+    }
+    .btn-save, .btn-cancel {
+        width: 100%;
+    }
+}
+</style>
+
+<div class="edit-container">
+    <div class="edit-card">
+        <div class="card-header-modern">
+            <i class="fas fa-edit"></i>
+            <h3>Edit Your Story</h3>
+            <p>Update your coffee knowledge article</p>
+        </div>
+        <div class="card-body-modern">
+            <form method="POST" id="editForm">
+                <div class="form-group-modern">
+                    <label><i class="fas fa-heading"></i> Title (English)</label>
+                    <input type="text" name="title" class="input-modern" value="{{ news.title }}" required>
+                    <div class="char-counter"><span id="titleCount">{{ news.title|length }}</span> characters</div>
+                </div>
+
+                <div class="form-group-modern">
+                    <label><i class="fas fa-tag"></i> Category</label>
+                    <select name="category" class="select-modern" required>
+                        <option value="news" {% if news.category == 'news' %}selected{% endif %}>📰 News & Updates</option>
+                        <option value="tips" {% if news.category == 'tips' %}selected{% endif %}>☕ Brewing Tips & Tricks</option>
+                        <option value="offers" {% if news.category == 'offers' %}selected{% endif %}>🎁 Special Offers</option>
+                        <option value="giveaway" {% if news.category == 'giveaway' %}selected{% endif %}>🎉 Giveaways</option>
+                        <option value="lifestyle" {% if news.category == 'lifestyle' %}selected{% endif %}>🌟 Coffee Lifestyle</option>
+                        <option value="history" {% if news.category == 'history' %}selected{% endif %}>📖 Coffee History</option>
+                        <option value="health" {% if news.category == 'health' %}selected{% endif %}>💚 Health Benefits</option>
+                    </select>
+                </div>
+
+                <div class="form-group-modern">
+                    <label><i class="fas fa-image"></i> Image URL (optional)</label>
+                    <input type="text" name="image_url" id="imageUrl" class="input-modern" value="{{ news.image_url }}" placeholder="https://example.com/coffee.jpg or /static/images/your-image.jpg">
+                    <div class="image-preview" id="imagePreview" {% if news.image_url %}style="display:block;"{% endif %}>
+                        <img id="previewImg" src="{{ news.image_url or '' }}" alt="Preview">
+                    </div>
+                    <small class="text-muted">Leave empty to use default coffee image</small>
+                </div>
+
+                <div class="form-group-modern">
+                    <label><i class="fas fa-paragraph"></i> Content (English)</label>
+                    <textarea name="content" id="editContent" class="textarea-modern" rows="12" required>{{ news.content }}</textarea>
+                    <div class="char-counter"><span id="contentCount">{{ news.content|length }}</span> characters</div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" name="is_published" id="is_published" {% if news.is_published %}checked{% endif %}>
+                    <label for="is_published"><i class="fas fa-globe"></i> Published (visible on website)</label>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn-save">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                    <a href="/admin/news" class="btn-cancel">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Character counter for title
+const titleInput = document.querySelector('input[name="title"]');
+const titleCount = document.getElementById('titleCount');
+titleInput.addEventListener('input', function() {
+    titleCount.textContent = this.value.length;
+});
+
+// Character counter for content
+const contentInput = document.getElementById('editContent');
+const contentCount = document.getElementById('contentCount');
+contentInput.addEventListener('input', function() {
+    contentCount.textContent = this.value.length;
+});
+
+// Image preview
+const imageUrlInput = document.getElementById('imageUrl');
+const imagePreview = document.getElementById('imagePreview');
+const previewImg = document.getElementById('previewImg');
+
+imageUrlInput.addEventListener('input', function() {
+    const url = this.value.trim();
+    if (url) {
+        previewImg.src = url;
+        imagePreview.style.display = 'block';
+        previewImg.onerror = function() {
+            previewImg.src = '/static/images/coffee-placeholder.jpg';
+        };
+    } else {
+        imagePreview.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

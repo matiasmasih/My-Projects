@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.article-page {
+    background: #f5efe8;
+    padding: 60px 0;
+}
+
+.article-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.article-header {
+    padding: 40px 40px 20px;
+    text-align: center;
+    background: white;
+}
+
+.article-category {
+    display: inline-block;
+    background: #C67C4E;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    margin-bottom: 20px;
+}
+
+.article-header h1 {
+    font-size: 2.5rem;
+    color: #2C1810;
+    margin-bottom: 15px;
+    font-weight: 800;
+}
+
+.article-meta {
+    color: #999;
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+}
+
+.article-meta i {
+    margin: 0 10px;
+}
+
+.article-image {
+    width: 100%;
+    max-height: 500px;
+    object-fit: cover;
+}
+
+.article-content {
+    padding: 40px;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #444;
+}
+
+.article-content p {
+    margin-bottom: 25px;
+}
+
+.share-section {
+    padding: 20px 40px 40px;
+    border-top: 1px solid #eee;
+    text-align: center;
+}
+
+.share-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.share-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.share-btn:hover {
+    transform: translateY(-3px);
+}
+
+.btn-back {
+    display: inline-block;
+    background: #6c757d;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 30px;
+    text-decoration: none;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+.btn-back:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .article-header h1 {
+        font-size: 1.5rem;
+    }
+    .article-content {
+        padding: 25px;
+        font-size: 1rem;
+    }
+}
+</style>
+
+<div class="article-page">
+    <div class="article-container">
+        <div class="article-header">
+            <span class="article-category">{{ news.category }}</span>
+            <h1>{{ news.title }}</h1>
+            <div class="article-meta">
+                <i class="fas fa-user"></i> {{ news.author }}
+                <i class="fas fa-calendar"></i> {{ news.published_at.strftime('%B %d, %Y') }}
+            </div>
+        </div>
+
+        {% if news.image_url %}
+        <img src="{{ news.image_url }}" alt="{{ news.title }}" class="article-image" onerror="this.src='/static/images/coffee-placeholder.jpg'">
+        {% endif %}
+
+        <div class="article-content">
+            <p>{{ news.content }}</p>
+        </div>
+
+        <div class="share-section">
+            <h5>Share this article</h5>
+            <div class="share-buttons">
+                <a href="#" class="share-btn" style="background: #3b5998;"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="share-btn" style="background: #1da1f2;"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="share-btn" style="background: #e4405f;"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="share-btn" style="background: #25d366;"><i class="fab fa-whatsapp"></i></a>
+            </div>
+            <a href="/news" class="btn-back">← Back to News</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

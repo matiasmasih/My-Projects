@@ -1,0 +1,144 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Profile Picture</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .upload-form {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .requirements {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        .error {
+            color: red;
+            background-color: #ffe6e6;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .success {
+            color: green;
+            background-color: #e6ffe6;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-form">
+        <h2>Upload Profile Picture</h2>
+        
+        <?php
+        // Display error/success messages
+        if (isset($_GET['error'])) {
+            echo '<div class="error">Error: ' . htmlspecialchars($_GET['error']) . '</div>';
+        }
+        if (isset($_GET['success'])) {
+            echo '<div class="success">Profile picture updated successfully!</div>';
+        }
+        ?>
+        
+        <form action="upload_profile.php" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="profile_image">Select Image:</label>
+                <input type="file" name="profile_image" id="profile_image" accept="image/jpeg, image/png, image/gif, image/webp" required>
+                
+                <div class="requirements">
+                    <strong>Requirements:</strong>
+                    <ul>
+                        <li>Maximum file size: 5MB</li>
+                        <li>Allowed formats: JPG, PNG, GIF, WebP</li>
+                        <li>Recommended dimensions: 500x500px</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <button type="submit">Upload Picture</button>
+        </form>
+        
+        <a href="manager_dashboard.php" class="back-link">← Back to Dashboard</a>
+    </div>
+    
+    <script>
+        // Client-side file size validation
+        document.getElementById('profile_image').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+            
+            if (file && file.size > maxSize) {
+                alert('File size must be less than 5MB. Your file is ' + 
+                      Math.round(file.size / 1024 / 1024 * 100) / 100 + 'MB');
+                e.target.value = ''; // Clear the file input
+            }
+        });
+    </script>
+</body>
+</html>

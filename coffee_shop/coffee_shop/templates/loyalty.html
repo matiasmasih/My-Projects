@@ -1,0 +1,632 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.loyalty-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #faf7f2 0%, #f5efe8 100%);
+    min-height: calc(100vh - 200px);
+}
+
+/* Banner Styles */
+.loyalty-banner {
+    background: linear-gradient(135deg, #2C1810 0%, #3D2518 50%, #2C1810 100%);
+    border-radius: 24px;
+    padding: 40px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.loyalty-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(198,124,78,0.1) 0%, transparent 70%);
+    transform: rotate(25deg);
+    pointer-events: none;
+}
+
+.loyalty-banner::after {
+    content: '🎁';
+    position: absolute;
+    bottom: 10px;
+    right: 30px;
+    font-size: 80px;
+    opacity: 0.1;
+}
+
+.banner-content {
+    position: relative;
+    z-index: 2;
+}
+
+.banner-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.banner-title i {
+    font-size: 50px;
+    color: #D4AF37;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.banner-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 20px;
+}
+
+.banner-stats {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.banner-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.1);
+    padding: 8px 16px;
+    border-radius: 40px;
+    backdrop-filter: blur(5px);
+}
+
+.banner-stat-item i {
+    color: #D4AF37;
+    font-size: 18px;
+}
+
+.banner-stat-item span {
+    color: white;
+    font-size: 14px;
+}
+
+.banner-stat-item strong {
+    color: #D4AF37;
+    font-size: 18px;
+    margin-left: 5px;
+}
+
+/* Points Card */
+.points-card {
+    background: white;
+    border-radius: 32px;
+    overflow: hidden;
+    box-shadow: 0 25px 45px -12px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.points-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 30px 55px -12px rgba(198,124,78,0.3);
+}
+
+.points-body {
+    padding: 45px;
+    text-align: center;
+    background: linear-gradient(135deg, #ffffff, #fef9f5);
+}
+
+.points-number {
+    font-size: 4.5rem;
+    font-weight: 800;
+    color: #C67C4E;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.05);
+}
+
+.points-label {
+    color: #666;
+    font-size: 1rem;
+    margin-bottom: 20px;
+}
+
+.progress-bar-custom {
+    height: 12px;
+    background: #E8E0D5;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 20px 0;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #C67C4E, #D4AF37);
+    border-radius: 10px;
+    transition: width 0.5s ease;
+}
+
+.next-reward {
+    color: #C67C4E;
+    font-weight: 500;
+    margin-top: 15px;
+}
+
+.points-note {
+    font-size: 0.8rem;
+    color: #999;
+    margin-top: 15px;
+}
+
+/* How to Earn Section */
+.section-title {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2C1810;
+    margin-bottom: 40px;
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.section-title:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #C67C4E, #D4AF37);
+    border-radius: 3px;
+}
+
+.earn-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-bottom: 60px;
+}
+
+.earn-card {
+    background: white;
+    padding: 35px 25px;
+    border-radius: 28px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    transition: all 0.4s ease;
+}
+
+.earn-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 45px rgba(198,124,78,0.2);
+}
+
+.earn-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    transition: all 0.3s ease;
+}
+
+.earn-card:hover .earn-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.earn-icon i {
+    font-size: 35px;
+    color: white;
+}
+
+.earn-card h5 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2C1810;
+    margin-bottom: 10px;
+}
+
+.earn-card p {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Rewards Grid */
+.rewards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.reward-card {
+    background: white;
+    border-radius: 24px;
+    padding: 30px 20px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.reward-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.reward-card:hover::before {
+    left: 100%;
+}
+
+.reward-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(198,124,78,0.2);
+}
+
+.reward-icon {
+    font-size: 45px;
+    color: #D4AF37;
+    margin-bottom: 15px;
+}
+
+.reward-card h5 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2C1810;
+    margin-bottom: 8px;
+}
+
+.reward-card p {
+    color: #666;
+    font-size: 0.8rem;
+    margin-bottom: 15px;
+}
+
+.reward-points {
+    display: inline-block;
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.redeem-btn {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.redeem-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(198,124,78,0.4);
+}
+
+.redeem-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.loading-spinner {
+    text-align: center;
+    padding: 40px;
+}
+
+.loading-spinner i {
+    font-size: 50px;
+    color: #C67C4E;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+    .banner-title {
+        font-size: 1.8rem;
+        flex-direction: column;
+        text-align: center;
+    }
+    .banner-stats {
+        justify-content: center;
+    }
+    .points-number {
+        font-size: 3rem;
+    }
+    .earn-grid {
+        grid-template-columns: 1fr;
+    }
+    .rewards-grid {
+        grid-template-columns: 1fr;
+    }
+    .points-body {
+        padding: 30px;
+    }
+}
+</style>
+
+<div class="loyalty-container">
+    <div class="container">
+        <!-- Banner -->
+        <div class="loyalty-banner">
+            <div class="banner-content">
+                <div class="banner-title">
+                    <i class="fas fa-gift"></i>
+                    <span>{{ t('loyalty_program') }}</span>
+                </div>
+                <div class="banner-subtitle">
+                    {{ t('loyalty_subtitle') }}
+                </div>
+                <div class="banner-stats">
+                    <div class="banner-stat-item">
+                        <i class="fas fa-star"></i>
+                        <span>{{ t('loyalty_points') }}: <strong id="bannerPoints">0</strong></span>
+                    </div>
+                    <div class="banner-stat-item">
+                        <i class="fas fa-trophy"></i>
+                        <span>{{ t('available_rewards') }}: <strong id="bannerRewards">0</strong></span>
+                    </div>
+                    <div class="banner-stat-item">
+                        <i class="fas fa-coffee"></i>
+                        <span>{{ t('next_reward') }}: <strong id="bannerNextReward">100</strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Points Card -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-md-8 col-lg-6">
+                <div class="points-card">
+                    <div class="points-body">
+                        <div class="points-number" id="pointsDisplay">0</div>
+                        <div class="points-label">{{ t('your_loyalty_points') }}</div>
+                        <div class="progress-bar-custom">
+                            <div class="progress-fill" id="pointsProgress" style="width: 0%;"></div>
+                        </div>
+                        <div class="next-reward" id="nextReward">{{ t('earn_more_points') }}</div>
+                        <div class="points-note">✨ {{ t('points_note') }} ✨</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- How to Earn -->
+        <div class="text-center">
+            <h2 class="section-title">{{ t('how_to_earn') }}</h2>
+        </div>
+        <div class="earn-grid">
+            <div class="earn-card">
+                <div class="earn-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h5>{{ t('make_purchase') }}</h5>
+                <p>{{ t('earn_points_per_dollar') }}</p>
+            </div>
+            <div class="earn-card">
+                <div class="earn-icon">
+                    <i class="fas fa-birthday-cake"></i>
+                </div>
+                <h5>{{ t('birthday_bonus') }}</h5>
+                <p>{{ t('birthday_bonus_desc') }}</p>
+            </div>
+            <div class="earn-card">
+                <div class="earn-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h5>{{ t('refer_friend') }}</h5>
+                <p>{{ t('refer_friend_desc') }}</p>
+            </div>
+        </div>
+
+        <!-- Rewards -->
+        <div class="text-center">
+            <h2 class="section-title">{{ t('available_rewards') }}</h2>
+        </div>
+        <div id="rewardsContainer" class="rewards-grid">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Translation helper for JavaScript
+const t = {
+    'redeem_confirm': '{{ t("redeem_confirm") }}',
+    'redeem_success': '{{ t("redeem_success") }}',
+    'not_enough_points': '{{ t("not_enough_points") }}',
+    'points_needed': '{{ t("points_needed") }}'
+};
+
+// Function to get reward name in current language
+function getRewardName(reward) {
+    const lang = '{{ session.lang }}';
+    if (lang === 'fi' && reward.name_fi) return reward.name_fi;
+    if (lang === 'sv' && reward.name_sv) return reward.name_sv;
+    if (lang === 'fa' && reward.name_fa) return reward.name_fa;
+    return reward.name;
+}
+
+// Function to get reward description in current language
+function getRewardDescription(reward) {
+    const lang = '{{ session.lang }}';
+    if (lang === 'fi' && reward.description_fi) return reward.description_fi;
+    if (lang === 'sv' && reward.description_sv) return reward.description_sv;
+    if (lang === 'fa' && reward.description_fa) return reward.description_fa;
+    return reward.description;
+}
+
+async function loadPoints() {
+    try {
+        const response = await fetch('/api/loyalty/points');
+        const data = await response.json();
+
+        document.getElementById('pointsDisplay').textContent = data.points;
+        document.getElementById('bannerPoints').textContent = data.points;
+        
+        const progress = (data.points % 100);
+        document.getElementById('pointsProgress').style.width = progress + '%';
+
+        const remaining = 100 - (data.points % 100);
+        const lang = '{{ session.lang }}';
+
+        let nextRewardText = '';
+        let nextRewardShort = '';
+        if (lang === 'fi') {
+            nextRewardText = `Tarvitset ${remaining} pistettä lisää ilmaiseen kahviin!`;
+            nextRewardShort = `${remaining} pistettä`;
+        } else if (lang === 'sv') {
+            nextRewardText = `Du behöver ${remaining} poäng till för gratis kaffe!`;
+            nextRewardShort = `${remaining} poäng`;
+        } else if (lang === 'fa') {
+            nextRewardText = `برای قهوه رایگان به ${remaining} امتیاز دیگر نیاز دارید!`;
+            nextRewardShort = `${remaining} امتیاز`;
+        } else {
+            nextRewardText = `Earn ${remaining} more points for a free coffee!`;
+            nextRewardShort = `${remaining} points`;
+        }
+        document.getElementById('nextReward').textContent = nextRewardText;
+        document.getElementById('bannerNextReward').textContent = nextRewardShort;
+    } catch (error) {
+        console.error('Error loading points:', error);
+    }
+}
+
+async function loadRewards() {
+    try {
+        const response = await fetch('/api/loyalty/rewards');
+        const rewards = await response.json();
+
+        const container = document.getElementById('rewardsContainer');
+        container.innerHTML = '';
+        
+        document.getElementById('bannerRewards').textContent = rewards.length;
+
+        if (rewards.length === 0) {
+            container.innerHTML = '<div class="text-center"><p>{{ t("no_rewards") }}</p></div>';
+            return;
+        }
+
+        rewards.forEach(reward => {
+            const card = document.createElement('div');
+            card.className = 'reward-card';
+            const rewardName = getRewardName(reward);
+            const rewardDesc = getRewardDescription(reward);
+            card.innerHTML = `
+                <div class="reward-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <h5>${escapeHtml(rewardName)}</h5>
+                <p>${escapeHtml(rewardDesc)}</p>
+                <div class="reward-points">${reward.points_required} {{ t('points') }}</div>
+                <button class="redeem-btn" data-id="${reward.id}" data-points="${reward.points_required}" data-name="${escapeHtml(rewardName)}">
+                    {{ t('redeem') }}
+                </button>
+            `;
+            container.appendChild(card);
+        });
+
+        document.querySelectorAll('.redeem-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const rewardId = this.dataset.id;
+                const rewardName = this.dataset.name;
+                const pointsRequired = parseInt(this.dataset.points);
+                const currentPoints = parseInt(document.getElementById('pointsDisplay').textContent);
+
+                const lang = '{{ session.lang }}';
+                let confirmText = '';
+                if (lang === 'fi') {
+                    confirmText = `Lunasta ${rewardName} ${pointsRequired} pisteellä?`;
+                } else if (lang === 'sv') {
+                    confirmText = `Lös in ${rewardName} för ${pointsRequired} poäng?`;
+                } else if (lang === 'fa') {
+                    confirmText = `${rewardName} را با ${pointsRequired} امتیاز دریافت کنید؟`;
+                } else {
+                    confirmText = `Redeem ${rewardName} for ${pointsRequired} points?`;
+                }
+
+                if (currentPoints >= pointsRequired) {
+                    if (confirm(confirmText)) {
+                        const response = await fetch('/api/loyalty/redeem', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({reward_id: rewardId})
+                        });
+                        const result = await response.json();
+                        if (result.success) {
+                            let successText = '';
+                            if (lang === 'fi') successText = `${rewardName} lunastettu!`;
+                            else if (lang === 'sv') successText = `${rewardName} inlöst!`;
+                            else if (lang === 'fa') successText = `${rewardName} دریافت شد!`;
+                            else successText = `${rewardName} redeemed!`;
+                            alert(successText);
+                            loadPoints();
+                        } else {
+                            let errorText = '';
+                            if (lang === 'fi') errorText = 'Ei tarpeeksi pisteitä!';
+                            else if (lang === 'sv') errorText = 'Inte tillräckligt med poäng!';
+                            else if (lang === 'fa') errorText = 'امتیاز کافی نیست!';
+                            else errorText = 'Not enough points!';
+                            alert(errorText);
+                        }
+                    }
+                } else {
+                    const needed = pointsRequired - currentPoints;
+                    let neededText = '';
+                    if (lang === 'fi') neededText = `Tarvitset ${needed} pistettä lisää kohteelle ${rewardName}!`;
+                    else if (lang === 'sv') neededText = `Du behöver ${needed} poäng till för ${rewardName}!`;
+                    else if (lang === 'fa') neededText = `برای ${rewardName} به ${needed} امتیاز دیگر نیاز دارید!`;
+                    else neededText = `You need ${needed} more points for ${rewardName}!`;
+                    alert(neededText);
+                }
+            });
+        });
+    } catch (error) {
+        console.error('Error loading rewards:', error);
+    }
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+loadPoints();
+loadRewards();
+</script>
+{% endblock %}

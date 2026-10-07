@@ -1,0 +1,446 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.menu-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.menu-hero {
+    background: linear-gradient(135deg, #2C1810 0%, #3D2518 100%);
+    border-radius: 28px;
+    padding: 60px 40px;
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.menu-hero h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.menu-hero p {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.8);
+}
+
+.search-section {
+    background: white;
+    border-radius: 24px;
+    padding: 30px;
+    margin-bottom: 50px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+}
+
+.search-input {
+    width: 100%;
+    padding: 14px 24px;
+    border: 2px solid #E0E0E0;
+    border-radius: 50px;
+    font-size: 16px;
+}
+
+.search-input:focus {
+    border-color: #C67C4E;
+    outline: none;
+}
+
+.filter-group {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin: 25px 0;
+}
+
+.filter-btn {
+    padding: 8px 22px;
+    border-radius: 30px;
+    background: #f0f0f0;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn.active {
+    background: #C67C4E;
+    color: white;
+}
+
+.filter-btn:hover {
+    background: #C67C4E;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.price-group {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.price-input {
+    width: 110px;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+}
+
+.reset-btn {
+    padding: 10px 24px;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.reset-btn:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+.menu-category {
+    margin-bottom: 70px;
+}
+
+.category-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #C67C4E;
+    display: inline-block;
+    color: #2C1810;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 35px;
+}
+
+.product-item {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    position: relative;
+}
+
+.product-item:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+}
+
+.product-img {
+    height: 220px;
+    overflow: hidden;
+}
+
+.product-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.product-item:hover .product-img img {
+    transform: scale(1.05);
+}
+
+.favorite-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.favorite-btn i {
+    font-size: 18px;
+    color: #ccc;
+}
+
+.favorite-btn.active i {
+    color: #ff4444;
+}
+
+.favorite-btn:hover {
+    transform: scale(1.1);
+}
+
+.product-info {
+    padding: 20px;
+}
+
+.product-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #2C1810;
+}
+
+.rating-stars {
+    color: #D4AF37;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+.product-desc {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.product-price {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #C67C4E;
+}
+
+.product-price bdi {
+    unicode-bidi: embed;
+    direction: ltr;
+    display: inline-block;
+}
+
+[dir="rtl"] .product-price {
+    text-align: right;
+}
+
+.btn-add {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 15px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.btn-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(198,124,78,0.3);
+}
+
+@media (max-width: 768px) {
+    .products-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+    .menu-hero h1 {
+        font-size: 2rem;
+    }
+    .menu-hero {
+        padding: 40px 20px;
+    }
+}
+</style>
+
+<div class="menu-container">
+    <div class="menu-hero">
+        <h1>☕ {{ t('menu') }}</h1>
+         <p>{{ t('coffee_menu_description') or 'Experience the perfect blend of aroma and taste. Our coffee is sourced from the finest beans and roasted to perfection.' }}</p>
+    </div>
+
+
+
+    <div class="search-section">
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 {{ t('search') }}">
+        
+        <div class="filter-group">
+            <button class="filter-btn active" data-filter="all">{{ t('all') }}</button>
+            <button class="filter-btn" data-filter="coffee">☕ {{ t('coffee') }}</button>
+            <button class="filter-btn" data-filter="tea">🍵 {{ t('tea') }}</button>
+            <button class="filter-btn" data-filter="pastry">🥐 {{ t('pastry') }}</button>
+            <button class="filter-btn" data-filter="other_drinks">🥤 {{ t('other_drinks') }}</button>
+        </div>
+
+        <div class="price-group">
+            <span>{{ t('price') or 'Price:' }}</span>
+            <input type="number" id="minPrice" class="price-input" placeholder="Min" value="0">
+            <span>-</span>
+            <input type="number" id="maxPrice" class="price-input" placeholder="Max" value="50">
+            <button id="applyPrice" class="filter-btn" style="background:#C67C4E; color:white;">{{ t('apply') or 'Apply' }}</button>
+            <button id="resetFilters" class="reset-btn">{{ t('reset') or 'Reset' }}</button>
+        </div>
+    </div>
+
+    {% for category, products in products_by_category.items() %}
+    <div class="menu-category" data-category="{{ category }}">
+        <h2 class="category-title">
+            {% if category == 'coffee' %}☕ {{ t('coffee') }}
+            {% elif category == 'tea' %}🍵 {{ t('tea') }}
+            {% elif category == 'pastry' %}🥐 {{ t('pastry') }}
+            {% elif category == 'other_drinks' %}🥤 {{ t('other_drinks') }}
+            {% else %}{{ category }}{% endif %}
+        </h2>
+        <div class="products-grid">
+            {% for product in products %}
+            <div class="product-item" data-id="{{ product.id }}" data-name="{{ product.name|lower }}" data-price="{{ product.price }}" data-category="{{ product.category }}">
+                <button class="favorite-btn" data-id="{{ product.id }}"><i class="far fa-heart"></i></button>
+                <div class="product-img">
+                    <img src="/static/images/{{ product.name.lower().replace(' ', '-') }}.jpg" 
+                         alt="{{ product.name }}"
+                         onerror="this.src='/static/images/coffee-placeholder.jpg'">
+                </div>
+                <div class="product-info">
+                    <div class="product-name">{{ product.name }}</div>
+                    <div class="rating-stars">★★★★★</div>
+                    <div class="product-desc">{{ product.description[:100] if product.description else '' }}...</div>
+                    <div class="product-price">
+                        {% set c = session.get('currency', 'USD') %}
+                        {% if c == 'EUR' %}
+                            <bdi>€{{ "%.2f"|format(product.price|float * 0.92) }}</bdi>
+                        {% elif c == 'SEK' %}
+                            <bdi>{{ "%.2f"|format(product.price|float * 10.5) }} kr</bdi>
+                        {% elif c == 'AFN' %}
+                            <bdi>{{ "%.0f"|format(product.price|float * 71.5) }} AFN</bdi>
+                        {% else %}
+                            <bdi>${{ "%.2f"|format(product.price|float) }}</bdi>
+                        {% endif %}
+                    </div>
+                    <button class="btn-add add-to-cart" data-id="{{ product.id }}">
+                        <i class="fas fa-shopping-cart"></i> {{ t('add_to_cart') }}
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let favoritesList = new Set();
+
+    async function loadFavorites() {
+        try {
+            const response = await fetch('/api/favorites');
+            const favorites = await response.json();
+            favoritesList = new Set(favorites.map(f => f.id));
+            document.querySelectorAll('.favorite-btn').forEach(btn => {
+                const productId = parseInt(btn.dataset.id);
+                if (favoritesList.has(productId)) {
+                    btn.innerHTML = '<i class="fas fa-heart"></i>';
+                    btn.classList.add('active');
+                }
+            });
+        } catch (error) { console.error(error); }
+    }
+
+    async function toggleFavorite(productId, btn) {
+        try {
+            const response = await fetch('/api/favorites/toggle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({product_id: productId})
+            });
+            const data = await response.json();
+            if (data.added) {
+                favoritesList.add(productId);
+                btn.innerHTML = '<i class="fas fa-heart"></i>';
+                btn.classList.add('active');
+            } else {
+                favoritesList.delete(productId);
+                btn.innerHTML = '<i class="far fa-heart"></i>';
+                btn.classList.remove('active');
+            }
+        } catch (error) { console.error(error); }
+    }
+
+    document.querySelectorAll('.favorite-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const productId = parseInt(btn.dataset.id);
+            toggleFavorite(productId, btn);
+        });
+    });
+
+    function filterProducts() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
+        const maxPrice = parseFloat(document.getElementById('maxPrice').value) || 1000;
+        const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+
+        document.querySelectorAll('.product-item').forEach(product => {
+            const name = product.dataset.name;
+            const price = parseFloat(product.dataset.price);
+            const category = product.dataset.category;
+            const matchesSearch = name.includes(searchTerm);
+            const matchesPrice = price >= minPrice && price <= maxPrice;
+            const matchesCategory = activeFilter === 'all' || category === activeFilter;
+
+            product.style.display = (matchesSearch && matchesPrice && matchesCategory) ? 'block' : 'none';
+        });
+
+        document.querySelectorAll('.menu-category').forEach(cat => {
+            const hasVisible = Array.from(cat.querySelectorAll('.product-item')).some(item => item.style.display !== 'none');
+            cat.style.display = hasVisible ? 'block' : 'none';
+        });
+    }
+
+    function resetAllFilters() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('minPrice').value = 0;
+        document.getElementById('maxPrice').value = 50;
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
+        filterProducts();
+    }
+
+    // Event Listeners
+    document.getElementById('searchInput').addEventListener('keyup', filterProducts);
+    document.getElementById('applyPrice').addEventListener('click', filterProducts);
+    document.getElementById('resetFilters').addEventListener('click', resetAllFilters);
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            filterProducts();
+        });
+    });
+
+    document.querySelectorAll('.add-to-cart').forEach(btn => {
+        btn.addEventListener('click', function() {
+            fetch('/api/cart/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ product_id: parseInt(this.dataset.id) })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✓ Added to cart!');
+                    const cartCount = document.getElementById('cartCount');
+                    if (cartCount) cartCount.textContent = data.count;
+                }
+            });
+        });
+    });
+
+    loadFavorites();
+});
+</script>
+{% endblock %}

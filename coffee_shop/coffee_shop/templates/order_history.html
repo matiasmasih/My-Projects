@@ -1,0 +1,639 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+/* Modern Styles */
+.order-page {
+    background: linear-gradient(135deg, #faf7f2 0%, #f5efe8 100%);
+    min-height: calc(100vh - 200px);
+    padding: 40px 0;
+}
+
+/* Banner Styles */
+.order-banner {
+    background: linear-gradient(135deg, #2C1810 0%, #3D2518 50%, #2C1810 100%);
+    border-radius: 24px;
+    padding: 40px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.order-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(198,124,78,0.1) 0%, transparent 70%);
+    transform: rotate(25deg);
+    pointer-events: none;
+}
+
+.order-banner::after {
+    content: '📦';
+    position: absolute;
+    bottom: 10px;
+    right: 30px;
+    font-size: 80px;
+    opacity: 0.1;
+}
+
+.banner-content {
+    position: relative;
+    z-index: 2;
+}
+
+.banner-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.banner-title i {
+    font-size: 50px;
+    color: #D4AF37;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.banner-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 20px;
+}
+
+.banner-stats {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.banner-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.1);
+    padding: 8px 16px;
+    border-radius: 40px;
+    backdrop-filter: blur(5px);
+}
+
+.banner-stat-item i {
+    color: #D4AF37;
+    font-size: 18px;
+}
+
+.banner-stat-item span {
+    color: white;
+    font-size: 14px;
+}
+
+.banner-stat-item strong {
+    color: #D4AF37;
+    font-size: 18px;
+    margin-left: 5px;
+}
+
+/* Currency Selector */
+.currency-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.currency-wrapper label {
+    font-weight: 600;
+    color: #2C1810;
+    font-size: 14px;
+}
+
+.currency-select {
+    padding: 8px 20px;
+    border: 2px solid #E8E0D5;
+    border-radius: 30px;
+    background: white;
+    font-weight: 500;
+    color: #2C1810;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.currency-select:hover {
+    border-color: #C67C4E;
+}
+
+.currency-select:focus {
+    outline: none;
+    border-color: #C67C4E;
+    box-shadow: 0 0 0 3px rgba(198,124,78,0.1);
+}
+
+/* Order Cards */
+.order-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    transition: all 0.3s ease;
+    margin-bottom: 24px;
+    border: 1px solid rgba(0,0,0,0.04);
+}
+
+.order-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+}
+
+.order-header {
+    padding: 16px 24px;
+    background: linear-gradient(135deg, #faf7f2, #f5efe8);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.order-header:hover {
+    background: linear-gradient(135deg, #f5efe8, #f0e8dd);
+}
+
+.order-number {
+    font-weight: 700;
+    color: #2C1810;
+    font-size: 1rem;
+}
+
+.order-number small {
+    font-weight: 400;
+    color: #999;
+    font-size: 0.8rem;
+}
+
+.order-amount {
+    font-weight: 700;
+    color: #2C1810;
+    font-size: 1.2rem;
+}
+
+.order-status {
+    padding: 4px 14px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+}
+
+.status-pending {
+    background: #FFF3CD;
+    color: #856404;
+}
+
+.status-processing {
+    background: #CCE5FF;
+    color: #004085;
+}
+
+.status-ready {
+    background: #D1ECF1;
+    color: #0C5460;
+}
+
+.status-completed {
+    background: #D4EDDA;
+    color: #155724;
+}
+
+.status-cancelled {
+    background: #F8D7DA;
+    color: #721C24;
+}
+
+.order-body {
+    padding: 24px;
+    border-top: 1px solid #f0ede8;
+    display: none;
+}
+
+.order-body.show {
+    display: block;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.order-items {
+    margin-bottom: 20px;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f5f0e8;
+}
+
+.order-item:last-child {
+    border-bottom: none;
+}
+
+.order-item-name {
+    font-weight: 500;
+    color: #2C1810;
+}
+
+.order-item-price {
+    font-weight: 600;
+    color: #2C1810;
+}
+
+.order-summary {
+    background: #faf7f2;
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-top: 16px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 0.95rem;
+}
+
+.summary-row.total {
+    border-top: 2px solid #E8E0D5;
+    padding-top: 10px;
+    margin-top: 4px;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.order-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+}
+
+.btn-order {
+    padding: 6px 18px;
+    border: none;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    height: 36px;
+}
+
+.btn-order:hover {
+    transform: translateY(-2px);
+}
+
+.btn-receipt {
+    background: #28a745;
+    color: white;
+}
+
+.btn-receipt:hover {
+    background: #1e7e34;
+    box-shadow: 0 4px 12px rgba(40,167,69,0.3);
+    color: white;
+}
+
+.btn-reorder {
+    background: #C67C4E;
+    color: white;
+}
+
+.btn-reorder:hover {
+    background: #A0522D;
+    box-shadow: 0 4px 12px rgba(198,124,78,0.3);
+    color: white;
+}
+
+.btn-cancel {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-cancel:hover {
+    background: #c82333;
+    box-shadow: 0 4px 12px rgba(220,53,69,0.3);
+    color: white;
+}
+
+.btn-delete {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #5a6268;
+    box-shadow: 0 4px 12px rgba(108,117,125,0.3);
+    color: white;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+
+.empty-state i {
+    font-size: 60px;
+    color: #C67C4E;
+    opacity: 0.3;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    color: #2C1810;
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    color: #999;
+    margin-bottom: 20px;
+}
+
+.btn-browse {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    color: white;
+    padding: 10px 28px;
+    border: none;
+    border-radius: 40px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    height: 42px;
+}
+
+.btn-browse:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(198,124,78,0.3);
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .banner-title {
+        font-size: 1.8rem;
+        flex-direction: column;
+        text-align: center;
+    }
+    .banner-stats {
+        justify-content: center;
+    }
+    .order-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    .currency-wrapper {
+        justify-content: center;
+    }
+    .order-actions {
+        justify-content: center;
+    }
+}
+</style>
+
+<div class="order-page">
+    <div class="container">
+        <!-- Banner -->
+        <div class="order-banner">
+            <div class="banner-content">
+                <div class="banner-title">
+                    <i class="fas fa-box-open"></i>
+                    <span>{{ t('my_orders') }}</span>
+                </div>
+                <div class="banner-subtitle">
+                    {{ t('track_orders') }}
+                </div>
+                <div class="banner-stats">
+                    <div class="banner-stat-item">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span>{{ t('total') }}: <strong>{{ orders|length }}</strong></span>
+                    </div>
+                    <div class="banner-stat-item">
+                        <i class="fas fa-hourglass-half"></i>
+                        <span>{{ t('pending') }}: <strong>{{ orders|selectattr('status', 'equalto', 'pending')|list|length }}</strong></span>
+                    </div>
+                    <div class="banner-stat-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>{{ t('completed') }}: <strong>{{ orders|selectattr('status', 'equalto', 'completed')|list|length }}</strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Currency Selector -->
+        <div class="currency-wrapper">
+            <label><i class="fas fa-coins me-1" style="color: #D4AF37;"></i> {{ t('currency') }}:</label>
+            <select id="currency-selector" class="currency-select" onchange="changeCurrency(this.value)">
+                <option value="USD" {% if session.get('currency', 'USD') == 'USD' %}selected{% endif %}>$ USD</option>
+                <option value="EUR" {% if session.get('currency', 'USD') == 'EUR' %}selected{% endif %}>€ EUR</option>
+                <option value="SEK" {% if session.get('currency', 'USD') == 'SEK' %}selected{% endif %}>kr SEK</option>
+                <option value="AFN" {% if session.get('currency', 'USD') == 'AFN' %}selected{% endif %}>؋ AFN</option>
+            </select>
+        </div>
+
+        <!-- Orders -->
+        {% if orders %}
+            {% for order in orders %}
+            <div class="order-card">
+                <div class="order-header" onclick="toggleOrder({{ order.id }})">
+                    <div>
+                        <div class="order-number">
+                            {{ order.order_number }}
+                            <small>{{ order.created_at.strftime('%d/%m/%Y %H:%M') if order.created_at else 'N/A' }}</small>
+                        </div>
+                    </div>
+                    <div class="order-amount">{{ format_price(order.total_amount) }}</div>
+                    <span class="order-status status-{{ order.status }}">
+                        {% if order.status == 'pending' %}{{ t('pending') }}
+                        {% elif order.status == 'processing' %}{{ t('processing') }}
+                        {% elif order.status == 'ready' %}{{ t('ready') }}
+                        {% elif order.status == 'completed' %}{{ t('completed') }}
+                        {% elif order.status == 'cancelled' %}{{ t('cancelled') }}
+                        {% else %}{{ order.status }}{% endif %}
+                    </span>
+                    <button class="btn-order btn-receipt" onclick="event.stopPropagation(); window.open('/receipt/{{ order.order_number }}', '_blank')">
+                        <i class="fas fa-receipt"></i> {{ t('view_receipt') }}
+                    </button>
+                </div>
+
+                <div class="order-body" id="order-{{ order.id }}">
+                    <div class="order-items">
+                        {% set items = order.items %}
+                        {% if items %}
+                            {% for item in items %}
+                            <div class="order-item">
+                                <span class="order-item-name">
+                                    <strong>{{ item.quantity }}x</strong> {{ item.name }}
+                                </span>
+                                <span class="order-item-price">{{ format_price(item.price * item.quantity) }}</span>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">{{ t('no_items_found') }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="order-summary">
+                        <div class="summary-row">
+                            <span>{{ t('subtotal') }}</span>
+                            <span>{{ format_price(order.total_amount / 1.1) }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>{{ t('tax') }}</span>
+                            <span>{{ format_price(order.total_amount - (order.total_amount / 1.1)) }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>{{ t('delivery_fee') }}</span>
+                            <span>{{ format_price(2.50) }}</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>{{ t('total') }}</span>
+                            <span>{{ format_price(order.total_amount + 2.50) }}</span>
+                        </div>
+                    </div>
+
+                    <div class="order-actions">
+                        <button class="btn-order btn-reorder" onclick="reorder({{ order.id }})">
+                            <i class="fas fa-redo-alt"></i> {{ t('reorder') }}
+                        </button>
+                        {% if order.status == 'pending' %}
+                        <button class="btn-order btn-cancel" onclick="cancelOrder({{ order.id }}, '{{ order.order_number }}')">
+                            <i class="fas fa-times"></i> {{ t('cancel_order') }}
+                        </button>
+                        {% endif %}
+                        {% if order.status == 'cancelled' %}
+                        <button class="btn-order btn-delete" onclick="deleteOrder({{ order.id }}, '{{ order.order_number }}')">
+                            <i class="fas fa-trash"></i> {{ t('delete') }}
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-shopping-cart"></i>
+                <h3>{{ t('no_orders') }}</h3>
+                <p>{{ t('start_shopping') }}</p>
+                <a href="/menu" class="btn-browse">
+                    <i class=""></i> {{ t('browse_menu') }}
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function toggleOrder(orderId) {
+    const body = document.getElementById(`order-${orderId}`);
+    body.classList.toggle('show');
+}
+
+function changeCurrency(currency) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('currency', currency);
+    window.location.href = url.toString();
+}
+
+async function reorder(orderId) {
+    try {
+        const response = await fetch('/api/reorder', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({order_id: orderId, order_type: 'web'})
+        });
+        if (response.ok) {
+            window.location.href = '/cart';
+        } else {
+            alert('Failed to reorder. Please try again.');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+    }
+}
+
+async function cancelOrder(orderId, orderNumber) {
+    if (confirm(`Are you sure you want to cancel order ${orderNumber}? This action cannot be undone.`)) {
+        try {
+            const response = await fetch(`/api/cancel-order/${orderId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            if (data.success) {
+                alert('Order cancelled successfully!');
+                location.reload();
+            } else {
+                alert('Failed to cancel order.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        }
+    }
+}
+
+async function deleteOrder(orderId, orderNumber) {
+    if (confirm(`Are you sure you want to permanently delete order ${orderNumber}? This action cannot be undone.`)) {
+        try {
+            const response = await fetch(`/api/delete-order/${orderId}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" }
+            });
+            const data = await response.json();
+            if (data.success) {
+                alert("Order deleted successfully!");
+                location.reload();
+            } else {
+                alert("Failed to delete order.");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("An error occurred. Please try again.");
+        }
+    }
+}
+</script>
+{% endblock %}

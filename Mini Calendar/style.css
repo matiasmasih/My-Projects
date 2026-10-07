@@ -1,0 +1,50 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+}
+.Hero{
+    width: 100%;
+    min-height: 100vh;
+    background: linear-gradient(45deg, #1d0000, #20205b);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url(cover.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+}
+.calendar{
+    width: 300px;
+    height: 250px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+}
+.left, .right{
+
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 25px;
+}
+.right{
+    width: 42.5%;
+    background: #f4351e;
+    color: #ffffff;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+.left{
+    width: 58%;
+    background: #8eedf5;
+}
+#date{
+    font-size: 100px;
+    line-height: 90px;
+}

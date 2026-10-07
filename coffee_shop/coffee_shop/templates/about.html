@@ -1,0 +1,939 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.about-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #faf7f2 0%, #f5efe8 100%);
+    min-height: calc(100vh - 200px);
+}
+
+/* Banner Styles */
+.about-banner {
+    background: linear-gradient(135deg, #2C1810 0%, #3D2518 50%, #2C1810 100%);
+    border-radius: 24px;
+    padding: 40px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.about-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(198,124,78,0.1) 0%, transparent 70%);
+    transform: rotate(25deg);
+    pointer-events: none;
+}
+
+.about-banner::after {
+    content: '☕';
+    position: absolute;
+    bottom: 10px;
+    right: 30px;
+    font-size: 80px;
+    opacity: 0.1;
+}
+
+.banner-content {
+    position: relative;
+    z-index: 2;
+}
+
+.banner-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.banner-title i {
+    font-size: 50px;
+    color: #D4AF37;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.banner-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 20px;
+}
+
+.banner-stats {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.banner-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.1);
+    padding: 8px 16px;
+    border-radius: 40px;
+    backdrop-filter: blur(5px);
+    animation: fadeInUp 0.6s ease forwards;
+    opacity: 0;
+}
+
+.banner-stat-item:nth-child(1) { animation-delay: 0.2s; }
+.banner-stat-item:nth-child(2) { animation-delay: 0.4s; }
+.banner-stat-item:nth-child(3) { animation-delay: 0.6s; }
+
+.banner-stat-item i {
+    color: #D4AF37;
+    font-size: 18px;
+}
+
+.banner-stat-item span {
+    color: white;
+    font-size: 14px;
+}
+
+.banner-stat-item strong {
+    color: #D4AF37;
+    font-size: 18px;
+    margin-left: 5px;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Story Section */
+.story-section {
+    background: white;
+    border-radius: 32px;
+    overflow: hidden;
+    box-shadow: 0 20px 35px -10px rgba(0,0,0,0.1);
+    margin-bottom: 50px;
+}
+
+.story-content {
+    padding: 45px;
+}
+
+.story-content h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2C1810;
+    margin-bottom: 20px;
+    position: relative;
+    display: inline-block;
+}
+
+.story-content h2:after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(90deg, #C67C4E, #D4AF37);
+    border-radius: 3px;
+}
+
+.story-content p {
+    color: #555;
+    line-height: 1.8;
+    margin-bottom: 20px;
+    font-size: 1.05rem;
+}
+
+.story-image {
+    height: 100%;
+    min-height: 400px;
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.story-image i {
+    font-size: 150px;
+    color: white;
+    opacity: 0.8;
+}
+
+/* Mission & Vision & Values Cards - Like Team Cards */
+.mission-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.mission-card {
+    background: white;
+    border-radius: 28px;
+    padding: 35px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(198,124,78,0.06);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.mission-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.mission-card:hover::before {
+    left: 100%;
+}
+
+.mission-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 45px rgba(198,124,78,0.25);
+    border-color: rgba(198,124,78,0.2);
+}
+
+.mission-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    transition: all 0.3s ease;
+}
+
+.mission-card:hover .mission-icon {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 10px 25px rgba(198,124,78,0.3);
+}
+
+.mission-icon i {
+    font-size: 35px;
+    color: white;
+}
+
+.mission-card h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2C1810;
+    margin-bottom: 15px;
+}
+
+.mission-card p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.mission-card .read-more {
+    display: inline-block;
+    color: #C67C4E;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.mission-card:hover .read-more {
+    transform: translateX(5px);
+    color: #A0522D;
+}
+
+/* Team Section */
+.team-section {
+    margin-bottom: 50px;
+}
+
+.team-section h2 {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2C1810;
+    margin-bottom: 40px;
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.team-section h2:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #C67C4E, #D4AF37);
+    border-radius: 3px;
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.team-card {
+    background: white;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid rgba(198,124,78,0.06);
+    position: relative;
+}
+
+.team-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.team-card:hover::before {
+    left: 100%;
+}
+
+.team-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 45px rgba(198,124,78,0.25);
+    border-color: rgba(198,124,78,0.2);
+}
+
+.team-avatar {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    padding: 30px;
+    text-align: center;
+}
+
+.team-avatar i {
+    font-size: 70px;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.team-card:hover .team-avatar i {
+    transform: scale(1.1);
+}
+
+.team-card h4 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2C1810;
+    margin-top: 20px;
+    margin-bottom: 5px;
+}
+
+.team-card .position {
+    color: #C67C4E;
+    font-weight: 600;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+}
+
+.team-card .bio {
+    color: #666;
+    font-size: 0.85rem;
+    padding: 0 20px 10px;
+    line-height: 1.5;
+}
+
+.team-card .read-more {
+    display: inline-block;
+    color: #C67C4E;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.team-card:hover .read-more {
+    transform: translateX(5px);
+    color: #A0522D;
+}
+
+/* Values Section */
+.values-section {
+    background: white;
+    border-radius: 28px;
+    padding: 40px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    border: 1px solid rgba(198,124,78,0.06);
+    margin-bottom: 50px;
+}
+
+.values-section h3 {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2C1810;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.values-section h3:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #C67C4E, #D4AF37);
+    border-radius: 3px;
+}
+
+.values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+}
+
+.value-item {
+    text-align: center;
+    padding: 25px 20px;
+    transition: all 0.3s ease;
+    border-radius: 16px;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.value-item:hover {
+    background: rgba(198,124,78,0.05);
+    border-color: rgba(198,124,78,0.1);
+    transform: translateY(-5px);
+}
+
+.value-item i {
+    font-size: 40px;
+    color: #C67C4E;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.value-item:hover i {
+    transform: scale(1.1);
+}
+
+.value-item h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #2C1810;
+}
+
+.value-item .value-desc {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 8px;
+    line-height: 1.4;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    max-width: 550px;
+    width: 90%;
+    border-radius: 28px;
+    overflow: hidden;
+    animation: slideIn 0.3s ease;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #C67C4E, #A0522D);
+    color: white;
+    padding: 20px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header .close {
+    font-size: 32px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: white;
+    transition: transform 0.3s ease;
+}
+
+.modal-header .close:hover {
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    padding: 30px;
+}
+
+.modal-body h3 {
+    color: #2C1810;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+.modal-body .modal-sub {
+    color: #C67C4E;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.modal-body p {
+    color: #555;
+    line-height: 1.8;
+}
+
+.modal-body .modal-list {
+    list-style: none;
+    padding: 0;
+}
+
+.modal-body .modal-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid #f0ede8;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #555;
+}
+
+.modal-body .modal-list li:last-child {
+    border-bottom: none;
+}
+
+.modal-body .modal-list li i {
+    color: #C67C4E;
+    width: 24px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .banner-title {
+        font-size: 1.8rem;
+        flex-direction: column;
+        text-align: center;
+    }
+    .banner-stats {
+        justify-content: center;
+    }
+    .story-content {
+        padding: 30px;
+    }
+    .story-content h2 {
+        font-size: 1.4rem;
+    }
+    .mission-grid {
+        grid-template-columns: 1fr;
+    }
+    .team-grid {
+        grid-template-columns: 1fr;
+    }
+    .values-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+</style>
+
+<div class="about-container">
+    <div class="container">
+        <!-- Banner -->
+        <div class="about-banner">
+            <div class="banner-content">
+                <div class="banner-title">
+                    <i class="fas fa-mug-hot"></i>
+                    <span>{{ t('about_us') }}</span>
+                </div>
+                <div class="banner-subtitle">
+                    {{ t('about_subtitle') }}
+                </div>
+                <div class="banner-stats">
+                    <div class="banner-stat-item">
+                        <i class="fas fa-users"></i>
+                        <span>{{ t('team_members') }}: <strong id="teamCount">0</strong></span>
+                    </div>
+                    <div class="banner-stat-item">
+                        <i class="fas fa-coffee"></i>
+                        <span>{{ t('years_experience') }}: <strong>10+</strong></span>
+                    </div>
+                    <div class="banner-stat-item">
+                        <i class="fas fa-award"></i>
+                        <span>{{ t('coffee_awards') }}: <strong>5</strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Our Story -->
+        <div class="row story-section">
+            <div class="col-md-7">
+                <div class="story-content">
+                    <h2>{{ t('our_story') }}</h2>
+                    <p>{{ t('story_text_1') }}</p>
+                    <p>{{ t('story_text_2') }}</p>
+                    <p>{{ t('story_text_3') }}</p>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="story-image">
+                    <i class="fas fa-mug-hot"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mission, Vision, Values Cards -->
+        <div class="mission-grid">
+            <div class="mission-card" onclick="openMissionModal('mission')">
+                <div class="mission-icon">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <h3>{{ t('our_mission') }}</h3>
+                <p>{{ t('mission_text') }}</p>
+                <span class="read-more">{{ t('learn_more') }} →</span>
+            </div>
+            <div class="mission-card" onclick="openMissionModal('vision')">
+                <div class="mission-icon">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <h3>{{ t('our_vision') }}</h3>
+                <p>{{ t('vision_text') }}</p>
+                <span class="read-more">{{ t('learn_more') }} →</span>
+            </div>
+            <div class="mission-card" onclick="openMissionModal('values')">
+                <div class="mission-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3>{{ t('our_values') }}</h3>
+                <p>{{ t('values_text') }}</p>
+                <span class="read-more">{{ t('learn_more') }} →</span>
+            </div>
+        </div>
+
+        <!-- Our Team -->
+        <div class="team-section">
+            <h2>{{ t('meet_our_team') }}</h2>
+            <div class="team-grid">
+                {% for member in team_members %}
+                <div class="team-card" onclick="openTeamModal({{ loop.index0 }})">
+                    <div class="team-avatar">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h4>
+                        {% if session.lang == 'fi' and member.name_fi %}
+                            {{ member.name_fi }}
+                        {% elif session.lang == 'sv' and member.name_sv %}
+                            {{ member.name_sv }}
+                        {% elif session.lang == 'fa' and member.name_fa %}
+                            {{ member.name_fa }}
+                        {% else %}
+                            {{ member.name }}
+                        {% endif %}
+                    </h4>
+                    <div class="position">
+                        {% if session.lang == 'fi' and member.position_fi %}
+                            {{ member.position_fi }}
+                        {% elif session.lang == 'sv' and member.position_sv %}
+                            {{ member.position_sv }}
+                        {% elif session.lang == 'fa' and member.position_fa %}
+                            {{ member.position_fa }}
+                        {% else %}
+                            {{ member.position }}
+                        {% endif %}
+                    </div>
+                    <div class="bio">
+                        {% if session.lang == 'fi' and member.bio_fi %}
+                            {{ member.bio_fi[:80] }}...
+                        {% elif session.lang == 'sv' and member.bio_sv %}
+                            {{ member.bio_sv[:80] }}...
+                        {% elif session.lang == 'fa' and member.bio_fa %}
+                            {{ member.bio_fa[:80] }}...
+                        {% else %}
+                            {{ member.bio[:80] }}...
+                        {% endif %}
+                    </div>
+                    <span class="read-more">{{ t('learn_more') }} →</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Our Values Section -->
+        <div class="values-section">
+            <h3>{{ t('our_core_values') }}</h3>
+            <div class="values-grid">
+                <div class="value-item" onclick="openValueModal('sustainability')">
+                    <i class="fas fa-seedling"></i>
+                    <h4>{{ t('value_sustainability') }}</h4>
+                    <div class="value-desc">{{ t('value_sustainability_desc') }}</div>
+                </div>
+                <div class="value-item" onclick="openValueModal('quality')">
+                    <i class="fas fa-hand-holding-heart"></i>
+                    <h4>{{ t('value_quality') }}</h4>
+                    <div class="value-desc">{{ t('value_quality_desc') }}</div>
+                </div>
+                <div class="value-item" onclick="openValueModal('community')">
+                    <i class="fas fa-users"></i>
+                    <h4>{{ t('value_community') }}</h4>
+                    <div class="value-desc">{{ t('value_community_desc') }}</div>
+                </div>
+                <div class="value-item" onclick="openValueModal('innovation')">
+                    <i class="fas fa-lightbulb"></i>
+                    <h4>{{ t('value_innovation') }}</h4>
+                    <div class="value-desc">{{ t('value_innovation_desc') }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mission Modal -->
+<div id="missionModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <i id="missionModalIcon" class="fas fa-bullseye"></i>
+            <button class="close" onclick="closeModal('missionModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <h3 id="missionModalTitle"></h3>
+            <div class="modal-sub" id="missionModalSub"></div>
+            <p id="missionModalDesc"></p>
+        </div>
+    </div>
+</div>
+
+<!-- Team Modal -->
+<div id="teamModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <i class="fas fa-user-tie"></i>
+            <button class="close" onclick="closeModal('teamModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <h3 id="modalName"></h3>
+            <div class="modal-sub" id="modalPosition"></div>
+            <p id="modalBio"></p>
+        </div>
+    </div>
+</div>
+
+<!-- Value Modal -->
+<div id="valueModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <i id="valueModalIcon" class="fas fa-seedling"></i>
+            <button class="close" onclick="closeModal('valueModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <h3 id="valueModalTitle"></h3>
+            <div class="modal-sub" id="valueModalSub"></div>
+            <p id="valueModalDesc"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+// Team data from backend
+const teamMembers = {{ team_members | tojson | safe }};
+
+function updateBannerStats() {
+    document.getElementById('teamCount').innerText = teamMembers.length;
+}
+
+// Mission Modal
+function openMissionModal(type) {
+    const lang = '{{ session.lang }}';
+    
+    const content = {
+        'mission': {
+            'en': { title: 'Our Mission', sub: 'Why We Exist', desc: 'To serve exceptional coffee while building a community around shared passion for quality, sustainability, and human connection.' },
+            'fi': { title: 'Tehtävämme', sub: 'Miksi olemme olemassa', desc: 'Tarjota poikkeuksellista kahvia samalla kun rakennamme yhteisöä, joka jakaa intohimon laatuun, kestävyyteen ja inhimilliseen yhteyteen.' },
+            'sv': { title: 'Vårt uppdrag', sub: 'Varför vi finns', desc: 'Att servera exceptionellt kaffe samtidigt som vi bygger en gemenskap kring en gemensam passion för kvalitet, hållbarhet och mänsklig kontakt.' },
+            'fa': { title: 'ماموریت ما', sub: 'چرا وجود داریم', desc: 'ارائه قهوه استثنایی در عین ایجاد جامعه‌ای حول اشتیاق مشترک برای کیفیت، پایداری و ارتباط انسانی.' }
+        },
+        'vision': {
+            'en': { title: 'Our Vision', sub: 'What We Aspire To', desc: 'To be the most loved coffee shop in Finland, known for exceptional quality, warm hospitality, and positive impact on our community and environment.' },
+            'fi': { title: 'Visiotamme', sub: 'Mitä tavoittelemme', desc: 'Olla rakastetuin kahvila Suomessa, joka tunnetaan poikkeuksellisesta laadusta, lämpimästä vieraanvaraisuudesta ja positiivisesta vaikutuksesta yhteisöömme ja ympäristöön.' },
+            'sv': { title: 'Vår vision', sub: 'Vad vi strävar efter', desc: 'Att vara det mest älskade kaféet i Finland, känt för exceptionell kvalitet, varm gästfrihet och positiv påverkan på vår gemenskap och miljö.' },
+            'fa': { title: 'چشم‌انداز ما', sub: 'آنچه به دنبال آن هستیم', desc: 'محبوب‌ترین کافی‌شاپ در فنلاند، شناخته شده برای کیفیت استثنایی، مهمان‌نوازی گرم و تأثیر مثبت بر جامعه و محیط زیست.' }
+        },
+        'values': {
+            'en': { title: 'Our Values', sub: 'What Drives Us', desc: 'Quality, Sustainability, Community, Innovation, and Passion drive everything we do. These core values shape our decisions, our culture, and the experience we create for every customer.' },
+            'fi': { title: 'Arvomme', sub: 'Mikä meitä ohjaa', desc: 'Laatu, kestävyys, yhteisö, innovaatio ja intohimo ohjaavat kaikkea tekemistämme. Nämä perusarvot muovaavat päätöksiämme, kulttuuriamme ja kokemusta, jonka luomme jokaiselle asiakkaalle.' },
+            'sv': { title: 'Våra värderingar', sub: 'Vad som driver oss', desc: 'Kvalitet, hållbarhet, gemenskap, innovation och passion driver allt vi gör. Dessa kärnvärden formar våra beslut, vår kultur och den upplevelse vi skapar för varje kund.' },
+            'fa': { title: 'ارزش‌های ما', sub: 'آنچه ما را هدایت می‌کند', desc: 'کیفیت، پایداری، جامعه، نوآوری و اشتیاق همه کارهای ما را هدایت می‌کنند. این ارزش‌های اصلی تصمیمات، فرهنگ و تجربه‌ای را که برای هر مشتری ایجاد می‌کنیم، شکل می‌دهند.' }
+        }
+    };
+    
+    const selected = content[type][lang] || content[type]['en'];
+    
+    document.getElementById('missionModalTitle').textContent = selected.title;
+    document.getElementById('missionModalSub').textContent = selected.sub;
+    document.getElementById('missionModalDesc').textContent = selected.desc;
+    
+    const icons = {
+        'mission': 'fa-bullseye',
+        'vision': 'fa-eye',
+        'values': 'fa-heart'
+    };
+    document.getElementById('missionModalIcon').className = `fas ${icons[type]}`;
+    
+    document.getElementById('missionModal').classList.add('show');
+}
+
+// Team Modal
+function openTeamModal(index) {
+    const member = teamMembers[index];
+    const lang = '{{ session.lang }}';
+    
+    let name = member.name;
+    let position = member.position;
+    let bio = member.bio;
+    
+    if (lang === 'fi') {
+        name = member.name_fi || member.name;
+        position = member.position_fi || member.position;
+        bio = member.bio_fi || member.bio;
+    } else if (lang === 'sv') {
+        name = member.name_sv || member.name;
+        position = member.position_sv || member.position;
+        bio = member.bio_sv || member.bio;
+    } else if (lang === 'fa') {
+        name = member.name_fa || member.name;
+        position = member.position_fa || member.position;
+        bio = member.bio_fa || member.bio;
+    }
+    
+    document.getElementById('modalName').textContent = name;
+    document.getElementById('modalPosition').textContent = position;
+    document.getElementById('modalBio').textContent = bio;
+    
+    document.getElementById('teamModal').classList.add('show');
+}
+
+// Value Modal
+function openValueModal(type) {
+    const lang = '{{ session.lang }}';
+    
+    const content = {
+        'sustainability': {
+            'en': { title: 'Sustainability', sub: 'Our Commitment', desc: 'We are committed to sustainable practices from bean to cup. We source our coffee from fair-trade farms, use eco-friendly packaging, and strive to minimize our environmental footprint.' },
+            'fi': { title: 'Kestävyys', sub: 'Sitoumuksemme', desc: 'Olemme sitoutuneet kestäviin käytäntöihin pavusta kuppiin. Hankimme kahvimme reilun kaupan tiloilta, käytämme ympäristöystävällisiä pakkauksia ja pyrimme minimoimaan ympäristöjalanjälkemme.' },
+            'sv': { title: 'Hållbarhet', sub: 'Vårt åtagande', desc: 'Vi är engagerade i hållbara metoder från böna till kopp. Vi köper vårt kaffe från rättvisemärkta gårdar, använder miljövänliga förpackningar och strävar efter att minimera vårt miljöavtryck.' },
+            'fa': { title: 'پایداری', sub: 'تعهد ما', desc: 'ما متعهد به شیوه‌های پایدار از دانه تا فنجان هستیم. قهوه خود را از مزارع تجارت منصفانه تهیه می‌کنیم، از بسته‌بندی سازگار با محیط زیست استفاده می‌کنیم و تلاش می‌کنیم ردپای زیست‌محیطی خود را به حداقل برسانیم.' }
+        },
+        'quality': {
+            'en': { title: 'Quality First', sub: 'Our Standard', desc: 'Quality is at the heart of everything we do. From carefully selecting the finest beans to perfecting our roasting process, we never compromise on quality.' },
+            'fi': { title: 'Laatu ensin', sub: 'Standardimme', desc: 'Laatu on kaiken tekemisemme ytimessä. Huolellisesta parhaiden papujen valinnasta paahtoprosessimme täydentämiseen, emme koskaan tingi laadusta.' },
+            'sv': { title: 'Kvalitet först', sub: 'Vår standard', desc: 'Kvalitet är kärnan i allt vi gör. Från att noggrant välja de finaste bönorna till att perfekta vår rostningsprocess, vi kompromissar aldrig med kvaliteten.' },
+            'fa': { title: 'کیفیت اول', sub: 'استاندارد ما', desc: 'کیفیت در قلب همه کارهای ما قرار دارد. از انتخاب دقیق بهترین دانه‌ها تا تکمیل فرآیند برشته‌کاری، هرگز در کیفیت مصالحه نمی‌کنیم.' }
+        },
+        'community': {
+            'en': { title: 'Community', sub: 'Our Family', desc: 'We believe in building a welcoming community where everyone feels at home. Our coffee shop is a gathering place for friends, families, and neighbors to connect and share moments together.' },
+            'fi': { title: 'Yhteisö', sub: 'Perheemme', desc: 'Uskomme rakentavaan yhteisöön, jossa kaikki tuntevat olonsa kotoisaksi. Kahvilamme on kokoontumispaikka ystäville, perheille ja naapureille yhdistää ja jakaa hetkiä yhdessä.' },
+            'sv': { title: 'Gemenskap', sub: 'Vår familj', desc: 'Vi tror på att bygga en välkomnande gemenskap där alla känner sig som hemma. Vårt kafé är en mötesplats för vänner, familjer och grannar att ansluta och dela stunder tillsammans.' },
+            'fa': { title: 'جامعه', sub: 'خانواده ما', desc: 'ما به ایجاد جامعه‌ای گرم و پذیرا اعتقاد داریم که همه در آن احساس راحتی کنند. کافی‌شاپ ما محلی برای گردهمایی دوستان، خانواده‌ها و همسایگان برای ارتباط و به اشتراک گذاشتن لحظات است.' }
+        },
+        'innovation': {
+            'en': { title: 'Innovation', sub: 'Our Future', desc: 'We embrace innovation in everything we do. From new brewing techniques to creative coffee blends, we constantly evolve to bring you the best coffee experience.' },
+            'fi': { title: 'Innovaatio', sub: 'Tulevaisuutemme', desc: 'Omaksumme innovaation kaikessa tekemisessämme. Uusista keittotekniikoista luoviin kahvisekoituksiin, kehitymme jatkuvasti tarjotaksemme sinulle parhaan kahvielämyksen.' },
+            'sv': { title: 'Innovation', sub: 'Vår framtid', desc: 'Vi omfamnar innovation i allt vi gör. Från nya bryggtekniker till kreativa kaffeblandningar, vi utvecklas ständigt för att ge dig den bästa kaffeupplevelsen.' },
+            'fa': { title: 'نوآوری', sub: 'آینده ما', desc: 'ما نوآوری را در همه کارهای خود می‌پذیریم. از تکنیک‌های جدید دم‌آوری تا ترکیبات خلاقانه قهوه، ما دائماً در حال تکامل هستیم تا بهترین تجربه قهوه را به شما ارائه دهیم.' }
+        }
+    };
+    
+    const selected = content[type][lang] || content[type]['en'];
+    
+    document.getElementById('valueModalTitle').textContent = selected.title;
+    document.getElementById('valueModalSub').textContent = selected.sub;
+    document.getElementById('valueModalDesc').textContent = selected.desc;
+    
+    const icons = {
+        'sustainability': 'fa-seedling',
+        'quality': 'fa-hand-holding-heart',
+        'community': 'fa-users',
+        'innovation': 'fa-lightbulb'
+    };
+    document.getElementById('valueModalIcon').className = `fas ${icons[type]}`;
+    
+    document.getElementById('valueModal').classList.add('show');
+}
+
+// Close modal function
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('show');
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modals = ['missionModal', 'teamModal', 'valueModal'];
+    modals.forEach(function(modalId) {
+        const modal = document.getElementById(modalId);
+        if (event.target === modal) {
+            modal.classList.remove('show');
+        }
+    });
+}
+
+// Update banner stats
+updateBannerStats();
+</script>
+{% endblock %}

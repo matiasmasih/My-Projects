@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<img>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="muotoilu.css">
+  <link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@300&family=Cinzel&family=Jura&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@300;900&family=Orbitron:wght@600&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@1,6..72,300&display=swap"rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@1,6..72,300&family=Tangerine:wght@400;700&display=swap" rel="stylesheet">
+
+
+
+  <script>
+  function omaVaihda() {
+  document.getElementById("teksti").innerHTML = "Uusi teksti.";
+ }
+ </script>
+
+<style>
+#koodi{
+  font-family: 'Newsreader', serif;
+}
+.taulu td, tr{
+  font-family: 'Newsreader', serif;
+  border-collapse: collapse;
+  width: 100%;
+  color: MidnightBlue;
+}
+.tr, td, th{
+  border: 2px solid #5e4263d9;
+  padding: 4px;
+}
+tr:nth-child(even){
+  background-color: RGB(18, 213, 213);
+}
+.tr:hover {
+  background-color: #ddd;
+}
+th {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  text-align: left;
+  background-color: #5e4263d9;
+  color: wheat;
+}
+#teksti1{color:rgb(9, 72, 232);}
+#teksti2{color:rgb(205, 32, 70);}
+.vari1{color:green;}
+.vari2{color:black;}
+.vari3{color:red;}
+.vari4{color:blue;}
+.vari5{color:tomato;}
+.vari6{color:purple;}
+
+#clock {
+  position: absolute;
+  top: 30px;
+  right: 15px;
+  padding: 5px;
+  font-size: 20px;
+  color: white;
+  font-family: 'Newsreader', serif;
+}
+  </style>
+ </head>
+
+<div class="header">
+  <h1> JavaScript sivu2.html</h1>
+<div id="clock"></div>
+<script>
+function updateClock() {
+  var now = new Date();
+  var hours = now.getHours();
+  var minutes = now.getMinutes();
+  var seconds = now.getSeconds();
+  var timeString = padZero(hours) + ":" + padZero(minutes) + ":" + padZero(seconds);
+document.getElementById('clock').textContent = timeString;
+}
+
+function padZero(number) {
+  if (number < 10) {
+  return "0" + number;
+}
+ return number;
+}
+  setInterval(updateClock, 1000);
+  updateClock();
+</script>
+</div>
+<div class="row">
+  <div class="col-3 col-s-3 menu">
+    <ul>
+      <a href="index.html" id="eiviiva"><li> Tehtävä 1 - 6 </li></a>
+      <a href="sivu1.html" id="eiviiva"><li> Tehtävä 7 - 12 </li></a>
+      <a href="sivu2.html" id="eiviiva"><li> Tehtävä 13 - 18 </li></a>
+    </ul>
+</div>
+<div class="col-9 col-s-9">
+<!------------------------------------------------------------------->
+    <h3> Tehtävä 1 </h3>
+    <p> Lyhyesti, mitä koodaus tekee. </p>
+<div id="koodi"><pre>
+ <b>JS</b>
+  &LTscript>
+    function omaVaihda1() {
+      document.getElementById("teksti1").innerHTML =
+        "Uusi teksti.";
+    }
+  &LT/script>&LTbr>
+
+  &LTscript>
+    function omaVaihda2() {
+      document.getElementById("teksti2").innerHTML =
+        "Uusi teksti.";
+    }
+  &LT/script>
+
+ <b>HTML-koodaus</b>
+  &LTp id="teksti1"> Vaihdettava teksti &LT/p>
+  &LTbutton id="button" onclick="omaVaihda1()"> Klikkaa &LT/button>
+
+  &LTbutton id="button" onclick="omaVaihda2()"> Klikkaa &LT/button>
+  &LTp id="teksti2"> Vaihdettava teksti &LT/p>
+
+</pre></div>
+
+<script>
+  function omaVaihda1() {
+    document.getElementById("teksti1").innerHTML =
+      "Tervetuloa minun ensimmäinen JavaScriptin tehtävään.";
+  }
+
+  function omaVaihda2() {
+    document.getElementById("teksti2").innerHTML =
+      "Welcome to my first JavaScript task.";
+}
+</script>
+
+<p id="teksti1"> Tämä on minun ensimmäinen JavaScriptin tehtävää. </p>
+  <button id="button" onclick="omaVaihda1()"> Klikkaa Tästä</button>
+    <button id="button" onclick="omaVaihda2()"> Click Here </button>
+      <p id="teksti2"> This is my first JavaScript task. </p>
+
+<!------------------- END ------------------------------------------->
+
+<!------------------------------------------------------------------->
+    <h3> Tehtävä 2 </h3>
+    <p> Lyhyesti, mitä koodaus tekee. </p>
+<div id="koodi"><pre>
+  &LTp id="kuvateksti1">Millä tavalla?&LT/p>
+
+  &LTimg src="Image/trafficL1.jpg" onclick="hitimg1()" alt="Button1"
+    style="width: 100px; height: 85px; cursor: pointer;">
+
+  &LTimg src="Image/trafficR2.jpg" onclick="hitimg2()" alt="Button2"
+    style="width: 100px; height: 85px; cursor: pointer;">
+
+  &LTp id="kuvateksti2">Millä tavalla?&LT/p>
+
+  &LTscript>
+    var kuvateksti1 = "&LTspan style='color: blue; font-size: 27px;'> Käänny Vasemmalle! &LT/span>"
+    var kuvateksti2 = "&LTspan style='color: red; font-size: 28px;'> Käänny Oikealle! &LT/span>"
+
+    function hitimg1() {
+      document.getElementById("kuvateksti1").innerHTML = kuvateksti1;
+    }
+
+    function hitimg2() {
+      document.getElementById("kuvateksti2").innerHTML = kuvateksti2;
+    }
+  &LT/script>
+
+</pre></div>
+
+<p id="kuvateksti1">Millä tavalla?</p>
+
+<img src="Image/trafficL1.jpg" onclick="hitimg1()" alt="Button1"
+style="width: 100px; height: 85px; cursor: pointer;">
+
+<img src="Image/trafficR2.jpg" onclick="hitimg2()" alt="Button2"
+style="width: 100px; height: 85px; cursor: pointer;">
+
+<p id="kuvateksti2">Millä tavalla?</p>
+
+<script>
+  var kuvateksti1= "<span style='color: blue; font-size: 27px;'> Käänny Vasemmalle! </span>"
+  var kuvateksti2= "<span style='color: red; font-size: 28px;'> Käänny Oikealle! </span>"
+
+function hitimg1() {
+  document.getElementById("kuvateksti1").innerHTML = kuvateksti1;
+}
+
+function hitimg2() {
+  document.getElementById("kuvateksti2").innerHTML = kuvateksti2;
+}
+</script>
+
+<!------------------- END ------------------------------------------->
+
+<!------------------------------------------------------------------->
+    <h3> Tehtävä 3 </h3>
+    <p> Lyhyesti, mitä koodaus tekee. </p>
+<div id="koodi"><pre>
+  &LTp id="laskuA">&LT/p>
+
+  &LTscript>
+    var R1 = 10;
+    var R2 = 10;
+    var R3 = 10;
+
+    var Rkok = 1 / ((1 / R1) + (1 / R2) + (1 / R3));
+
+    document.getElementById("laskuA").innerHTML =
+      "&LTspan class='vari1'> R1 = " + R1 + "Ω &LT/span>&LTbr>" +
+      "&LTspan class='vari2'> R2 = " + R2 + "Ω &LT/span>&LTbr>" +
+      "&LTspan class='vari4'> R3 = " + R3 + "Ω &LT/span>&LTbr>" +
+      "&LTspan class='vari3'> Rkok = " + Rkok.toFixed(2) + " Ω &LT/p>";
+  &LT/script>
+</pre></div>
+
+<p id="laskuA"></p>
+
+  <script>
+  var R1 = 10;
+  var R2 = 10;
+  var R3 = 10;
+
+  var Rkok = 1 / ((1 / R1) + (1 / R2) + (1 / R3));
+
+  document.getElementById("laskuA").innerHTML =
+  "<span class='vari6'> R1 = " + R1 + "Ω </span><br>" +
+  "<span class='vari5'> R2 = " + R2 + "Ω </span><br>" +
+  "<span class='vari4'> R3 = " + R3 + "Ω </span><br>" +
+  "<span class='vari3'> Rkok = " + Rkok.toFixed(2) +  " Ω </span>";
+  </script>
+
+<!------------------- END ------------------------------------------->
+
+<!------------------------------------------------------------------->
+    <h3> Tehtävä 4 </h3>
+    <p> Lyhyesti, mitä koodaus tekee. </p>
+<div id="koodi"><pre>
+
+&LTp id="demo">&LT/p>
+&LTh2>Seitsemmän Velje&LT/h2>
+
+&LTscript>
+  document.getElementById("demo").innerHTML = document.title;
+&LT/script>
+&LTp class="vari4" id="seitsemän-velje_teksti1">&LT/p>
+
+&LTscript>
+  document.getElementById("seitsemän-velje_teksti1").style.fontFamily = "'Great Vibes', cursive";
+  document.getElementById("seitsemän-velje_teksti1").innerHTML =
+    "Jukolan talo sijaitsee eteläisessä Hämeessä. \
+        Karhunmetsästyksessä kuollut isäntä on jättänyt talon viljelykset hunningolle, \
+        emäntä on jäänyt huolehtimaan talosta seitsemän poikansa kanssa. \
+        Veljeksistä vanhin on Juhani, seuraavaksi tulevat kaksoset Tuomas ja Aapo, Simeoni sekä kaksoset Timo ja Lauri. \
+        Veljessarjan nuorin on nimeltään Eero. Nuorena pojat olivat välillä aika vallattomia. \
+        Kerran, Eeron vielä ollessa äitinsä helmoissa kotona, kuusi vanhinta veljestä varasti naapurista kananmunia ja \
+        karkasi sitten metsään. \
+        Karkulaisten elämä metsässä kesti muutaman päivän ennen kuin äiti apujoukkoineen löysi heidät. Seurasi kova löylytys.";
+&LT/script>
+
+&LTp class="vari5" id="seitsemän-velje_teksti2">&LT/p>
+
+&LTscript>
+  document.getElementById("seitsemän-velje_teksti2").style.fontFamily = "italic";
+  document.getElementById("seitsemän-velje_teksti2").innerHTML =
+    "Äidin kuoltua huoleton meno talossa jatkui, kunnes Aapo puhui veljilleen järkeä:\
+         talon työt on saatava käyntiin ja lukemaankin pitäisi jokaisen oppia tullakseen yhteiskunnan täysivaltaiseksi jäseneksi.\
+         Aapo saa kannatusta, sitä paitsi Juhani on sitä mieltä, että talo tarvitsee myös emännän.\
+         Hän tunnustaa jo pitkään katselleensa Männistön Venlaa sillä silmällä.\
+         Lauria lukuun ottamatta kaikki veljekset tekevät saman tunnustuksen.\
+         Tappelun ollessa jo puhkeamassa Aapo ehdottaa, että he antavat Venlan päättää, kenet hän haluaa miehekseen.\
+         Tähän tyytyvät kaikki, sen lisäksi päättävät he lopultakin opetella lukemaan.";
+&LT/script>
+
+</pre></div>
+
+<p id="demo"></p>
+<h2>Seitsemmän Velje</h2>
+
+<script>
+  document.getElementById("demo").innerHTML = document.title;
+</script>
+<p class="vari4" id="seitsemän-velje_teksti1"></p>
+
+<script>
+  document.getElementById("seitsemän-velje_teksti1").style.fontFamily =  "'Great Vibes', cursive";
+  document.getElementById("seitsemän-velje_teksti1").innerHTML =
+    "Jukolan talo sijaitsee eteläisessä Hämeessä. \
+        Karhunmetsästyksessä kuollut isäntä on jättänyt talon viljelykset hunningolle, \
+        emäntä on jäänyt huolehtimaan talosta seitsemän poikansa kanssa. \
+        Veljeksistä vanhin on Juhani, seuraavaksi tulevat kaksoset Tuomas ja Aapo, Simeoni sekä kaksoset Timo ja Lauri. \
+        Veljessarjan nuorin on nimeltään Eero. Nuorena pojat olivat välillä aika vallattomia. \
+        Kerran, Eeron vielä ollessa äitinsä helmoissa kotona, kuusi vanhinta veljestä varasti naapurista kananmunia ja\
+         karkasi sitten metsään. \
+        Karkulaisten elämä metsässä kesti muutaman päivän ennen kuin äiti apujoukkoineen löysi heidät. Seurasi kova löylytys.";
+</script>
+
+  <p class="vari5" id="seitsemän-velje_teksti2"></p>
+
+  <script>
+  document.getElementById("seitsemän-velje_teksti2").style.fontFamily = "italic";
+  document.getElementById("seitsemän-velje_teksti2").innerHTML =
+        "Äidin kuoltua huoleton meno talossa jatkui, kunnes Aapo puhui veljilleen järkeä:\
+         talon työt on saatava käyntiin ja lukemaankin pitäisi jokaisen oppia tullakseen yhteiskunnan täysivaltaiseksi jäseneksi.\
+         Aapo saa kannatusta, sitä paitsi Juhani on sitä mieltä, että talo tarvitsee myös emännän.\
+         Hän tunnustaa jo pitkään katselleensa Männistön Venlaa sillä silmällä.\
+         Lauria lukuun ottamatta kaikki veljekset tekevät saman tunnustuksen.\
+         Tappelun ollessa jo puhkeamassa Aapo ehdottaa, että he antavat Venlan päättää, kenet hän haluaa miehekseen.\
+         Tähän tyytyvät kaikki, sen lisäksi päättävät he lopultakin opetella lukemaan.";
+      </script>
+
+<!------------------- END ------------------------------------------->
+
+<!------------------------------------------------------------------->
+    <h3> Tehtävä 5 </h3>
+    <p> Lyhyesti, mitä koodaus tekee. </p>
+<div id="koodi"><pre>
+
+  &LTp id="lasku">&LT/p>
+
+  &LTscript>
+    var lasku = [[10, 20, 30, 40, 0, 0],
+    [50, 60, 70, 80, 0, 0],
+    [90, 40, 50, 20, 0, 0]];
+
+    lasku[0][5] = lasku[0][0] + lasku[0][1] + lasku[0][2] + lasku[0][3];
+    lasku[0][4] = lasku[0][5] / 4;
+    lasku[1][5] = lasku[1][0] + lasku[1][1] + lasku[1][2] + lasku[1][3];
+    lasku[1][4] = lasku[1][5] / 4;
+    lasku[2][5] = lasku[2][0] + lasku[2][1] + lasku[2][2] + lasku[2][3];
+    lasku[2][4] = lasku[2][5] / 4;
+    document.getElementById("lasku").innerHTML =
+      "&LTtable class='vari4'>&LTtr>" +
+      "&LTth> Luku 1 &LT/th>&LTth> Luku 2 &LT/th>&LTth> Luku 3 &LT/th>&LTth> Luku 4 &LT/th>&LTth> keskiarvo &LT/th>&LTth> yhteensä &LT/th>" +
+      "&LTtr>&LTtd>" + lasku[0][0] + "&LT/td>&LTtd>" + lasku[0][1] + "&LT/td>&LTtd>" + lasku[0][2] + "&LT/td>&LTtd>" + lasku[0][3] +
+       "&LT/td>&LTtd>" + lasku[0][4] + "&LT/td>&LTtd>" + lasku[0][5] + "&LT/tr>&LT/td>" +
+      "&LTtr>&LTtd>" + lasku[1][0] + "&LT/td>&LTtd>" + lasku[1][1] + &LT/td>&LTtd>" + lasku[1][2] + "&LT/td>&LTtd>" + lasku[1][3] +
+       "&LT/td>&LTtd>" + lasku[1][4] + "&LT/td>&LTtd>" + lasku[1][5] + "&LT/tr>&LT/td>" +
+      "&LTtr>&LTtd>" + lasku[2][0] + "&LT/td>&LTtd>" + lasku[2][1] + &LT&LT/td>&LTtd>" + lasku[2][2] + "&LT/td>&LTtd>" + lasku[2][3] +
+       "&LT/td>&LTtd>" + lasku[2][4] + "&LT/td>&LTtd>" + lasku[2][5] + "&LT/tr>&LT/td>" +
+      "&LT/table>"
+  &LT/script>
+</pre></div>
+
+<p id="lasku"></p>
+
+<script>
+var lasku = [[10, 20, 30, 40, 0, 0],
+             [50, 60, 70, 80, 0, 0],
+             [90, 40, 50, 20, 0, 0]];
+
+ lasku[0][5] = lasku[0][0] + lasku[0][1] + lasku[0][2] + lasku[0][3];
+ lasku[0][4] = lasku[0][5] /4;
+ lasku[1][5] = lasku[1][0] + lasku[1][1] + lasku[1][2] + lasku[1][3];
+ lasku[1][4] = lasku[1][5] /4;
+ lasku[2][5] = lasku[2][0] + lasku[2][1] + lasku[2][2] + lasku[2][3];
+ lasku[2][4] = lasku[2][5] /4;
+document.getElementById("lasku").innerHTML =
+"<table class='vari4'><tr>" +
+"<th> Luku 1 </th><th> Luku 2 </th><th> Luku 3 </th><th> Luku 4 </th><th> keskiarvo </th><th> yhteensä </th>" +
+"<tr><td>" + lasku[0][0] + "</td><td>" + lasku[0][1] + "</td><td>" + lasku[0][2] + "</td><td>" + lasku[0][3] +
+  "</td><td>" + lasku[0][4] + "</td><td>" + lasku[0][5] + "</tr></td>" +
+"<tr><td>" + lasku[1][0] + "</td><td>" + lasku[1][1] + "</td><td>" + lasku[1][2] + "</td><td>" + lasku[1][3] +
+   "</td><td>" + lasku[1][4] + "</td><td>" + lasku[1][5] + "</tr></td>" +
+"<tr><td>" + lasku[2][0] + "</td><td>" + lasku[2][1] + "</td><td>" + lasku[2][2] + "</td><td>" + lasku[2][3] +
+   "</td><td>" + lasku[2][4] + "</td><td>" + lasku[2][5] + "</tr></td>" +
+"</table>"
+</script>
+
+
+
+<!------------------- END ------------------------------------------->
+
+<!------------------------------------------------------------------->
+    <h3> Tehtävä 6 </h3>
+    <p> Lyhyesti, mitä koodaus tekee. </p>
+<div id="koodi"><pre>
+
+ &LTdiv id="taulu">&LT/div>
+
+  &LTscript>
+
+    var autot = [["V60 D3 Momentum", "110/150", "137", 35500, 5555.97, "0"],
+    ["V60 D3 Momentum aut", "110/150", "150", 38400, 6747.80, "0"],
+    ["V60 D3 AWD Momentum aut", "110/150", "150", 38400, 7697.43, "0"],
+    ["V60 D4 Momentum", "140/190", "138", 38000, 6047.60, "0"],
+    ["V60 D4 Momentum aut", "140/190", "145", 39100, 7094.55, "0"],
+    ["V60 D4 AWD Momentum aut", "140/190", "150", 40600, 8141.49, "0"]];
+
+    autot[0][5] = (autot[0][3] + autot[0][4]);
+    autot[1][5] = (autot[1][3] + autot[1][4]);
+    autot[2][5] = (autot[2][3] + autot[2][4]);
+    autot[3][5] = (autot[3][3] + autot[3][4]);
+    autot[4][5] = (autot[4][3] + autot[4][4]);
+    autot[5][5] = (autot[5][3] + autot[5][4]);
+
+
+    document.getElementById("taulu").innerHTML =
+      "&LTtable class='Malli'>" +
+      "&LTtr>&LTth> Malli  &LT/th>  &LTth> Suurin teho kw/hv &LT/th> &LTth> Arviotu Co^2 &LT/th> &LTth> Autoveroton hinta alv 24% &LT/th> &LTth> Arvioitu Atuvero &LT/th> &LTth> Kokonaishinta &LT/th>&LT/tr>" +
+      "&LTtr>&LTtd>" + "DIESEL" + "&LT/td> &LTtd>" + "&LT/td> &LTtd>" + "&LT/td> &LTtd>" + "€" + "&LT/td> &LTtd>" + "€" + "&LT/td> &LTtd>" + "€" + "&LT/tr> &LT/td>" +
+      "&LTtr>&LTtd>" + autot[0][0] + "&LT/td> &LTtd>" + autot[0][1] + "&LT/td> &LTtd>" + autot[0][2] + "&LT/td> &LTtd>" +
+       autot[0][3] + "&LT/td> &LTtd>" + autot[0][4] + "&LT/td> &LTtd>" + autot[0][5] + "&LT/td> &LT/tr>" +
+      "&LTtr>&LTtd>" + autot[1][0] + "&LT/td> &LTtd>" + autot[1][1] + "&LT/td> &LTtd>" + autot[1][2] + "&LT/td> &LTtd>" +
+       autot[1][3] + "&LT/td> &LTtd>" + autot[1][4] + "&LT/td> &LTtd>" + autot[1][5] + "&LT/td> &LT/tr>" +
+      "&LTtr>&LTtd>" + autot[2][0] + "&LT/td> &LTtd>" + autot[2][1] + "&LT/td> &LTtd>" + autot[2][2] + "&LT/td> &LTtd>" +
+       autot[2][3] + "&LT/td> &LTtd>" + autot[2][4] + "&LT/td> &LTtd>" + autot[2][5] + "&LT/td> &LT/tr>" +
+      "&LTtr>&LTtd>" + autot[3][0] + "&LT/td> &LTtd>" + autot[3][1] + "&LT/td> &LTtd>" + autot[3][2] + "&LT/td> &LTtd>" +
+       autot[3][3] + "&LT/td> &LTtd>" + autot[3][4] + "&LT/td> &LTtd>" + autot[3][5] + "&LT/td> &LT/tr>" +
+      "&LTtr>&LTtd>" + autot[4][0] + "&LT/td> &LTtd>" + autot[4][1] + "&LT/td> &LTtd>" + autot[4][2] + "&LT/td> &LTtd>" +
+       autot[4][3] + "&LT/td> &LTtd>" + autot[4][4] + "&LT/td> &LTtd>" + autot[4][5] + "&LT/td> &LT/tr>" +
+      "&LTtr>&LTtd>" + autot[5][0] + "&LT/td> &LTtd>" + autot[5][1] + "&LT/td> &LTtd>" + autot[5][2] + "&LT/td> &LTtd>" +
+       autot[5][3] + "&LT/td> &LTtd>" + autot[5][4] + "&LT/td> &LTtd>" + autot[5][5] + "&LT/td> &LT/tr>" +
+      "&LT/table>";
+  &LT/script>
+
+</pre></div>
+
+<div id="taulu"></div>
+
+<script>
+
+  var autot = [["V60 D3 Momentum", "110/150", "137", 35500, 5555.97, "0"],
+  ["V60 D3 Momentum aut", "110/150", "150", 38400, 6747.80, "0"],
+  ["V60 D3 AWD Momentum aut", "110/150", "150", 38400, 7697.43, "0"],
+  ["V60 D4 Momentum", "140/190", "138", 38000, 6047.60, "0"],
+  ["V60 D4 Momentum aut", "140/190", "145", 39100, 7094.55, "0"],
+  ["V60 D4 AWD Momentum aut", "140/190", "150", 40600, 8141.49, "0"]];
+
+  autot[0][5] = (autot[0][3] + autot[0][4]);
+  autot[1][5] = (autot[1][3] + autot[1][4]);
+  autot[2][5] = (autot[2][3] + autot[2][4]);
+  autot[3][5] = (autot[3][3] + autot[3][4]);
+  autot[4][5] = (autot[4][3] + autot[4][4]);
+  autot[5][5] = (autot[5][3] + autot[5][4]);
+
+
+  document.getElementById("taulu").innerHTML =
+    "<table class='Malli'>" +
+    "<tr><th>Malli</th><th>Suurin teho kw/hv</th><th>Arviotu Co^2</th><th>Autoveroton hinta alv 24%</th><th>Arvioitu Atuvero</th><th>Kokonaishinta</th></tr>" +
+    "<tr><td>" + "DIESEL" + "</td><td>" + "</td><td>" + "</td><td>" + "€" + "</td><td>" + "€" + "</td><td>" + "€" + "</tr></td>" +
+    "<tr><td>" + autot[0][0] + "</td> <td>" + autot[0][1] + "</td> <td>" + autot[0][2] + "</td> <td>" + autot[0][3] +
+       "</td> <td>" + autot[0][4] + "</td> <td>" + autot[0][5] + "</td> </tr>" +
+    "<tr><td>" + autot[1][0] + "</td> <td>" + autot[1][1] + "</td> <td>" + autot[1][2] + "</td> <td>" + autot[1][3] +
+       "</td> <td>" + autot[1][4] + "</td> <td>" + autot[1][5] + "</td> </tr>" +
+    "<tr><td>" + autot[2][0] + "</td> <td>" + autot[2][1] + "</td> <td>" + autot[2][2] + "</td> <td>" + autot[2][3] + 
+      "</td> <td>" + autot[2][4] + "</td> <td>" + autot[2][5] + "</td> </tr>" +
+    "<tr><td>" + autot[3][0] + "</td> <td>" + autot[3][1] + "</td> <td>" + autot[3][2] + "</td> <td>" + autot[3][3] + 
+      "</td> <td>" + autot[3][4] + "</td> <td>" + autot[3][5] + "</td> </tr>" +
+    "<tr><td>" + autot[4][0] + "</td> <td>" + autot[4][1] + "</td> <td>" + autot[4][2] + "</td> <td>" + autot[4][3] +
+       "</td> <td>" + autot[4][4] + "</td> <td>" + autot[4][5] + "</td> </tr>" +
+    "<tr><td>" + autot[5][0] + "</td> <td>" + autot[5][1] + "</td> <td>" + autot[5][2] + "</td> <td>" + autot[5][3] +
+       "</td> <td>" + autot[5][4] + "</td> <td>" + autot[5][5] + "</td> </tr>" +
+    "</table>";
+  </script>
+
+<!------------------- END ------------------------------------------->
+
+
+<!---------- ÄLÄ HUKKAA -------------------------------------------->
+</div>
+</div>
+
+   <div class="footer">
+     <p> © 2023 Aziz Rahman Noyan . Kaikki oikeudet pidätetään. </p>
+   </div>
+
+ </body>
+</html>

@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="muotoilu.css">
+  <link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@300&family=Cinzel&family=Jura&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@300;900&family=Orbitron:wght@600&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@1,6..72,300&family=Tangerine:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+
+#koodi{
+  font-family: 'Newsreader';
+}
+.taulu td, tr{
+  font-family: 'Newsreader', serif;
+  border-collapse: collapse;
+  width: 100%;
+  color: MidnightBlue;
+  }
+.tr, td, th{
+  border: 2px solid #5e4263d9;
+  padding: 4px;
+  }
+tr:nth-child(even){
+  background-color: RGB(18, 213, 213);
+  }
+.tr:hover {
+  background-color: #ddd;
+  }
+th {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  text-align: left;
+  background-color: #5e4263d9;
+  color: wheat;
+}
+
+#teksti1{color:rgb(9, 72, 232);}
+#teksti2{color:rgb(205, 32, 70);}
+.vari1{color:green;}
+.vari2{color:black;}
+.vari3{color:red;}
+.vari4{color:blue;}
+.vari5{color:tomato;}
+.vari6{color:purple;}
+
+#painikeLaatikko {
+  width: 200px;
+  height: 50px;
+  padding: 7px;
+  margin: 15px;
+  border: 1px solid green;
+  box-shadow: 5px 5px 5px rgb(128, 128, 128);
+  text-align: center;
+  font-size: 18px;
+  color: white;
+  background-color: Navy;
+}
+
+#vastusLaatikko {
+  width: 200px;
+  height: 50px;
+  padding: 7px;
+  margin: 15px;
+  border: 1px solid green;
+  box-shadow: 5px 5px 5px rgb(128, 128, 128);
+  text-align: center;
+  font-size: 18px;
+  background-color: Navy;
+  color: white}
+
+#clock {
+  position: absolute;
+  top: 20px;
+  right: 15px;
+  padding: 5px;
+  font-size: 20px;
+  color: white;
+  font-family: 'Newsreader', serif;
+}
+</style>
+ </head>
+ <body>
+
+  <div class="header">
+     <h1> JavaScript sivu1.html</h1>
+<div id="clock"></div>
+<script>
+function updateClock() {
+  var now = new Date();
+  var hours = now.getHours();
+  var minutes = now.getMinutes();
+  var seconds = now.getSeconds();
+  var timeString = padZero(hours) + ":" + padZero(minutes) + ":" + padZero(seconds);
+document.getElementById('clock').textContent = timeString;
+}
+function padZero(number) {
+  if (number < 10) {
+  return "0" + number;
+}
+ return number;
+}
+  setInterval(updateClock, 1000);
+  updateClock();
+</script>
+  </div>
+
+   <div class="row">
+
+  <div class="col-3 col-s-3 menu">
+      <ul>
+       <a href="index.html" id="eiviiva"><li> Tehtävä  1 - 6  </li></a>
+       <a href="sivu1.html" id="eiviiva"><li> Tehtävä  7 - 12 </li></a>
+       <a href="sivu2.html" id="eiviiva"><li> Tehtävä 13 - 18 </li></a>
+      </ul>
+  </div>
+
+  <div class="col-9 col-s-9">
+<!------------------------------------------------------------------->
+    <h3> Tehtävä 7 </h3>
+    <p> Lyhyesti, mitä koodaus tekee. </p>
+<div id="koodi"><pre>
+
+  &LTspan id="sarja">&LT/span>
+  &LTspan id="rinnan">&LT/span>
+
+  &LTscript>
+    var R1 = 50, R2 = 10, R3 = 30, Rsarja, Rrinnan;
+
+    function kolmeSarjaan() {
+      Rsarja = R1 + R2 + R3;
+      return Rsarja;
+    }
+
+    document.getElementById("sarja").innerHTML =
+      "&LTspan style='color: purple;'>R1 = " + R1 + " Ω&LT/span>&LTbr>" +
+      "&LTspan style='color: green;'>R2 = " + R2 + " Ω&LT/span>&LTbr>" +
+      "&LTspan style='color: blue;'>R3 = " + R3 + " Ω&LT/span>&LTbr>" +
+      "&LTspan style='color: red;'> Sarja = " + kolmeSarjaan(R1, R2, R3).toFixed(2) + " Ω&LT/span>&LTbr>";
+
+    function kolmeRinnan() {
+      var Rrinnan = 1 / ((1 / R1) + (1 / R2) + (1 / R3));
+      return Rrinnan;
+    }
+
+    document.getElementById("rinnan").innerHTML =
+      "&LTspan style='color: MediumSlateBlue;'> Rinnan = " + kolmeRinnan(R1, R2, R3).toFixed(2) + "Ω&LT/span>";
+
+  &LT/script>
+
+</pre></div>
+
+<span id="sarja"></span>
+<span id="rinnan"></span>
+
+<script>
+  var R1 = 50, R2 = 10, R3 = 30, Rsarja, Rrinnan;
+
+function kolmeSarjaan() {
+  Rsarja = R1 + R2 + R3;
+  return Rsarja;
+}
+
+document.getElementById("sarja").innerHTML =
+  "<span style='color: purple;'>R1 = " + R1 + " Ω</span><br>" +
+  "<span style='color: green;'>R2 = " + R2 + " Ω</span><br>" +
+  "<span style='color: blue;'>R3 = " + R3 + " Ω</span><br>" +
+  "<span style='color: red;'> Sarja = " + kolmeSarjaan(R1, R2, R3).toFixed(2) + " Ω</span><br>";
+
+function kolmeRinnan() {
+  var Rrinnan = 1 / ((1 / R1) + (1 / R2) + (1 / R3));
+  return Rrinnan;
+}
+
+document.getElementById("rinnan").innerHTML =
+  "<span style='color: MediumSlateBlue;'> Rinnan = " + kolmeRinnan(R1, R2, R3).toFixed(2) + "Ω</span>";
+
+</script>
+
+
+<!------------------- END ------------------------------------------->
+
+<!------------------------------------------------------------------->
+    <h3> Tehtävä 8 </h3>
+    <p> Lyhyesti, mitä koodaus tekee. </p>
+<div id="koodi"><pre>
+
+&LTh2>Pallon Pinta-ala ja Tilavuus&LT/h2>
+&LTp id="sade" class="vari5">&LT/p>
+&LTp id="Pallon_pinta-ala" class="vari5">&LT/p>
+  &LTp id="Pallon_tilavuus" class="vari2">&LT/p>
+
+&LTscript>
+  function laskePallonPintaAla(sade) {
+    return (4 * Math.PI * Math.pow(sade, 2)).toFixed(2);
+}
+  function laskePallonTilavuus(sade) {
+    return ((4 / 3) * Math.PI * Math.pow(sade, 3)).toFixed(2);
+}
+var sade = 5;
+  document.getElementById("sade").innerHTML =
+  "&LTspan class='vari1'> Säde pallon: " + sade + "&LT/span>";
+
+var pintaAla = laskePallonPintaAla(sade);
+  document.getElementById("Pallon_pinta-ala").innerHTML =
+  "&LTspan class='vari3'> Pallon pinta-ala: " + pintaAla + " neliöyksikköä&LT/span>";
+
+var tilavuus = laskePallonTilavuus(sade);
+  document.getElementById("Pallon_tilavuus").innerHTML =
+  "&LTspan class='vari4'> Pallon tilavuus: " + tilavuus + " kuutiometriä&LT/span>";
+
+  &LT/script>
+</pre></div>
+
+<h4>Pallon Pinta-ala ja Tilavuus</h4>
+
+<p id="sade" class="vari5"></p>
+<p id="Pallon_pinta-ala" class="vari5"></p>
+<p id="Pallon_tilavuus" class="vari2"></p>
+
+<script>
+function laskePallonPintaAla(sade) {
+  return (4 * Math.PI * Math.pow(sade, 2)).toFixed(2);
+}
+
+function laskePallonTilavuus(sade) {
+  return ((4 / 3) * Math.PI * Math.pow(sade, 3)).toFixed(2);
+}
+
+var sade = 5;
+
+document.getElementById("sade").innerHTML =
+  "<span class='vari1'> Säde pallon: " + sade + "</span>";
+
+var pintaAla = laskePallonPintaAla(sade);
+  document.getElementById("Pallon_pinta-ala").innerHTML =
+  "<span class='vari3'> Pallon pinta-ala: " + pintaAla + " neliöyksikköä </span>";
+
+var tilavuus = laskePallonTilavuus(sade);
+  document.getElementById("Pallon_tilavuus").innerHTML =
+  "<span class='vari4'> Pallon tilavuus: " + tilavuus + " kuutiometriä </span>";
+
+</script>
+
+
+<!------------------- END ------------------------------------------->
+
+<!------------------------------------------------------------------->
+    <h3> Tehtävä 9 </h3>
+    <p> Lyhyesti, mitä koodaus tekee. </p>
+<div id="koodi"><pre>
+
+  &LTh4>Vastusten Rinnankytkentä&LT/h4>
+  &LTdiv id="tulokset">&LT/div>
+
+  &LTscript>
+    var R = [10, 20, 30, 0];
+    R[3] = 1 / ((1 / R[0]) + (1 / R[1]) + (1 / R[2]));
+    var Rkok = R[3].toFixed(2);
+
+    var tuloksetElementti = document.getElementById("tulokset");
+    for (var i = 0; i < 3; i++) {
+      tuloksetElementti.innerHTML +=
+        "&LTspan style='color: " + (i === 0 ? 'purple' : i === 1 ? 'green' : 'blue') + "'> R" + (i + 1) +
+        " = " + R[i] + " Ω &LT/span>&LTbr>";
+    }
+    tuloksetElementti.innerHTML +=
+      "&LTspan style='color: red;'> Rkok = " + Rkok + " Ω &LT/span>";
+  &LT/script>
+
+</pre></div>
+
+<h4>Vastusten Rinnankytkentä</h4>
+<div id="tulokset"></div>
+
+<style>
+
+</style>
+
+<script>
+var R = [10, 20, 30, 0];
+      R[3] = 1 / ((1/R[0]) + (1/R[1]) + (1/R[2]));
+var Rkok = R[3].toFixed(2);
+
+var tuloksetElementti = document.getElementById("tulokset");
+for (var i = 0; i < 3; i++) {
+  tuloksetElementti.innerHTML +=
+    "<span style='color: " + (i === 0 ? 'purple' : i === 1 ? 'green' : 'blue') + "'> R" + (i + 1) +
+    " = " + R[i] + " Ω </span><br>";
+}
+  tuloksetElementti.innerHTML +=
+    "<span style='color: red;'> Rkok = " + Rkok + " Ω </span>";
+</script>
+
+<!------------------- END ------------------------------------------->
+
+<!------------------------------------------------------------------->
+    <h3> Tehtävä 10 </h3>
+    <p> Lyhyesti, mitä koodaus tekee. </p>
+<div id="koodi"><pre>
+
+&LTp id="tuote1">&LT/p>
+&LTp id="tuote2">&LT/p>
+
+&LTscript>
+  var poravasaraMerkki = "Bosch";
+  var poravasaraHinta = 150.00;
+
+  var toinenLaiteMerkki = "Sony";
+  var toinenLaiteHinta = 245.50;
+
+  document.getElementById("tuote1").innerHTML =
+    "&LTspan class='vari1'>Porvasaran merkki:  " + poravasaraMerkki + "&LT/span>" +
+    "&LTbr>&LTspan class='vari6'> Hinta: " + poravasaraHinta + " euroa&LT/span>"
+
+  omaMakaroni();
+  function omaMakaroni() {
+    document.getElementById("tuote2").innerHTML =
+      "&LTspan class='vari3'>Toisen laitteen tyyppimerkintä: " + toinenLaiteMerkki + "&LT/span>" +
+      "&LTbr>&LTspan class='vari4'>Hinta: " + toinenLaiteHinta + " euroa&LT/span>";
+  }
+&LT/script>
+
+</pre></div>
+
+<p id="tuote1"></p>
+<p id="tuote2"></p>
+
+<script>
+  var poravasaraMerkki = "Bosch";
+  var poravasaraHinta = 150.00;
+
+  var toinenLaiteMerkki = "Sony";
+  var toinenLaiteHinta = 245.50;
+
+  document.getElementById("tuote1").innerHTML =
+    "<span class='vari1'>Porvasaran merkki:  " + poravasaraMerkki + "</span>" +
+    "<br><span class='vari6'> Hinta: " + poravasaraHinta + " euroa</span>"
+
+  omaMakaroni();
+  function omaMakaroni() {
+    document.getElementById("tuote2").innerHTML =
+      "<span class='vari3'>Toisen laitteen tyyppimerkintä: " + toinenLaiteMerkki + "</span>" +
+      "<br><span class='vari4'>Hinta: " + toinenLaiteHinta + " euroa</span>";
+  }
+</script>
+
+<!------------------- END ------------------------------------------->
+
+<!------------------------------------------------------------------->
+    <h3> Tehtävä 11 </h3>
+    <p> Lyhyesti, mitä koodaus tekee. </p>
+<div id="koodi"><pre>
+
+  &LTdiv id="painikeLaatikko" oncontextmenu="return false;">
+    Paina hiiren painikkeita tässä laatikossa.
+  &LT/div>
+
+  &LTscript>
+    var laatikko = document.getElementById("painikeLaatikko");
+
+    laatikko.addEventListener("mousedown", function (event) {
+      event.preventDefault();
+
+      var teksti = "";
+      var vari = "";
+
+      if (event.which === 1) {
+        teksti = "Vasen painike";
+        vari = "yellow";
+      } else if (event.which === 2) {
+        teksti = "Keskimmäinen painike";
+        vari = "Chartreuse";
+      } else if (event.which === 3) {
+        teksti = "Oikea painike";
+        vari = "RGB(18, 213, 213)";
+      }
+
+      laatikko.innerHTML = teksti;
+      laatikko.style.backgroundColor = vari;
+    });
+  &LT/script>
+</pre></div>
+
+<div id="painikeLaatikko" oncontextmenu="return false;">
+  Paina hiiren painikkeita tässä laatikossa.
+</div>
+
+<script>
+  var laatikko = document.getElementById("painikeLaatikko");
+
+  laatikko.addEventListener("mousedown", function (event) {
+    event.preventDefault();
+
+    var teksti = "";
+    var vari = "";
+
+    if (event.which === 1) {
+      teksti = "Vasen painike";
+      vari = "SlateBlue";
+    } else if (event.which === 2) {
+      teksti = "Keskimmäinen painike";
+      vari = "CornflowerBlue";
+    } else if (event.which === 3) {
+      teksti = "Oikea painike";
+      vari = "DarkCyan";
+    }
+
+    laatikko.innerHTML = teksti;
+    laatikko.style.backgroundColor = vari;
+  });
+</script>
+
+<!------------------- END ------------------------------------------->
+
+<!------------------------------------------------------------------->
+    <h3> Tehtävä 12 </h3>
+    <p> Lyhyesti, mitä koodaus tekee. </p>
+<div id="koodi"><pre>
+
+  &LTdiv id="vastusLaatikko">
+    Paina hiiren painikkeita tässä laatikossa.
+  &LT/div>
+
+  &LTscript>
+    var vastusLaatikko = document.getElementById("vastusLaatikko");
+
+    vastusLaatikko.addEventListener("mousedown", function (event) {
+      event.preventDefault();
+
+      var sarjaVastus = 100;
+      var rinnanVastus = 200;
+      var teksti = "Se on hiiren painikkeita vasatuksen";
+
+      if (event.altKey && event.button === 0) {
+        teksti = "Rinnankytkennän tulos: " + rinnanVastus + " Ω";
+      } else if (event.button === 0) {
+        teksti = "Sarjakytkennän tulos: " + sarjaVastus + " Ω";
+      }
+
+      vastusLaatikko.innerHTML = teksti;
+    });
+  &LT/script>
+
+</pre></div>
+
+<div id="vastusLaatikko">
+  Paina hiiren painikkeita tässä laatikossa.
+</div>
+
+<script>
+  var vastusLaatikko = document.getElementById("vastusLaatikko");
+
+  vastusLaatikko.addEventListener("mousedown", function (event) {
+    event.preventDefault();
+
+    var sarjaVastus = 100;
+    var rinnanVastus = 200;
+    var teksti = "Se on hiiren painikkeita vasatuksen";
+
+    if (event.altKey && event.button === 0) {
+      teksti = "Rinnankytkennän tulos: " + rinnanVastus + " Ω";
+    } else if (event.button === 0) {
+      teksti = "Sarjakytkennän tulos: " + sarjaVastus + " Ω";
+    }
+
+    vastusLaatikko.innerHTML = teksti;
+  });
+</script>
+
+<!------------------- END ------------------------------------------->
+
+
+
+<!---------- ÄLÄ HUKKAA -------------------------------------------->
+  </div>
+  </div>
+  <div class="footer">
+     <p> © 2023 Aziz Rahman Noyan . Kaikki oikeudet pidätetään. </p>
+  </div>
+
+ </body>
+</html>

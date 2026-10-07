@@ -1,0 +1,516 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+:root {
+    --primary: #C67C4E;
+    --primary-dark: #A0522D;
+    --dark: #2C1810;
+    --light: #f8f9fa;
+    --success: #28a745;
+    --warning: #ffc107;
+    --danger: #dc3545;
+}
+
+.profile-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.profile-header {
+    background: linear-gradient(135deg, var(--dark) 0%, #3D2518 100%);
+    border-radius: 28px;
+    padding: 40px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(198,124,78,0.1) 0%, transparent 70%);
+    animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+.profile-avatar {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-avatar img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--primary);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.avatar-upload {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: var(--primary);
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid white;
+}
+
+.avatar-upload:hover {
+    transform: scale(1.1);
+    background: var(--primary-dark);
+}
+
+.profile-name {
+    margin-top: 20px;
+}
+
+.profile-name h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 5px;
+}
+
+.profile-name p {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.9rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(198,124,78,0.1);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(198,124,78,0.15);
+    border-color: var(--primary);
+}
+
+.stat-icon {
+    font-size: 40px;
+    color: var(--primary);
+    margin-bottom: 15px;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    color: #666;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.profile-card {
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+.card-header-custom {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    padding: 20px 25px;
+}
+
+.card-header-custom h4 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.card-header-custom i {
+    margin-right: 10px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 8px;
+    display: block;
+}
+
+.form-label i {
+    color: var(--primary);
+    margin-right: 8px;
+    width: 20px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #E0E0E0;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(198,124,78,0.1);
+}
+
+.form-control:disabled {
+    background: var(--light);
+    color: #666;
+}
+
+.btn-update {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-update:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(198,124,78,0.4);
+}
+
+.birthday-alert {
+    background: linear-gradient(135deg, var(--warning), #e0a800);
+    color: var(--dark);
+    border-radius: 16px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.birthday-alert i {
+    font-size: 24px;
+}
+
+.birthday-alert .btn-claim {
+    background: white;
+    color: var(--warning);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.birthday-alert .btn-claim:hover {
+    transform: scale(1.05);
+}
+
+.danger-zone {
+    background: #fff5f5;
+    border: 1px solid var(--danger);
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.danger-zone h5 {
+    color: var(--danger);
+    margin-bottom: 10px;
+}
+
+.danger-zone p {
+    color: #666;
+    font-size: 0.85rem;
+    margin-bottom: 15px;
+}
+
+.btn-danger-custom {
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-danger-custom:hover {
+    background: #c82333;
+    transform: translateY(-2px);
+}
+
+.referral-box {
+    background: var(--light);
+    border-radius: 16px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.referral-code {
+    font-family: monospace;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary);
+    background: white;
+    padding: 8px 15px;
+    border-radius: 30px;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+    
+    .profile-header {
+        padding: 30px 20px;
+    }
+    
+    .profile-name h2 {
+        font-size: 1.4rem;
+    }
+    
+    .birthday-alert {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+</style>
+
+<div class="profile-container">
+    <!-- Header Section -->
+    <div class="profile-header">
+        <div class="text-center">
+            <div class="profile-avatar">
+                {% if user.profile_picture %}
+                <img src="{{ user.profile_picture }}" id="profileImage" alt="Profile">
+                {% else %}
+                <img src="https://ui-avatars.com/api/?name={{ user.username|urlencode }}&background=C67C4E&color=fff&size=120&rounded=true&bold=true" id="profileImage" alt="Profile">
+                {% endif %}
+                <div class="avatar-upload" onclick="document.getElementById('avatarInput').click();">
+                    <i class="fas fa-camera" style="color: white; font-size: 14px;"></i>
+                </div>
+                <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="uploadAvatar(this)">
+            </div>
+            <div class="profile-name">
+                <h2>{{ user.full_name or user.username }}</h2>
+                <p><i class="fas fa-calendar-alt me-1"></i> {{ t('member_since') or 'Memeber Since' }} {{ user.created_at.strftime('%B %Y') if user.created_at else '2025' }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
+            <div class="stat-number">{{ orders_count }}</div>
+            <div class="stat-label">{{ t('total_orders') }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-star"></i></div>
+            <div class="stat-number">{{ user.loyalty_points }}</div>
+            <div class="stat-label">{{ t('loyalty_points') }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-coffee"></i></div>
+            <div class="stat-number">{{ (user.loyalty_points // 100) * 5 }}</div>
+            <div class="stat-label">{{ t('free_coffees') }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-gift"></i></div>
+            <div class="stat-number">{{ user.referrals_count or 0 }}</div>
+            <div class="stat-label">{{ t('friends_referred') or 'Friend Referred' }}</div>
+        </div>
+    </div>
+
+    <!-- Profile Edit Form -->
+    <div class="profile-card">
+        <div class="card-header-custom">
+            <h4><i class="fas fa-edit"></i> {{ t('edit_profile') }}</h4>
+        </div>
+        <div style="padding: 25px;">
+            <form method="POST" id="profileForm">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-user"></i> {{ t('username') }}</label>
+                            <input type="text" class="form-control" value="{{ user.username }}" disabled>
+                            <small class="text-muted">{{ t('username_cannot_change') }}</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-envelope"></i> {{ t('email') }}</label>
+                            <input type="email" class="form-control" value="{{ user.email }}" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-user-tie"></i> {{ t('full_name') }}</label>
+                            <input type="text" name="full_name" class="form-control" value="{{ user.full_name or '' }}" placeholder="{{ t('enter_full_name') }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-phone"></i> {{ t('phone') }}</label>
+                            <input type="tel" name="phone" class="form-control" value="{{ user.phone or '' }}" placeholder="{{ t('enter_phone') }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-cake-candles"></i> {{ t('birthday') }}</label>
+                            <input type="date" name="birthday" class="form-control" value="{{ user.birthday.strftime('%Y-%m-%d') if user.birthday else '' }}">
+                            <small class="text-muted">{{ t('birthday_reward') }}</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-qrcode"></i> {{ t('referral_code') }}</label>
+                            <div class="referral-box">
+                                <code class="referral-code">{{ user.referral_code }}</code>
+                                <button type="button" class="btn btn-sm btn-outline-primary ms-2" onclick="copyReferralCode()">
+                                    <i class="fas fa-copy"></i> {{ t('copy') }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if user.check_birthday_reward() %}
+                <div class="birthday-alert">
+                    <div>
+                        <i class="fas fa-birthday-cake"></i>
+                        <strong>🎂 {{ t('happy_birthday') }}!</strong> {{ t('birthday_reward_message') }}
+                    </div>
+                    <form action="{{ url_for('claim_birthday') }}" method="POST" class="m-0">
+                        <button type="submit" class="btn-claim">{{ t('claim_reward') }}</button>
+                    </form>
+                </div>
+                {% endif %}
+
+                <button type="submit" class="btn-update">
+                    <i class="fas fa-save me-2"></i> {{ t('update_profile') }}
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="danger-zone">
+        <h5><i class="fas fa-exclamation-triangle me-2"></i> {{ t('danger_zone') }}</h5>
+        <p>{{ t('delete_account_warning') }}</p>
+        <button class="btn-danger-custom" onclick="confirmDelete()">
+            <i class="fas fa-trash-alt me-2"></i> {{ t('delete_account') }}
+        </button>
+    </div>
+</div>
+
+<script>
+function uploadAvatar(input) {
+    if (input.files && input.files[0]) {
+        const formData = new FormData();
+        formData.append('avatar', input.files[0]);
+        
+        fetch('/api/upload-avatar', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('profileImage').src = data.avatar_url + '?t=' + new Date().getTime();
+                showNotification('{{ t('avatar_updated') }}', 'success');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+}
+
+function copyReferralCode() {
+    const code = '{{ user.referral_code }}';
+    navigator.clipboard.writeText(code);
+    showNotification('{{ t('referral_code_copied') }}', 'success');
+}
+
+function confirmDelete() {
+    if (confirm('{{ t('delete_account_confirm') }}')) {
+        fetch('/api/delete-account', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = '/logout';
+            }
+        });
+    }
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} position-fixed top-0 start-50 translate-middle-x mt-3 shadow-lg`;
+    notification.style.zIndex = '9999';
+    notification.style.minWidth = '300px';
+    notification.style.background = type === 'success' ? '#28a745' : '#dc3545';
+    notification.style.color = 'white';
+    notification.style.borderRadius = '30px';
+    notification.style.padding = '12px 20px';
+    notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>${message}`;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
+}
+</script>
+{% endblock %}

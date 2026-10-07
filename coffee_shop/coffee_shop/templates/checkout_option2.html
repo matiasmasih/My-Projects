@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.checkout-card { background: white; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
+.checkout-header { background: linear-gradient(135deg, #2C1810, #3D2518); padding: 30px; text-align: center; color: white; }
+.checkout-body { padding: 30px; }
+.summary-card { background: linear-gradient(135deg, #FFF8F5, #FFF); border-radius: 20px; padding: 20px; margin-bottom: 15px; }
+.btn-order { background: linear-gradient(135deg, #C67C4E, #A0522D); border: none; border-radius: 50px; padding: 14px; font-weight: bold; }
+.btn-order:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(198,124,78,0.3); }
+</style>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="checkout-card">
+                <div class="checkout-header">
+                    <i class="fas fa-mug-hot fa-2x mb-2"></i>
+                    <h2 class="mb-0">Complete Your Order</h2>
+                </div>
+                <div class="checkout-body">
+                    <div class="row">
+                        <div class="col-md-7">
+                            <form method="POST">
+                                <h5>Delivery Information</h5>
+                                <div class="mb-3"><textarea name="delivery_address" class="form-control" rows="2" placeholder="Delivery Address" required></textarea></div>
+                                <div class="mb-3"><textarea name="special_instructions" class="form-control" rows="2" placeholder="Special Instructions"></textarea></div>
+                                <div class="mb-3"><select name="payment_method" class="form-select"><option value="card">💳 Credit Card</option><option value="cash">💵 Cash</option></select></div>
+                                <div class="mb-3"><div class="input-group"><input type="text" id="couponCode2" class="form-control" placeholder="Coupon Code"><button type="button" class="btn btn-outline-secondary" onclick="applyCoupon2()">Apply</button></div><div id="couponMessage2" class="small mt-1"></div></div>
+                                <button type="submit" class="btn btn-order w-100">Place Order <i class="fas fa-arrow-right ms-2"></i></button>
+                            </form>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="summary-card"><h5>Order Summary</h5><hr>
+                                <div class="d-flex justify-content-between mb-2"><span>Subtotal</span><span>{{ format_price(total) }}</span></div>
+                                <div class="d-flex justify-content-between mb-2"><span>Tax</span><span>{{ format_price(total * 0.1) }}</span></div>
+                                <div class="d-flex justify-content-between mb-2"><span>Delivery</span><span>{{ format_price(2.50) }}</span></div>
+                                <div class="d-flex justify-content-between mt-3 pt-2 border-top"><strong>Total</strong><strong style="color:#C67C4E;">{{ format_price(total * 1.1 + 2.5) }}</strong></div>
+                            </div>
+                            <div class="text-center"><small class="text-muted"><i class="fas fa-clock"></i> 15-20 min delivery</small></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function applyCoupon2() {
+    const code = document.getElementById('couponCode2').value;
+    fetch('/api/apply-coupon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ coupon_code: code, subtotal: {{ total|float }} })
+    })
+    .then(r => r.json())
+    .then(data => { const m=document.getElementById('couponMessage2'); if(data.success){ m.innerHTML=`<span class="text-success">${data.message}</span>`; setTimeout(()=>location.reload(),1000); } else { m.innerHTML=`<span class="text-danger">${data.message}</span>`; } });
+}
+</script>
+{% endblock %}

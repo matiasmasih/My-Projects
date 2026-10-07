@@ -1,0 +1,1687 @@
+import os
+from flask import Flask, render_template, jsonify, request, session, flash, redirect, url_for, Response
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from flask_bcrypt import Bcrypt
+from config import Config
+from db_helper import get_db
+import random
+import uuid
+import json
+from datetime import datetime, date
+import stripe
+from authlib.integrations.flask_client import OAuth
+
+app = Flask(__name__)
+app.config.from_object(Config)
+app.secret_key = Config.SECRET_KEY
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
+bcrypt = Bcrypt(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+
+os.makedirs('static/uploads', exist_ok=True)
+
+stripe.api_key = os.environ.get('STRIPE_SECRET_KEY', '')
+
+oauth = OAuth(app)
+
+google = oauth.register(
+    name='google',
+    client_id=os.environ.get('GOOGLE_CLIENT_ID', ''),
+    client_secret=os.environ.get('GOOGLE_CLIENT_SECRET', ''),
+    access_token_url='https://accounts.google.com/o/oauth2/token',
+    authorize_url='https://accounts.google.com/o/oauth2/auth',
+    api_base_url='https://www.googleapis.com/oauth2/v1/',
+    client_kwargs={'scope': 'openid email profile'},
+    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration'
+)
+
+facebook = oauth.register(
+    name='facebook',
+    client_id=os.environ.get('FACEBOOK_CLIENT_ID', ''),
+    client_secret=os.environ.get('FACEBOOK_CLIENT_SECRET', ''),
+    access_token_url='https://graph.facebook.com/oauth/access_token',
+    authorize_url='https://www.facebook.com/dialog/oauth',
+    api_base_url='https://graph.facebook.com/',
+    client_kwargs={'scope': 'email public_profile'},
+)
+
+tiktok = oauth.register(
+    name='tiktok',
+    client_id=os.environ.get('TIKTOK_CLIENT_ID', ''),
+    client_secret=os.environ.get('TIKTOK_CLIENT_SECRET', ''),
+    access_token_url='https://open.tiktokapis.com/v2/oauth/token/',
+    authorize_url='https://www.tiktok.com/v2/auth/authorize/',
+    api_base_url='https://open.tiktokapis.com/v2/',
+    client_kwargs={'scope': 'user.info.basic'},
+)
+
+whatsapp = oauth.register(
+    name='whatsapp',
+    client_id=os.environ.get('WHATSAPP_CLIENT_ID', ''),
+    client_secret=os.environ.get('WHATSAPP_CLIENT_SECRET', ''),
+    access_token_url='https://graph.facebook.com/v18.0/oauth/access_token',
+    authorize_url='https://www.facebook.com/v18.0/dialog/oauth',
+    api_base_url='https://graph.facebook.com/',
+    client_kwargs={'scope': 'email,public_profile'},
+)
+
+# Simple order confirmation - prints to console (no real email)
+def send_order_email(to_email, order_number, items, total, customer_name):
+    print("\n" + "=" * 60)
+    print("📧 ORDER CONFIRMATION (Email would be sent)")
+    print("=" * 60)
+    print(f"📧 To: {to_email}")
+    print(f"📋 Order Number: {order_number}")
+    print(f"👤 Customer: {customer_name}")
+    print(f"💰 Total: ${total:.2f}")
+    print("\n📦 Items:")
+    for item in items:
+        qty = item.get('quantity', 1)
+        price = item.get('price', 0)
+        print(f"   - {item['name']} x{qty}: ${price * qty:.2f}")
+    print("=" * 60)
+    print("📍 Pickup: Iskoskuja 3 C 111, Vantaa")
+    print("☕ Thank you for ordering from Bean & Brew Coffee!\n")
+    return True
+
+translations = {
+    'en': {
+        'review_items': 'Review your items before checkout',
+        'order_summary': 'Order Summary',
+        'subtotal': 'Subtotal',
+        'tax': 'Tax (10%)',
+        'delivery_fee': 'Delivery Fee',
+        'clear_cart': 'Clear Cart',
+        'remove_confirm': 'Remove this item?',
+        'clear_cart_confirm': 'Clear entire cart?',
+        'cart_empty': 'Your cart is empty',
+        'cart_empty_msg': "Looks like you haven't added any items yet",
+        'browse_menu': 'Browse Menu',
+        'track_orders': 'Track and manage your order history',
+        'order_items': 'Order Items',
+        'view_receipt': 'View Receipt',
+        'reorder': 'Reorder',
+        'no_orders': 'No Orders Yet',
+        'start_shopping': 'Start shopping to see your orders',
+        'view_details': 'View Details',
+        'order_placed': 'Order placed successfully!',
+        'payment_method': 'Payment Method',
+        'place_order': 'Place Order',
+        'delivery_info': 'Delivery Information',
+        'special_instructions': 'Special Instructions (Optional)',
+        'complete_order': 'Complete your order to enjoy your coffee',
+        'agree_terms': 'I agree to the Terms & Conditions',
+        'estimated_delivery': 'Estimated Delivery',
+        'peak_hours': 'During peak hours, delivery may take longer',
+        'calculating': 'Calculating delivery time...',
+        'my_orders': 'My Orders',
+        'cart': 'Cart',
+        'remove': 'Remove',
+        'checkout': 'Checkout',
+        'total': 'Total',
+        'refer_friend': 'Refer a Friend',
+        'share_code_earn_coffee': 'Share your code and earn free coffee!',
+        'your_referral_code': 'Your Referral Code',
+        'copy_code': 'Copy Code',
+        'share_this_link': 'Share this link:',
+        'how_it_works': 'How it Works',
+        'step1': 'Share your unique referral code with friends',
+        'step2': 'Friend signs up using your code',
+        'step3': 'Friend places their first order',
+        'step4': 'You both get 100 bonus loyalty points!',
+        'your_referrals': 'Your referrals:',
+        'friends_joined': 'friends joined',
+        'points': 'points',
+        'scan_qr_code': 'Scan QR Code to Share',
+        'qr_instruction': 'Friends can scan this QR code with their phone to get your referral link instantly!',
+        'download_qr': 'Download QR Code',
+        'your_referrals_list': 'Your Referrals',
+        'friend': 'Friend',
+        'date_joined': 'Date Joined',
+        'points_earned_table': 'Points Earned',
+        'no_referrals_yet': 'No referrals yet. Share your code!',
+        'referral_code_copied': 'Referral code copied!',
+        'referral_link_copied': 'Referral link copied!',
+        'qr_not_ready': 'QR code is not ready yet. Please try again.',
+        'total_orders': 'Total Orders',
+        'free_coffees': 'Free Coffees',
+        'edit_profile': 'Edit Profile',
+        'username_cannot_change': 'Username cannot be changed',
+        'birthday_reward': 'Get 50 bonus points on your birthday!',
+        'claim_reward': 'Claim Reward',
+        'danger_zone': 'Danger Zone',
+        'delete_account_warning': 'Once you delete your account, there is no going back.',
+        'delete_account': 'Delete Account',
+    },
+    'fi': {
+        'home': 'Koti', 'menu': 'Ruokalista', 'cart': 'Ostoskori', 'checkout': 'Kassa',
+        'login': 'Kirjaudu', 'register': 'Rekisteröidy', 'logout': 'Kirjaudu ulos',
+        'profile': 'Oma profiili', 'orders': 'Tilaukseni', 'reviews': 'Arvostelut',
+        'wifi': 'Ilmainen WiFi', 'hours': 'Aukioloajat', 'contact': 'Ota yhteyttä',
+        'add_to_cart': 'Lisää ostoskoriin', 'total': 'Yhteensä',
+        'search': 'Etsi...', 'all': 'Kaikki',
+        'coffee': 'Kahvi', 'tea': 'Tee', 'pastry': 'Leivonnaiset', 'other_drinks': 'Muut Juomat',
+        'welcome': 'Tervetuloa', 'featured': 'Suositellut',
+        'loyalty_points': 'Kanta-asiakaspisteet', 'delivery': 'Toimitus', 'pickup': 'Nouto',
+        'my_profile': 'Oma profiili', 'my_orders': 'Tilaukseni', 'my_receipts': 'Kuitit',
+        'refer_friend': 'Suosittele kaveria', 'loyalty_rewards': 'Kanta-asiakasedut',
+        'username': 'Käyttäjätunnus', 'password': 'Salasana', 'email': 'Sähköposti',
+        'phone': 'Puhelin', 'full_name': 'Koko nimi', 'birthday': 'Syntymäpäivä',
+        'update_profile': 'Päivitä profiili', 'claim_birthday': 'Nosta syntymäpäiväpalkinto',
+        'free_wifi': 'Ilmainen WiFi', 'stay_connected': 'Pysy yhteydessä',
+        'network_name': 'Verkon nimi', 'quick_connect': 'Pikayhteys',
+        'scan_qr': 'Skannaa QR-koodi yhdistääksesi heti',
+        'available_tables': 'Saatavilla kaikilla pöytäpaikoilla',
+        'high_speed': 'Suuri nopeus', 'up_to_100mbps': 'Jopa 100 Mbps',
+        'charging_stations': 'Latauspisteet', 'outlets_usb': 'Pistorasiat ja USB-portit',
+        'secure_connection': 'Turvallinen yhteys', 'enterprise_grade': 'Yritystason tietoturva',
+        'tips': 'Vinkit parhaaseen kokemukseen',
+        'customer_reviews': 'Asiakasarvostelut',
+        'what_customers_say': 'Mitä kahvinystävämme sanovat meistä',
+        'share_experience': 'Jaa Kokemuksesi',
+        'love_to_hear': 'Haluamme kuulla vierailustasi',
+        'write_review': 'Kirjoita Arvostelu',
+        'login_to_review': 'Kirjaudu kirjoittaaksesi arvostelun',
+        'rating': 'Arvosana', 'your_review': 'Arvostelusi',
+        'submit_review': 'Lähetä Arvostelu', 'thank_you_review': 'Kiitos arvostelustasi!',
+        'coffee_enthusiast': 'Kahvin Ystävä', 'regular_customer': 'Vakioasiakas',
+        'remote_worker': 'Etätyöntekijä', 'tea_lover': 'Teen Ystävä',
+        'coffee_addict': 'Kahviaddikti', 'loyal_customer': 'Kanta-asiakas',
+        'share_code_earn_coffee': 'Jaa koodisi ja ansaitse ilmaista kahvia!',
+        'your_referral_code': 'Sinun suosittelukoodisi',
+        'copy_code': 'Kopioi koodi',
+        'share_this_link': 'Jaa tämä linkki:',
+        'how_it_works': 'Miten se toimii',
+        'step1': 'Jaa ainutlaatuinen suosittelukoodisi ystäville',
+        'step2': 'Ystävä rekisteröityy koodillasi',
+        'step3': 'Ystävä tekee ensimmäisen tilauksensa',
+        'step4': 'Saatte molemmat 100 bonuspistettä!',
+        'your_referrals': 'Sinun suosittelusi:',
+        'friends_joined': 'kaveria liittynyt',
+        'scan_qr_code': 'Skannaa QR-koodi',
+        'qr_instruction': 'Ystävät voivat skannata tämän QR-koodin saadakseen suosittelulinkkisi!',
+        'download_qr': 'Lataa QR-koodi',
+        'your_referrals_list': 'Omat suosittelut',
+        'date_joined': 'Liittymispäivä',
+        'points_earned_table': 'Ansaitut pisteet',
+        'no_referrals_yet': 'Ei vielä suosituksia. Jaa koodisi!',
+        'referral_code_copied': 'Suosittelukoodi kopioitu!',
+        'referral_link_copied': 'Suosittelulinkki kopioitu!',
+        'qr_not_ready': 'QR-koodi ei ole vielä valmis. Yritä uudelleen.',
+        'total_orders': 'Kokonaistilaukset',
+        'free_coffees': 'Ilmaiset kahvit',
+        'edit_profile': 'Muokkaa profiilia',
+        'username_cannot_change': 'Käyttäjätunnusta ei voi muuttaa',
+        'birthday_reward': 'Saat 50 bonuspistettä syntymäpäivänäsi!',
+        'claim_reward': 'Nosta palkinto',
+        'danger_zone': 'Vaara-alue',
+        'delete_account_warning': 'Kun poistat tilisi, sitä ei voi palauttaa.',
+        'delete_account': 'Poista tili',
+    },
+    'sv': {
+        'home': 'Hem', 'menu': 'Meny', 'cart': 'Varukorg', 'checkout': 'Kassa',
+        'login': 'Logga in', 'register': 'Registrera', 'logout': 'Logga ut',
+        'profile': 'Min profil', 'orders': 'Mina beställningar', 'reviews': 'Recensioner',
+        'wifi': 'Gratis WiFi', 'hours': 'Öppettider', 'contact': 'Kontakta oss',
+        'add_to_cart': 'Lägg till i varukorg', 'total': 'Totalt',
+        'search': 'Sök...', 'all': 'Alla',
+        'coffee': 'Kaffe', 'tea': 'Te', 'pastry': 'Bakverk', 'other_drinks': 'Andra Drycker',
+        'welcome': 'Välkommen', 'featured': 'Populära',
+        'loyalty_points': 'Lojalitetspoäng', 'delivery': 'Leverans', 'pickup': 'Hämta',
+        'my_profile': 'Min profil', 'my_orders': 'Mina beställningar', 'my_receipts': 'Mina kvitton',
+        'refer_friend': 'Tipsa en vän', 'loyalty_rewards': 'Lojalitetsbelöningar',
+        'username': 'Användarnamn', 'password': 'Lösenord', 'email': 'E-post',
+        'phone': 'Telefon', 'full_name': 'Fullständigt namn', 'birthday': 'Födelsedag',
+        'update_profile': 'Uppdatera profil', 'claim_birthday': 'Hämta födelsedagsbelöning',
+        'free_wifi': 'Gratis WiFi', 'stay_connected': 'Håll kontakten',
+        'network_name': 'Nätverksnamn', 'quick_connect': 'Snabbanslutning',
+        'scan_qr': 'Skanna QR-koden för att ansluta direkt',
+        'available_tables': 'Tillgängligt vid alla bord',
+        'high_speed': 'Hög hastighet', 'up_to_100mbps': 'Upp till 100 Mbps',
+        'charging_stations': 'Laddningsstationer', 'outlets_usb': 'Uttag och USB-portar',
+        'secure_connection': 'Säker anslutning', 'enterprise_grade': 'Företagssäkerhet',
+        'tips': 'Tips för bästa upplevelse',
+        'customer_reviews': 'Kundrecensioner',
+        'what_customers_say': 'Vad våra kaffeälskare säger om oss',
+        'share_experience': 'Dela Din Upplevelse',
+        'love_to_hear': 'Vi vill gärna höra om ditt besök',
+        'write_review': 'Skriv en Recension',
+        'login_to_review': 'Logga in för att skriva en recension',
+        'rating': 'Betyg', 'your_review': 'Din recension',
+        'submit_review': 'Skicka Recension', 'thank_you_review': 'Tack för din recension!',
+        'coffee_enthusiast': 'Kaffeälskare', 'regular_customer': 'Regular Kund',
+        'remote_worker': 'Distansarbetare', 'tea_lover': 'Teälskare',
+        'coffee_addict': 'Kaffeälskare', 'loyal_customer': 'Lojal Kund',
+        'share_code_earn_coffee': 'Dela din kod och tjäna gratis kaffe!',
+        'your_referral_code': 'Din hänvisningskod',
+        'copy_code': 'Kopiera kod',
+        'share_this_link': 'Dela denna länk:',
+        'how_it_works': 'Hur det fungerar',
+        'step1': 'Dela din unika hänvisningskod med vänner',
+        'step2': 'Vän registrerar sig med din kod',
+        'step3': 'Vän lägger sin första beställning',
+        'step4': 'Ni får båda 100 bonuspoäng!',
+        'your_referrals': 'Dina hänvisningar:',
+        'friends_joined': 'vänner gick med',
+        'scan_qr_code': 'Skanna QR-kod',
+        'qr_instruction': 'Vänner kan skanna denna QR-kod för att få din hänvisningslänk!',
+        'download_qr': 'Ladda ner QR-kod',
+        'your_referrals_list': 'Dina hänvisningar',
+        'date_joined': 'Gick med datum',
+        'points_earned_table': 'Intjänade poäng',
+        'no_referrals_yet': 'Inga hänvisningar än. Dela din kod!',
+        'referral_code_copied': 'Hänvisningskod kopierad!',
+        'referral_link_copied': 'Hänvisningslänk kopierad!',
+        'qr_not_ready': 'QR-koden är inte klar än. Försök igen.',
+        'total_orders': 'Totala beställningar',
+        'free_coffees': 'Gratis kaffe',
+        'edit_profile': 'Redigera profil',
+        'username_cannot_change': 'Användarnamnet kan inte ändras',
+        'birthday_reward': 'Få 50 bonuspoäng på din födelsedag!',
+        'claim_reward': 'Hämta belöning',
+        'danger_zone': 'Riskzon',
+        'delete_account_warning': 'När du raderar ditt konto kan det inte återställas.',
+        'delete_account': 'Radera konto',
+    },
+    'fa': {
+        'home': 'خانه', 'menu': 'منو', 'cart': 'سبد خرید', 'checkout': 'تسویه حساب',
+        'login': 'ورود', 'register': 'ثبت نام', 'logout': 'خروج',
+        'profile': 'پروفایل من', 'orders': 'سفارشات من', 'reviews': 'نظرات',
+        'wifi': 'وای فای رایگان', 'hours': 'ساعات کاری', 'contact': 'تماس با ما',
+        'add_to_cart': 'افزودن به سبد خرید', 'total': 'مجموع',
+        'search': 'جستجو...', 'all': 'همه',
+        'coffee': 'قهوه', 'tea': 'چای', 'pastry': 'شیرینی', 'other_drinks': 'نوشیدنی‌های دیگر',
+        'welcome': 'خوش آمدید', 'featured': 'ویژه',
+        'loyalty_points': 'امتیازهای وفاداری', 'delivery': 'تحویل', 'pickup': 'تحویل حضوری',
+        'my_profile': 'پروفایل من', 'my_orders': 'سفارشات من', 'my_receipts': 'رسیدهای من',
+        'refer_friend': 'معرفی به دوست', 'loyalty_rewards': 'جوایز وفاداری',
+        'username': 'نام کاربری', 'password': 'رمز عبور', 'email': 'ایمیل',
+        'phone': 'تلفن', 'full_name': 'نام کامل', 'birthday': 'تاریخ تولد',
+        'update_profile': 'به روز رسانی پروفایل', 'claim_birthday': 'دریافت جایزه تولد',
+        'free_wifi': 'وای فای رایگان', 'stay_connected': 'متصل بمانید',
+        'network_name': 'نام شبکه', 'quick_connect': 'اتصال سریع',
+        'scan_qr': 'برای اتصال فوری کد QR را اسکن کنید',
+        'available_tables': 'در دسترس در تمام میزها',
+        'high_speed': 'سرعت بالا', 'up_to_100mbps': 'تا ۱۰۰ مگابیت بر ثانیه',
+        'charging_stations': 'ایستگاه‌های شارژ', 'outlets_usb': 'پریز و پورت USB',
+        'secure_connection': 'اتصال امن', 'enterprise_grade': 'امنیت در سطح سازمانی',
+        'tips': 'نکاتی برای بهترین تجربه',
+        'customer_reviews': 'نظرات مشتریان',
+        'what_customers_say': 'عاشقان قهوه ما در مورد ما چه می‌گویند',
+        'share_experience': 'تجربه خود را به اشتراک بگذارید',
+        'love_to_hear': 'ما دوست داریم در مورد بازدید شما بشنویم',
+        'write_review': 'نوشتن نظر', 'login_to_review': 'برای نوشتن نظر وارد شوید',
+        'rating': 'امتیاز', 'your_review': 'نظر شما',
+        'submit_review': 'ارسال نظر', 'thank_you_review': 'از نظر شما متشکریم!',
+        'coffee_enthusiast': 'عاشق قهوه', 'regular_customer': 'مشتری همیشگی',
+        'remote_worker': 'کارمند از راه دور', 'tea_lover': 'عاشق چای',
+        'coffee_addict': 'معتاد به قهوه', 'loyal_customer': 'مشتری وفادار',
+        'share_code_earn_coffee': 'کد خود را به اشتراک بگذارید و قهوه رایگان دریافت کنید!',
+        'your_referral_code': 'کد معرفی شما',
+        'copy_code': 'کپی کد',
+        'share_this_link': 'اشتراک‌گذاری این لینک:',
+        'how_it_works': 'نحوه کار',
+        'step1': 'کد معرفی خود را با دوستان به اشتراک بگذارید',
+        'step2': 'دوستان با استفاده از کد شما ثبت نام می‌کنند',
+        'step3': 'دوستان اولین سفارش خود را ثبت می‌کنند',
+        'step4': 'هر دو شما ۱۰۰ امتیاز پاداش دریافت می‌کنید!',
+        'your_referrals': 'معرفی‌های شما:',
+        'friends_joined': 'دوستان عضو شده',
+        'scan_qr_code': 'اسکن کد QR',
+        'qr_instruction': 'دوستان می‌توانند این کد QR را اسکن کنند تا لینک معرفی شما را دریافت کنند!',
+        'download_qr': 'دانلود کد QR',
+        'your_referrals_list': 'معرفی‌های شما',
+        'date_joined': 'تاریخ عضویت',
+        'points_earned_table': 'امتیاز کسب شده',
+        'no_referrals_yet': 'هنوز معرفی نداشته‌اید. کد خود را به اشتراک بگذارید!',
+        'referral_code_copied': 'کد معرفی کپی شد!',
+        'referral_link_copied': 'لینک معرفی کپی شد!',
+        'qr_not_ready': 'کد QR هنوز آماده نیست. لطفاً دوباره تلاش کنید.',
+        'total_orders': 'کل سفارشات',
+        'free_coffees': 'قهوه رایگان',
+        'edit_profile': 'ویرایش پروفایل',
+        'username_cannot_change': 'نام کاربری قابل تغییر نیست',
+        'birthday_reward': 'در روز تولد ۵۰ امتیاز پاداش بگیرید!',
+        'claim_reward': 'دریافت جایزه',
+        'danger_zone': 'منطقه خطر',
+        'delete_account_warning': 'پس از حذف حساب کاربری، بازگشتی وجود ندارد.',
+        'delete_account': 'حذف حساب',
+    }
+}
+
+def t(key):
+    lang = session.get('lang', 'en')
+    return translations.get(lang, {}).get(key, key)
+
+# ============ CURRENCY CONFIGURATION ============
+EXCHANGE_RATES = {
+    'USD': 1.0,
+    'EUR': 0.92,
+    'SEK': 10.5,
+    'AFN': 71.5,
+}
+
+CURRENCY_SYMBOLS = {
+    'USD': '$',
+    'EUR': '€',
+    'SEK': 'kr',
+    'AFN': '؋',
+}
+
+def convert_currency(amount_usd, target_currency='USD'):
+    if not target_currency or target_currency not in EXCHANGE_RATES:
+        target_currency = 'USD'
+    try:
+        return float(amount_usd) * EXCHANGE_RATES[target_currency]
+    except (TypeError, ValueError):
+        return 0
+
+def format_currency(amount_usd, currency=None):
+    if currency is None:
+        currency = session.get('currency', 'USD')
+    if currency not in CURRENCY_SYMBOLS:
+        currency = 'USD'
+    converted = convert_currency(amount_usd, currency)
+    symbol = CURRENCY_SYMBOLS.get(currency, '$')
+    if currency == 'AFN':
+        return f"{symbol} {converted:,.0f}"
+    else:
+        return f"{symbol} {converted:,.2f}"
+
+@app.context_processor
+def utility_processor():
+    def now():
+        return datetime.now()
+
+    def currency():
+        curr = session.get('currency', 'USD')
+        symbols = {'USD': '$', 'EUR': '€', 'SEK': 'kr', 'AFN': '؋'}
+        return symbols.get(curr, '$')
+
+    def convert_price(price):
+        """Convert price from USD to current currency"""
+        price_float = float(price)
+        currency_code = session.get('currency', 'USD')
+        
+        if currency_code == 'EUR':
+            return price_float * 0.92
+        elif currency_code == 'SEK':
+            return price_float * 10.5
+        elif currency_code == 'AFN':
+            return price_float * 71.5
+        else:
+            return price_float  # USD
+
+    def format_price(price):
+        """Format price with current currency symbol"""
+        try:
+            converted = convert_price(price)
+            currency_code = session.get('currency', 'USD')
+            
+            if currency_code == 'EUR':
+                return f"€{converted:.2f}"
+            elif currency_code == 'SEK':
+                return f"{converted:.2f} kr"
+            elif currency_code == 'AFN':
+                return f"؋ {converted:,.0f}"
+            else:
+                return f"${converted:.2f}"
+        except:
+            return f"${price}"
+
+    return dict(
+        t=t, 
+        now=now, 
+        currency=currency, 
+        convert_price=convert_price, 
+        format_price=format_price, 
+        format_currency=format_currency
+    )
+
+@app.route('/set-lang/<lang>')
+def set_language(lang):
+    if lang in ['en', 'fi', 'sv', 'fa']:
+        session['lang'] = lang
+        # Set currency based on language
+        if lang == 'en':
+            session['currency'] = 'USD'
+        elif lang == 'fi':
+            session['currency'] = 'EUR'
+        elif lang == 'sv':
+            session['currency'] = 'SEK'
+        elif lang == 'fa':
+            session['currency'] = 'AFN'
+        # Set currency based on language
+        if lang == 'en':
+            session['currency'] = 'USD'
+        elif lang == 'fi':
+            session['currency'] = 'EUR'
+        elif lang == 'sv':
+            session['currency'] = 'SEK'
+        elif lang == 'fa':
+            session['currency'] = 'AFN'
+    return redirect(request.referrer or url_for('index'))
+
+@app.route('/change-currency/<currency_code>')
+def change_currency(currency_code):
+    if currency_code in ['USD', 'EUR', 'SEK', 'AFN']:
+        session['currency'] = currency_code
+        # Also update language based on currency
+        if currency_code == 'USD':
+            session['lang'] = 'en'
+        elif currency_code == 'EUR':
+            session['lang'] = 'fi'
+        elif currency_code == 'SEK':
+            session['lang'] = 'sv'
+        elif currency_code == 'AFN':
+            session['lang'] = 'fa'
+    return redirect(request.referrer or url_for('index'))
+
+class User:
+    def __init__(self, id, username, email, is_admin=False, loyalty_points=0, full_name=None, phone=None, referral_code=None, referred_by=None, birthday=None, last_birthday_redeemed=None, profile_picture=None):
+        self.id = id
+        self.username = username
+        self.email = email
+        self.is_admin = is_admin
+        self.loyalty_points = loyalty_points
+        self.full_name = full_name
+        self.phone = phone
+        self.referral_code = referral_code
+        self.referred_by = referred_by
+        self.birthday = birthday
+        self.last_birthday_redeemed = last_birthday_redeemed
+        self.profile_picture = profile_picture
+        self.is_authenticated = True
+        self.is_active = True
+        self.is_anonymous = False
+
+    def get_id(self):
+        return str(self.id)
+
+    @staticmethod
+    def get_by_id(user_id):
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("SELECT id, username, email, is_admin, loyalty_points, full_name, phone, referral_code, referred_by, birthday, last_birthday_redeemed, profile_picture FROM users WHERE id = %s", (user_id,))
+        data = cursor.fetchone()
+        db.close()
+        if data:
+            return User(data['id'], data['username'], data['email'], data['is_admin'], data.get('loyalty_points', 0), data.get('full_name'), data.get('phone'), data.get('referral_code'), data.get('referred_by'), data.get('birthday'), data.get('last_birthday_redeemed'), data.get('profile_picture'))
+        return None
+
+    @staticmethod
+    def get_by_username(username):
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("SELECT id, username, email, is_admin, loyalty_points, full_name, phone, referral_code, referred_by, birthday, last_birthday_redeemed, profile_picture, password_hash FROM users WHERE username = %s", (username,))
+        data = cursor.fetchone()
+        db.close()
+        if data:
+            user = User(data['id'], data['username'], data['email'], data['is_admin'], data.get('loyalty_points', 0), data.get('full_name'), data.get('phone'), data.get('referral_code'), data.get('referred_by'), data.get('birthday'), data.get('last_birthday_redeemed'), data.get('profile_picture'))
+            user.password_hash = data['password_hash']
+            return user
+        return None
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password_hash, password)
+
+    @staticmethod
+    def create_user(username, email, password, full_name=None, phone=None):
+        db = get_db()
+        cursor = db.cursor()
+        password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+        referral_code = 'COFFEE' + str(uuid.uuid4())[:6].upper()
+        cursor.execute("INSERT INTO users (username, email, password_hash, full_name, phone, referral_code) VALUES (%s, %s, %s, %s, %s, %s)", (username, email, password_hash, full_name, phone, referral_code))
+        db.commit()
+        db.close()
+
+    def add_loyalty_points(self, points, reason="Purchase"):
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("UPDATE users SET loyalty_points = loyalty_points + %s WHERE id = %s", (points, self.id))
+        cursor.execute("INSERT INTO loyalty_transactions (user_id, points, reason) VALUES (%s, %s, %s)", (self.id, points, reason))
+        db.commit()
+        db.close()
+        self.loyalty_points += points
+        return True
+
+    def check_birthday_reward(self):
+        if not self.birthday:
+            return False
+        today = date.today()
+        birthday_this_year = date(today.year, self.birthday.month, self.birthday.day)
+        if birthday_this_year == today and self.last_birthday_redeemed != today.year:
+            return True
+        return False
+
+    def claim_birthday_reward(self):
+        if self.check_birthday_reward():
+            db = get_db()
+            cursor = db.cursor()
+            cursor.execute("UPDATE users SET loyalty_points = loyalty_points + 50, last_birthday_redeemed = %s WHERE id = %s", (date.today().year, self.id))
+            cursor.execute("INSERT INTO loyalty_transactions (user_id, points, reason) VALUES (%s, %s, %s)", (self.id, 50, "Birthday Reward"))
+            db.commit()
+            db.close()
+            self.loyalty_points += 50
+            self.last_birthday_redeemed = date.today().year
+            return True
+        return False
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.get_by_id(int(user_id))
+
+class Product:
+    @staticmethod
+    def get_all():
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM products WHERE is_available = 1")
+        products = cursor.fetchall()
+        db.close()
+        return products
+
+    @staticmethod
+    def get_by_id(product_id):
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM products WHERE id = %s", (product_id,))
+        product = cursor.fetchone()
+        db.close()
+        return product
+
+    @staticmethod
+    def get_categories():
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("SELECT DISTINCT category FROM products")
+        categories = [row['category'] for row in cursor.fetchall()]
+        db.close()
+        return categories
+
+class Order:
+    def __init__(self, **kwargs):
+        self.id = kwargs.get('id')
+        self.user_id = kwargs.get('user_id')
+        self.order_number = kwargs.get('order_number')
+        self.total_amount = float(kwargs.get('total_amount', 0))
+        self.status = kwargs.get('status', 'pending')
+        self.payment_method = kwargs.get('payment_method')
+        self.delivery_address = kwargs.get('delivery_address')
+        self.special_instructions = kwargs.get('special_instructions')
+        self.created_at = kwargs.get('created_at')
+
+    @staticmethod
+    def get_by_id(order_id):
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM orders WHERE id = %s", (order_id,))
+        data = cursor.fetchone()
+        db.close()
+        if data:
+            return Order(**data)
+        return None
+
+    @staticmethod
+    def get_by_order_number(order_number):
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM orders WHERE order_number = %s", (order_number,))
+        data = cursor.fetchone()
+        db.close()
+        if data:
+            return Order(**data)
+        return None
+
+    @staticmethod
+    def get_user_orders(user_id, limit=50):
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM orders WHERE user_id = %s ORDER BY created_at DESC LIMIT %s", (user_id, limit))
+        data = cursor.fetchall()
+        db.close()
+        return [Order(**row) for row in data]
+
+    def get_items(self):
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("SELECT oi.*, p.name, p.image_url FROM order_items oi JOIN products p ON oi.product_id = p.id WHERE oi.order_id = %s", (self.id,))
+        items = cursor.fetchall()
+        db.close()
+        return items
+
+@app.route('/')
+def index():
+    products = Product.get_all()
+    return render_template('index.html', featured_products=products[:6])
+
+@app.route('/menu')
+def menu():
+    products = Product.get_all()
+    categories = Product.get_categories()
+    products_by_category = {}
+    for cat in categories:
+        products_by_category[cat] = [p for p in products if p['category'] == cat]
+    return render_template('menu.html', products_by_category=products_by_category, categories=categories)
+
+@app.route('/cart')
+def cart():
+    cart_items = session.get('cart', [])
+    items = []
+    total = 0.0
+    for item in cart_items:
+        product = Product.get_by_id(item['product_id'])
+        if product:
+            price = float(product['price'])
+            subtotal = price * item['quantity']
+            total += subtotal
+            items.append({'product': product, 'quantity': item['quantity'], 'subtotal': subtotal})
+    return render_template('cart.html', cart_items=items, total=total)
+
+@app.route('/checkout', methods=['GET', 'POST'])
+@login_required
+def checkout():
+    cart_items = session.get('cart', [])
+    if not cart_items:
+        flash('Your cart is empty', 'warning')
+        return redirect(url_for('menu'))
+
+    total = 0.0
+    for item in cart_items:
+        product = Product.get_by_id(item['product_id'])
+        if product:
+            total += float(product['price']) * item['quantity']
+
+    if request.method == 'POST':
+        order_number = "ORD" + str(uuid.uuid4())[:8].upper()
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("INSERT INTO orders (order_number, user_id, total_amount, status, payment_method, delivery_address, special_instructions) VALUES (%s, %s, %s, 'pending', %s, %s, %s)", (order_number, current_user.id, total, request.form.get('payment_method'), request.form.get('delivery_address'), request.form.get('special_instructions')))
+        order_id = cursor.lastrowid
+        for item in cart_items:
+            product = Product.get_by_id(item['product_id'])
+            if product:
+                cursor.execute("INSERT INTO order_items (order_id, product_id, quantity, price_at_time) VALUES (%s, %s, %s, %s)", (order_id, item['product_id'], item['quantity'], float(product['price'])))
+        db.commit()
+        db.close()
+        points_earned = int(total)
+        current_user.add_loyalty_points(points_earned, f"Order {order_number}")
+
+        items_list = []
+        for item in cart_items:
+            product = Product.get_by_id(item['product_id'])
+            if product:
+                items_list.append({
+                    'name': product['name'],
+                    'quantity': item['quantity'],
+                    'price': float(product['price'])
+                })
+        send_order_email(current_user.email, order_number, items_list, total, current_user.full_name or current_user.username)
+
+        session['cart'] = []
+        flash(f'Order placed successfully! You earned {points_earned} loyalty points!', 'success')
+        return redirect(url_for('order_history'))
+
+    return render_template('checkout.html', total=total, loyalty_points=current_user.loyalty_points, stripe_public_key=os.environ.get('STRIPE_PUBLIC_KEY', ''), final_total=total * 1.1 + 2.5)
+
+@app.route('/order-history')
+@login_required
+def order_history():
+    currency = request.args.get('currency')
+    if currency and currency in ['USD', 'EUR', 'SEK', 'AFN']:
+        session['currency'] = currency
+    elif 'currency' not in session:
+        session['currency'] = 'USD'
+
+    web_orders = Order.get_user_orders(current_user.id)
+    return render_template('order_history.html', orders=web_orders, current_currency=session.get('currency', 'USD'))
+
+@app.route('/referral')
+@login_required
+def referral():
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT COUNT(*) as count FROM referrals WHERE referrer_id = %s", (current_user.id,))
+    referrals_count = cursor.fetchone()['count']
+    cursor.execute("SELECT SUM(points_earned) as total FROM referrals WHERE referrer_id = %s", (current_user.id,))
+    points_data = cursor.fetchone()
+    points_earned = points_data['total'] or 0
+    cursor.execute("SELECT r.*, u.username, u.created_at FROM referrals r JOIN users u ON r.referred_user_id = u.id WHERE r.referrer_id = %s ORDER BY r.created_at DESC", (current_user.id,))
+    referrals = cursor.fetchall()
+    db.close()
+    return render_template('referral.html', user=current_user, referrals_count=referrals_count, points_earned=points_earned, referrals=referrals)
+
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    if request.method == 'POST':
+        full_name = request.form.get('full_name')
+        phone = request.form.get('phone')
+        birthday = request.form.get('birthday') or None
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("UPDATE users SET full_name = %s, phone = %s, birthday = %s WHERE id = %s", (full_name, phone, birthday, current_user.id))
+        db.commit()
+        db.close()
+        flash('Profile updated successfully!', 'success')
+        return redirect(url_for('profile'))
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT COUNT(*) as count FROM orders WHERE user_id = %s", (current_user.id,))
+    orders_count = cursor.fetchone()['count']
+    db.close()
+    return render_template('profile.html', user=current_user, orders_count=orders_count)
+
+@app.route('/claim-birthday', methods=['POST'])
+@login_required
+def claim_birthday():
+    if current_user.claim_birthday_reward():
+        flash('🎂 Happy Birthday! You received 50 bonus loyalty points!', 'success')
+    else:
+        flash('No birthday reward available at this time.', 'warning')
+    return redirect(url_for('profile'))
+
+@app.route('/api/upload-avatar', methods=['POST'])
+@login_required
+def upload_avatar():
+    if 'avatar' not in request.files:
+        return jsonify({'error': 'No file'}), 400
+    file = request.files['avatar']
+    if file.filename == '':
+        return jsonify({'error': 'No file'}), 400
+    ext = file.filename.rsplit('.', 1)[1].lower() if '.' in file.filename else 'jpg'
+    filename = f"avatar_{current_user.id}.{ext}"
+    filepath = os.path.join('static/uploads', filename)
+    file.save(filepath)
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("UPDATE users SET profile_picture = %s WHERE id = %s", (f'/static/uploads/{filename}', current_user.id))
+    db.commit()
+    db.close()
+    return jsonify({'success': True, 'avatar_url': f'/static/uploads/{filename}'})
+
+@app.route('/api/delete-account', methods=['POST'])
+@login_required
+def delete_account():
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("DELETE FROM orders WHERE user_id = %s", (current_user.id,))
+        cursor.execute("DELETE FROM loyalty_transactions WHERE user_id = %s", (current_user.id,))
+        cursor.execute("DELETE FROM referrals WHERE referrer_id = %s OR referred_user_id = %s", (current_user.id, current_user.id))
+        cursor.execute("DELETE FROM users WHERE id = %s", (current_user.id,))
+        db.commit()
+        db.close()
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/wifi')
+def wifi():
+    return render_template('wifi.html')
+
+@app.route('/reviews')
+def reviews():
+    return render_template('reviews.html')
+
+@app.route('/track-order')
+def track_order():
+    return render_template('track_order.html')
+
+@app.route('/track-order/<order_number>')
+def track_order_with_number(order_number):
+    return render_template('track_order.html', order_number=order_number)
+
+@app.route('/receipt/<order_number>')
+@login_required
+def receipt(order_number):
+    order = Order.get_by_order_number(order_number)
+    if not order:
+        flash('Order not found', 'error')
+        return redirect(url_for('order_history'))
+    if order.user_id != current_user.id and not current_user.is_admin:
+        flash('Unauthorized', 'error')
+        return redirect(url_for('order_history'))
+    items = order.get_items()
+    return render_template('receipt.html', order=order, items=items, current_user=current_user)
+
+@app.route('/my-receipts')
+@login_required
+def my_receipts():
+    orders = Order.get_user_orders(current_user.id)
+    return render_template('my_receipts.html', orders=orders)
+
+@app.route('/loyalty')
+@login_required
+def loyalty():
+    return render_template('loyalty.html')
+
+# ============ SOCIAL LOGIN ROUTES ============
+@app.route('/login/google')
+def login_google():
+    redirect_uri = url_for('authorize_google', _external=True)
+    return google.authorize_redirect(redirect_uri)
+
+@app.route('/login/google/callback')
+def authorize_google():
+    try:
+        token = google.authorize_access_token()
+        resp = google.get('userinfo')
+        user_info = resp.json()
+        email = user_info.get('email')
+        name = user_info.get('name')
+        if not email:
+            flash('Email not available from Google', 'danger')
+            return redirect(url_for('login'))
+        username = email.split('@')[0]
+        user = User.get_by_username(username)
+        if not user:
+            User.create_user(username, email, str(uuid.uuid4()), name)
+            user = User.get_by_username(username)
+        login_user(user)
+        flash('Logged in with Google!', 'success')
+        return redirect(url_for('index'))
+    except Exception as e:
+        flash(f'Google login error: {str(e)}', 'danger')
+        return redirect(url_for('login'))
+
+@app.route('/login/facebook')
+def login_facebook():
+    redirect_uri = url_for('authorize_facebook', _external=True)
+    return facebook.authorize_redirect(redirect_uri)
+
+@app.route('/login/facebook/callback')
+def authorize_facebook():
+    try:
+        token = facebook.authorize_access_token()
+        resp = facebook.get('me?fields=id,name,email')
+        user_info = resp.json()
+        email = user_info.get('email')
+        name = user_info.get('name')
+        if not email:
+            flash('Email not available from Facebook', 'danger')
+            return redirect(url_for('login'))
+        username = email.split('@')[0]
+        user = User.get_by_username(username)
+        if not user:
+            User.create_user(username, email, str(uuid.uuid4()), name)
+            user = User.get_by_username(username)
+        login_user(user)
+        flash('Logged in with Facebook!', 'success')
+        return redirect(url_for('index'))
+    except Exception as e:
+        flash(f'Facebook login error: {str(e)}', 'danger')
+        return redirect(url_for('login'))
+
+@app.route('/login/tiktok')
+def login_tiktok():
+    redirect_uri = url_for('authorize_tiktok', _external=True)
+    return tiktok.authorize_redirect(redirect_uri)
+
+@app.route('/login/tiktok/callback')
+def authorize_tiktok():
+    try:
+        token = tiktok.authorize_access_token()
+        resp = tiktok.get('user/info/', token=token)
+        user_info = resp.json()
+        data = user_info.get('data', {}).get('user', {})
+        open_id = data.get('open_id')
+        display_name = data.get('display_name', 'TikTok User')
+        if not open_id:
+            flash('Could not get user info from TikTok', 'danger')
+            return redirect(url_for('login'))
+        username = f"tiktok_{open_id[:8]}"
+        email = f"{open_id}@tiktok.user"
+        user = User.get_by_username(username)
+        if not user:
+            User.create_user(username, email, str(uuid.uuid4()), display_name)
+            user = User.get_by_username(username)
+        login_user(user)
+        flash('Logged in with TikTok!', 'success')
+        return redirect(url_for('index'))
+    except Exception as e:
+        flash(f'TikTok login error: {str(e)}', 'danger')
+        return redirect(url_for('login'))
+
+@app.route('/login/whatsapp')
+def login_whatsapp():
+    redirect_uri = url_for('authorize_whatsapp', _external=True)
+    return whatsapp.authorize_redirect(redirect_uri)
+
+@app.route('/login/whatsapp/callback')
+def authorize_whatsapp():
+    try:
+        token = whatsapp.authorize_access_token()
+        resp = whatsapp.get('me?fields=id,name,email', token=token)
+        user_info = resp.json()
+        email = user_info.get('email')
+        name = user_info.get('name', 'WhatsApp User')
+        fb_id = user_info.get('id')
+        if email:
+            username = email.split('@')[0]
+        else:
+            username = f"wa_{fb_id[:8]}" if fb_id else f"user_{uuid.uuid4().hex[:8]}"
+            email = f"{username}@whatsapp.user"
+        user = User.get_by_username(username)
+        if not user:
+            User.create_user(username, email, str(uuid.uuid4()), name)
+            user = User.get_by_username(username)
+        login_user(user)
+        flash('Logged in with WhatsApp!', 'success')
+        return redirect(url_for('index'))
+    except Exception as e:
+        flash(f'WhatsApp login error: {str(e)}', 'danger')
+        return redirect(url_for('login'))
+
+# ============ STRIPE PAYMENT ROUTES ============
+@app.route('/api/create-payment-intent', methods=['POST'])
+@login_required
+def create_payment_intent():
+    if not stripe.api_key:
+        return jsonify({'error': 'Stripe not configured'}), 400
+    data = request.json
+    amount = int(float(data.get('amount', 0)) * 100)
+    try:
+        intent = stripe.PaymentIntent.create(
+            amount=amount,
+            currency='usd',
+            metadata={'user_id': current_user.id}
+        )
+        return jsonify({'clientSecret': intent.client_secret})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/payment-success')
+@login_required
+def payment_success():
+    flash('Payment successful! Your order has been confirmed.', 'success')
+    return redirect(url_for('order_history'))
+
+@app.route('/payment-cancel')
+@login_required
+def payment_cancel():
+    flash('Payment cancelled.', 'warning')
+    return redirect(url_for('cart'))
+
+# ============ API ROUTES ============
+@app.route('/api/cart/add', methods=['POST'])
+def add_to_cart():
+    data = request.json
+    cart = session.get('cart', [])
+    product_id = data['product_id']
+    for item in cart:
+        if item['product_id'] == product_id:
+            item['quantity'] += 1
+            break
+    else:
+        cart.append({'product_id': product_id, 'quantity': 1})
+    session['cart'] = cart
+    return jsonify({'success': True, 'count': len(cart)})
+
+@app.route('/api/cart/remove', methods=['POST'])
+def remove_from_cart():
+    data = request.json
+    cart = session.get('cart', [])
+    cart = [item for item in cart if item['product_id'] != data['product_id']]
+    session['cart'] = cart
+    return jsonify({'success': True})
+
+@app.route('/api/cart/count')
+def cart_count():
+    return jsonify({'count': len(session.get('cart', []))})
+
+@app.route('/api/cart/update', methods=['POST'])
+def update_cart():
+    data = request.json
+    cart = session.get('cart', [])
+    product_id = data['product_id']
+    quantity = data['quantity']
+    for item in cart:
+        if item['product_id'] == product_id:
+            if quantity <= 0:
+                cart.remove(item)
+            else:
+                item['quantity'] = quantity
+            break
+    session['cart'] = cart
+    return jsonify({'success': True})
+
+@app.route('/api/cart/clear', methods=['POST'])
+def clear_cart():
+    session['cart'] = []
+    return jsonify({'success': True})
+
+@app.route('/api/chatbot', methods=['POST'])
+def chatbot():
+    data = request.json
+    msg = data.get('message', '').lower()
+    if 'hour' in msg or 'open' in msg:
+        response = "We're open Monday-Friday 7AM-9PM, Saturday 8AM-10PM, Sunday 8AM-8PM"
+    elif 'wifi' in msg:
+        response = "Yes! Free WiFi available. Password: 'coffeelove2024'"
+    elif 'menu' in msg:
+        response = "Our menu: Espresso($3.50), Cappuccino($4.50), Latte($4.50), Mocha($5.00), Caramel Macchiato($5.50), Cold Brew($4.50), Hot Chocolate($4.00)"
+    elif 'address' in msg or 'location' in msg:
+        response = "📍 Iskoskuja 3 C 111, Vantaa"
+    elif 'phone' in msg or 'contact' in msg:
+        response = "📞 +(358) 413114312"
+    else:
+        response = "☕ Hello! Type 'menu' to see our items, 'hours' for opening times, 'wifi' for password."
+    return jsonify({'response': response})
+
+@app.route('/api/chatbot/save-order', methods=['POST'])
+def save_chatbot_order():
+    try:
+        data = request.json
+        order_number = data.get('order_number', 'CHAT' + str(uuid.uuid4())[:8].upper())
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("INSERT INTO chatbot_orders (order_number, customer_name, customer_email, customer_phone, delivery_address, items, total_amount, status, payment_status) VALUES (%s, %s, %s, %s, %s, %s, %s, 'pending', 'unpaid')", (order_number, data.get('customer_name', 'Guest'), data.get('customer_email', 'guest@coffeeshop.com'), data.get('customer_phone', '00000000'), data.get('delivery_address', 'pickup'), json.dumps(data.get('items', [])), data.get('total_amount', 0)))
+        db.commit()
+        db.close()
+        return jsonify({'success': True, 'order_number': order_number})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/update-profile', methods=['POST'])
+@login_required
+def update_profile():
+    data = request.json
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("UPDATE users SET full_name = %s, phone = %s WHERE id = %s", (data.get('full_name'), data.get('phone'), current_user.id))
+    db.commit()
+    db.close()
+    return jsonify({'success': True})
+
+@app.route('/api/cancel-order/<order_number>', methods=['POST'])
+@login_required
+def cancel_order(order_number):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("UPDATE orders SET status = 'cancelled' WHERE order_number = %s AND user_id = %s", (order_number, current_user.id))
+    db.commit()
+    db.close()
+    return jsonify({'success': True})
+
+@app.route('/api/reorder', methods=['POST'])
+@login_required
+def reorder():
+    try:
+        data = request.json
+        order_id = data.get('order_id')
+        order_type = data.get('order_type', 'web')
+        if not order_id:
+            return jsonify({'success': False, 'message': 'Order ID required'}), 400
+        db = get_db()
+        cursor = db.cursor()
+        items = []
+        if order_type == 'chatbot':
+            cursor.execute("SELECT * FROM chatbot_orders WHERE id = %s", (order_id,))
+            order = cursor.fetchone()
+            if not order:
+                db.close()
+                return jsonify({'success': False, 'message': 'Order not found'}), 404
+            order_items = json.loads(order['items']) if order['items'] else []
+            for item in order_items:
+                items.append({'product_id': item.get('id', item.get('product_id')), 'quantity': item.get('quantity', 1)})
+        else:
+            cursor.execute("SELECT id FROM orders WHERE id = %s AND user_id = %s", (order_id, current_user.id))
+            order = cursor.fetchone()
+            if not order:
+                db.close()
+                return jsonify({'success': False, 'message': 'Order not found'}), 404
+            cursor.execute("SELECT product_id, quantity FROM order_items WHERE order_id = %s", (order_id,))
+            items = cursor.fetchall()
+        db.close()
+        if not items:
+            return jsonify({'success': False, 'message': 'No items found'}), 400
+        session['cart'] = []
+        cart = []
+        for item in items:
+            cart.append({'product_id': item['product_id'], 'quantity': item['quantity']})
+        session['cart'] = cart
+        return jsonify({'success': True, 'message': f'{len(items)} items added to cart!'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+# ============ LOYALTY API ============
+@app.route('/api/loyalty/points')
+@login_required
+def get_loyalty_points():
+    return jsonify({'points': current_user.loyalty_points, 'next_reward': 100 - (current_user.loyalty_points % 100) if current_user.loyalty_points % 100 != 0 else 0})
+
+@app.route('/api/loyalty/rewards')
+@login_required
+def get_rewards():
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM rewards WHERE is_active = 1")
+    rewards = cursor.fetchall()
+    db.close()
+    return jsonify(rewards)
+
+@app.route('/api/loyalty/redeem', methods=['POST'])
+@login_required
+def redeem_reward():
+    data = request.json
+    reward_id = data.get('reward_id')
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM rewards WHERE id = %s", (reward_id,))
+    reward = cursor.fetchone()
+    db.close()
+    if reward and current_user.loyalty_points >= reward['points_required']:
+        current_user.loyalty_points -= reward['points_required']
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("UPDATE users SET loyalty_points = %s WHERE id = %s", (current_user.loyalty_points, current_user.id))
+        cursor.execute("INSERT INTO loyalty_transactions (user_id, points, reason) VALUES (%s, %s, %s)", (current_user.id, -reward['points_required'], f"Redeemed: {reward['name']}"))
+        db.commit()
+        db.close()
+        return jsonify({'success': True, 'message': f"Redeemed {reward['name']}!", 'points': current_user.loyalty_points})
+    else:
+        return jsonify({'success': False, 'message': 'Not enough points'}), 400
+
+# ============ FAVORITES API ============
+@app.route('/api/favorites', methods=['GET'])
+@login_required
+def get_favorites():
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT p.* FROM products p JOIN user_favorites f ON p.id = f.product_id WHERE f.user_id = %s", (current_user.id,))
+    favorites = cursor.fetchall()
+    db.close()
+    return jsonify(favorites)
+
+@app.route('/api/favorites/toggle', methods=['POST'])
+@login_required
+def toggle_favorite():
+    data = request.json
+    product_id = data.get('product_id')
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM user_favorites WHERE user_id = %s AND product_id = %s", (current_user.id, product_id))
+    exists = cursor.fetchone()
+    if exists:
+        cursor.execute("DELETE FROM user_favorites WHERE user_id = %s AND product_id = %s", (current_user.id, product_id))
+        added = False
+    else:
+        cursor.execute("INSERT INTO user_favorites (user_id, product_id) VALUES (%s, %s)", (current_user.id, product_id))
+        added = True
+    db.commit()
+    db.close()
+    return jsonify({'added': added})
+
+# ============ REVIEWS API ============
+@app.route('/api/reviews/add', methods=['POST'])
+@login_required
+def add_review():
+    data = request.json
+    product_id = data.get('product_id')
+    rating = data.get('rating')
+    comment = data.get('comment', '')
+    if not product_id or not rating:
+        return jsonify({'success': False, 'message': 'Missing data'}), 400
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM product_reviews WHERE product_id = %s AND user_id = %s", (product_id, current_user.id))
+    existing = cursor.fetchone()
+    if existing:
+        cursor.execute("UPDATE product_reviews SET rating = %s, comment = %s WHERE id = %s", (rating, comment, existing['id']))
+    else:
+        cursor.execute("INSERT INTO product_reviews (product_id, user_id, rating, comment) VALUES (%s, %s, %s, %s)", (product_id, current_user.id, rating, comment))
+    db.commit()
+    db.close()
+    return jsonify({'success': True})
+
+@app.route('/api/reviews/product/<int:product_id>', methods=['GET'])
+def get_product_reviews(product_id):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT AVG(rating) as avg_rating, COUNT(*) as total FROM product_reviews WHERE product_id = %s", (product_id,))
+    stats = cursor.fetchone()
+    cursor.execute("SELECT pr.*, u.username FROM product_reviews pr JOIN users u ON pr.user_id = u.id WHERE pr.product_id = %s ORDER BY pr.created_at DESC LIMIT 5", (product_id,))
+    reviews = cursor.fetchall()
+    db.close()
+    return jsonify({'average_rating': float(stats['avg_rating']) if stats['avg_rating'] else 0, 'total_reviews': stats['total'] or 0, 'reviews': reviews})
+
+# ============ AUTH ROUTES ============
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        user = User.get_by_username(request.form['username'])
+        if user and user.check_password(request.form['password']):
+            login_user(user)
+            flash('Welcome back!', 'success')
+            if user.check_birthday_reward():
+                flash('🎂 Happy Birthday! You have a birthday reward waiting! Go to your profile to claim it.', 'info')
+            return redirect(url_for('index'))
+        flash('Invalid username or password', 'danger')
+    return render_template('login.html')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    ref_code = request.args.get('ref', '')
+    if request.method == 'POST':
+        try:
+            full_name = request.form.get('full_name', '')
+            phone = request.form.get('phone', '')
+            ref_code = request.form.get('ref_code', '')
+            User.create_user(request.form['username'], request.form['email'], request.form['password'], full_name, phone)
+            if ref_code:
+                db = get_db()
+                cursor = db.cursor()
+                cursor.execute("SELECT id FROM users WHERE referral_code = %s", (ref_code,))
+                referrer = cursor.fetchone()
+                if referrer:
+                    new_user = User.get_by_username(request.form['username'])
+                    cursor.execute("INSERT INTO referrals (referrer_id, referred_user_id, points_earned) VALUES (%s, %s, 100)", (referrer['id'], new_user.id))
+                    cursor.execute("UPDATE users SET loyalty_points = loyalty_points + 100 WHERE id = %s", (referrer['id'],))
+                    cursor.execute("UPDATE users SET loyalty_points = loyalty_points + 50 WHERE id = %s", (new_user.id,))
+                    db.commit()
+                db.close()
+            flash('Registration successful! Please login.', 'success')
+            return redirect(url_for('login'))
+        except:
+            flash('Username or email already exists', 'danger')
+    return render_template('register.html', ref_code=ref_code)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('Logged out', 'info')
+    return redirect(url_for('index'))
+
+# ============ ADMIN FEATURES ============
+@app.route('/admin/sales-dashboard')
+@login_required
+def sales_dashboard():
+    if not current_user.is_admin:
+        flash('Admin access required', 'danger')
+        return redirect(url_for('index'))
+    return render_template('admin/sales_dashboard.html')
+
+@app.route('/api/admin/sales-data')
+@login_required
+def sales_data():
+    if not current_user.is_admin:
+        return jsonify({'error': 'Unauthorized'}), 403
+    period = request.args.get('period', 'week')
+    db = get_db()
+    cursor = db.cursor()
+    if period == 'week':
+        cursor.execute("SELECT DATE(created_at) as date, COUNT(*) as orders, SUM(total_amount) as revenue FROM orders WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY) GROUP BY DATE(created_at) ORDER BY date")
+    elif period == 'month':
+        cursor.execute("SELECT DATE(created_at) as date, COUNT(*) as orders, SUM(total_amount) as revenue FROM orders WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) GROUP BY DATE(created_at) ORDER BY date")
+    elif period == 'year':
+        cursor.execute("SELECT MONTH(created_at) as month, COUNT(*) as orders, SUM(total_amount) as revenue FROM orders WHERE created_at >= DATE_SUB(NOW(), INTERVAL 12 MONTH) GROUP BY MONTH(created_at) ORDER BY month")
+    else:
+        cursor.execute("SELECT DATE(created_at) as date, COUNT(*) as orders, SUM(total_amount) as revenue FROM orders GROUP BY DATE(created_at) ORDER BY date")
+    sales_data = cursor.fetchall()
+    cursor.execute("SELECT p.category, SUM(oi.quantity) as total_sold, SUM(oi.quantity * oi.price_at_time) as revenue FROM order_items oi JOIN products p ON oi.product_id = p.id GROUP BY p.category ORDER BY revenue DESC")
+    category_data = cursor.fetchall()
+    cursor.execute("SELECT p.name, p.category, SUM(oi.quantity) as total_quantity, SUM(oi.quantity * oi.price_at_time) as revenue FROM order_items oi JOIN products p ON oi.product_id = p.id GROUP BY p.id ORDER BY revenue DESC LIMIT 10")
+    top_products = cursor.fetchall()
+    cursor.execute("SELECT COUNT(*) as total, COALESCE(SUM(total_amount), 0) as revenue FROM orders")
+    totals = cursor.fetchone()
+    cursor.execute("SELECT COUNT(*) as total FROM users WHERE is_admin = 0")
+    customer_count = cursor.fetchone()
+    db.close()
+    return jsonify({
+        'total_revenue': float(totals['revenue']),
+        'total_orders': totals['total'],
+        'total_customers': customer_count['total'],
+        'avg_order_value': float(totals['revenue'] / totals['total']) if totals['total'] > 0 else 0,
+        'sales_labels': [row['date'] if 'date' in row else row['month'] for row in sales_data],
+        'sales_data': [float(row['revenue']) for row in sales_data],
+        'category_labels': [row['category'] for row in category_data],
+        'category_data': [float(row['revenue']) for row in category_data],
+        'top_products': [{'name': p['name'], 'category': p['category'], 'total_quantity': p['total_quantity'], 'revenue': float(p['revenue']), 'trend': round((p['total_quantity'] / 10) * 100, 1)} for p in top_products]
+    })
+
+@app.route('/admin/inventory')
+@login_required
+def inventory_page():
+    if not current_user.is_admin:
+        flash('Admin access required', 'danger')
+        return redirect(url_for('index'))
+    return render_template('admin/inventory.html')
+
+@app.route('/api/admin/inventory')
+@login_required
+def get_inventory():
+    if not current_user.is_admin:
+        return jsonify({'error': 'Unauthorized'}), 403
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SHOW COLUMNS FROM products LIKE 'stock'")
+    if not cursor.fetchone():
+        cursor.execute("ALTER TABLE products ADD COLUMN stock INT DEFAULT 10")
+    cursor.execute("SELECT * FROM products ORDER BY id")
+    products = cursor.fetchall()
+    cursor.execute("SELECT COUNT(*) as total FROM products")
+    total = cursor.fetchone()
+    cursor.execute("SELECT COUNT(*) as count FROM products WHERE stock < 10 AND stock > 0")
+    low_stock = cursor.fetchone()
+    cursor.execute("SELECT COUNT(*) as count FROM products WHERE stock <= 0")
+    out_stock = cursor.fetchone()
+    cursor.execute("SELECT SUM(price * stock) as value FROM products")
+    total_value = cursor.fetchone()
+    db.close()
+    return jsonify({'products': products, 'total_products': total['total'], 'low_stock_count': low_stock['count'], 'out_stock_count': out_stock['count'], 'total_value': float(total_value['value'] or 0)})
+
+@app.route('/api/admin/add-product', methods=['POST'])
+@login_required
+def add_product():
+    if not current_user.is_admin:
+        return jsonify({'error': 'Unauthorized'}), 403
+    data = request.json
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("INSERT INTO products (name, description, price, category, stock, is_available) VALUES (%s, %s, %s, %s, %s, 1)", (data['name'], data.get('description', ''), data['price'], data['category'], data.get('stock', 10)))
+    db.commit()
+    db.close()
+    return jsonify({'success': True})
+
+@app.route('/api/admin/update-stock', methods=['POST'])
+@login_required
+def update_stock():
+    if not current_user.is_admin:
+        return jsonify({'error': 'Unauthorized'}), 403
+    data = request.json
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("UPDATE products SET stock = %s WHERE id = %s", (data['stock'], data['product_id']))
+    cursor.execute("UPDATE products SET is_available = %s WHERE id = %s", (1 if data['stock'] > 0 else 0, data['product_id']))
+    db.commit()
+    db.close()
+    return jsonify({'success': True})
+
+@app.route('/admin/customers')
+@login_required
+def customers_page():
+    if not current_user.is_admin:
+        flash('Admin access required', 'danger')
+        return redirect(url_for('index'))
+    return render_template('admin/customers.html')
+
+@app.route('/api/admin/customers')
+@login_required
+def get_customers():
+    if not current_user.is_admin:
+        return jsonify({'error': 'Unauthorized'}), 403
+    search = request.args.get('search', '')
+    db = get_db()
+    cursor = db.cursor()
+    query = "SELECT u.*, COUNT(o.id) as order_count, COALESCE(SUM(o.total_amount), 0) as total_spent FROM users u LEFT JOIN orders o ON u.id = o.user_id WHERE u.is_admin = 0"
+    params = []
+    if search:
+        query += " AND (u.username LIKE %s OR u.email LIKE %s OR u.full_name LIKE %s)"
+        search_param = f"%{search}%"
+        params = [search_param, search_param, search_param]
+    query += " GROUP BY u.id ORDER BY u.created_at DESC"
+    cursor.execute(query, params)
+    customers = cursor.fetchall()
+    cursor.execute("SELECT COUNT(*) as count FROM users WHERE is_admin = 0 AND MONTH(created_at) = MONTH(CURRENT_DATE())")
+    new_this_month = cursor.fetchone()
+    cursor.execute("SELECT COUNT(*) as total FROM users WHERE is_admin = 0")
+    total_customers = cursor.fetchone()
+    cursor.execute("SELECT COUNT(*) as total FROM orders")
+    total_orders = cursor.fetchone()
+    cursor.execute("SELECT COALESCE(SUM(total_amount), 0) as total FROM orders")
+    total_spent = cursor.fetchone()
+    db.close()
+    return jsonify({'customers': customers, 'total_customers': total_customers['total'], 'new_this_month': new_this_month['count'], 'total_orders': total_orders['total'], 'total_spent': float(total_spent['total'] or 0)})
+
+@app.route('/api/admin/customer/<int:customer_id>')
+@login_required
+def get_customer_detail(customer_id):
+    if not current_user.is_admin:
+        return jsonify({'error': 'Unauthorized'}), 403
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT u.*, COUNT(o.id) as order_count, COALESCE(SUM(o.total_amount), 0) as total_spent FROM users u LEFT JOIN orders o ON u.id = o.user_id WHERE u.id = %s GROUP BY u.id", (customer_id,))
+    customer = cursor.fetchone()
+    db.close()
+    return jsonify(customer)
+
+@app.route('/api/admin/update-customer', methods=['POST'])
+@login_required
+def update_customer():
+    if not current_user.is_admin:
+        return jsonify({'error': 'Unauthorized'}), 403
+    data = request.json
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("UPDATE users SET full_name = %s, email = %s, phone = %s, loyalty_points = %s WHERE id = %s", (data['full_name'], data['email'], data['phone'], data['loyalty_points'], data['id']))
+    db.commit()
+    db.close()
+    return jsonify({'success': True})
+
+@app.route('/api/admin/delete-customer', methods=['POST'])
+@login_required
+def delete_customer():
+    if not current_user.is_admin:
+        return jsonify({'error': 'Unauthorized'}), 403
+    data = request.json
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT COUNT(*) as count FROM orders WHERE user_id = %s", (data['id'],))
+    orders = cursor.fetchone()
+    if orders['count'] > 0:
+        return jsonify({'success': False, 'message': 'Cannot delete customer with existing orders'}), 400
+    cursor.execute("DELETE FROM users WHERE id = %s", (data['id'],))
+    db.commit()
+    db.close()
+    return jsonify({'success': True})
+
+@app.route('/admin/export')
+@login_required
+def export_page():
+    if not current_user.is_admin:
+        flash('Admin access required', 'danger')
+        return redirect(url_for('index'))
+    return render_template('admin/export.html')
+
+@app.route('/api/admin/export/<report_type>')
+@login_required
+def export_report(report_type):
+    if not current_user.is_admin:
+        return jsonify({'error': 'Unauthorized'}), 403
+    import csv
+    from io import StringIO
+    from datetime import datetime
+    start_date = request.args.get('start')
+    end_date = request.args.get('end')
+    limit = request.args.get('limit')
+    db = get_db()
+    cursor = db.cursor()
+    if report_type == 'sales':
+        query = "SELECT o.order_number, o.created_at, o.total_amount, o.status, o.payment_method, u.username, u.email FROM orders o LEFT JOIN users u ON o.user_id = u.id WHERE 1=1"
+        params = []
+        if start_date:
+            query += " AND DATE(o.created_at) >= %s"
+            params.append(start_date)
+        if end_date:
+            query += " AND DATE(o.created_at) <= %s"
+            params.append(end_date)
+        query += " ORDER BY o.created_at DESC"
+        if limit:
+            query += f" LIMIT {limit}"
+        cursor.execute(query, params)
+        data = cursor.fetchall()
+        output = StringIO()
+        writer = csv.writer(output)
+        writer.writerow(['Order Number', 'Date', 'Total Amount', 'Status', 'Payment Method', 'Customer', 'Email'])
+        for row in data:
+            writer.writerow([row['order_number'], row['created_at'], f"${row['total_amount']}", row['status'], row['payment_method'] or 'N/A', row['username'] or 'Guest', row['email'] or 'N/A'])
+    elif report_type == 'products':
+        cursor.execute("SELECT p.id, p.name, p.category, p.price, p.stock, p.is_available, COALESCE(SUM(oi.quantity), 0) as total_sold, COALESCE(SUM(oi.quantity * oi.price_at_time), 0) as total_revenue FROM products p LEFT JOIN order_items oi ON p.id = oi.product_id GROUP BY p.id ORDER BY total_sold DESC")
+        data = cursor.fetchall()
+        output = StringIO()
+        writer = csv.writer(output)
+        writer.writerow(['ID', 'Product Name', 'Category', 'Price', 'Stock', 'Status', 'Total Sold', 'Revenue'])
+        for row in data:
+            writer.writerow([row['id'], row['name'], row['category'], f"${row['price']}", row['stock'] or 0, 'Available' if row['is_available'] else 'Unavailable', row['total_sold'], f"${row['total_revenue']}"])
+    elif report_type == 'customers':
+        cursor.execute("SELECT u.id, u.username, u.email, u.full_name, u.phone, u.loyalty_points, u.created_at, COUNT(o.id) as order_count, COALESCE(SUM(o.total_amount), 0) as total_spent FROM users u LEFT JOIN orders o ON u.id = o.user_id WHERE u.is_admin = 0 GROUP BY u.id ORDER BY total_spent DESC")
+        data = cursor.fetchall()
+        output = StringIO()
+        writer = csv.writer(output)
+        writer.writerow(['ID', 'Username', 'Full Name', 'Email', 'Phone', 'Loyalty Points', 'Joined', 'Orders', 'Total Spent'])
+        for row in data:
+            writer.writerow([row['id'], row['username'], row['full_name'] or '', row['email'], row['phone'] or '', row['loyalty_points'], row['created_at'], row['order_count'], f"${row['total_spent']}"])
+    elif report_type == 'inventory':
+        cursor.execute("SELECT id, name, category, price, stock, is_available, CASE WHEN stock <= 0 THEN 'Out of Stock' WHEN stock < 10 THEN 'Low Stock' ELSE 'In Stock' END as stock_status FROM products ORDER BY stock ASC")
+        data = cursor.fetchall()
+        output = StringIO()
+        writer = csv.writer(output)
+        writer.writerow(['ID', 'Product', 'Category', 'Price', 'Stock', 'Status', 'Stock Level'])
+        for row in data:
+            writer.writerow([row['id'], row['name'], row['category'], f"${row['price']}", row['stock'] or 0, 'Active' if row['is_available'] else 'Inactive', row['stock_status']])
+    db.close()
+    filename = f"{report_type}_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    response = Response(output.getvalue(), mimetype='text/csv')
+    response.headers['Content-Disposition'] = f'attachment; filename={filename}'
+    return response
+
+@app.route('/admin/chatbot-orders')
+@login_required
+def admin_chatbot_orders():
+    if not current_user.is_admin:
+        flash('Admin access required', 'danger')
+        return redirect(url_for('index'))
+
+    import json
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM chatbot_orders ORDER BY created_at DESC")
+    orders = cursor.fetchall()
+
+    for order in orders:
+        if order.get('items'):
+            try:
+                items_data = json.loads(order['items'])
+                item_names = [item.get('name', 'Unknown') for item in items_data]
+                order['item_names'] = ', '.join(item_names)
+            except:
+                order['item_names'] = str(order['items'])[:50]
+        else:
+            order['item_names'] = '-'
+
+    db.close()
+    return render_template('admin/chatbot_orders.html', orders=orders)
+
+@app.route('/api/admin/delete-chatbot-order', methods=['POST'])
+@login_required
+def delete_chatbot_order():
+    if not current_user.is_admin:
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+
+    data = request.json
+    order_id = data.get('order_id')
+
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("DELETE FROM chatbot_orders WHERE id = %s", (order_id,))
+    db.commit()
+    db.close()
+
+    return jsonify({'success': True})
+
+# ============ ADMIN LOGIN & REGISTRATION ============
+@app.route('/admin-login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        user = User.get_by_username(username)
+        if user and user.check_password(password) and user.is_admin:
+            login_user(user)
+            flash('Welcome Admin!', 'success')
+            return redirect(url_for('sales_dashboard'))
+        else:
+            flash('Invalid admin credentials', 'danger')
+
+    return render_template('admin_login.html')
+
+@app.route('/admin-register', methods=['GET', 'POST'])
+def admin_register_page():
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT COUNT(*) as count FROM users WHERE is_admin = 1")
+    result = cursor.fetchone()
+    db.close()
+
+    admin_exists = result['count'] > 0
+
+    if admin_exists:
+        flash('Admin already registered. Please login.', 'warning')
+        return redirect(url_for('admin_login'))
+
+    if request.method == 'POST':
+        admin_key = request.form.get('admin_key')
+        ADMIN_SECRET_KEY = "AdminKey2024"
+
+        if admin_key != ADMIN_SECRET_KEY:
+            flash('Invalid admin registration key!', 'danger')
+            return render_template('admin_register_page.html')
+
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        existing = User.get_by_username(username)
+        if existing:
+            flash('Username already exists', 'danger')
+            return render_template('admin_register_page.html')
+
+        password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+        referral_code = 'ADMIN' + str(uuid.uuid4())[:6].upper()
+
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("""
+            INSERT INTO users (username, email, password_hash, referral_code, is_admin, loyalty_points)
+            VALUES (%s, %s, %s, %s, 1, 0)
+        """, (username, email, password_hash, referral_code))
+        db.commit()
+        db.close()
+
+        flash('✅ Admin account created successfully! Please login.', 'success')
+        return redirect(url_for('admin_login'))
+
+    return render_template('admin_register_page.html')
+
+@app.route('/admin-access')
+@login_required
+def admin_access():
+    if not current_user.is_admin:
+        flash('Admin access required', 'danger')
+        return redirect(url_for('index'))
+    return render_template('admin_access.html')
+
+# ============ CONCEAL ORDER ============
+@app.route('/api/conceal-order', methods=['POST'])
+@login_required
+def conceal_order():
+    data = request.json
+    order_id = data.get('order_id')
+    order_type = data.get('order_type', 'web')
+    db = get_db()
+    cursor = db.cursor()
+    if order_type == 'chatbot':
+        cursor.execute("DELETE FROM chatbot_orders WHERE id = %s", (order_id,))
+    else:
+        cursor.execute("DELETE FROM orders WHERE id = %s AND user_id = %s", (order_id, current_user.id))
+    db.commit()
+    db.close()
+    return jsonify({'success': True})
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)
