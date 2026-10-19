@@ -2,8 +2,6 @@
 includes/config.php
 
 # Uploads (large images)
-uploads/menu/*.jpg
-uploads/menu/*.webp
 
 # Database dumps
 *.sql
