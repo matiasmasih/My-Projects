@@ -1,0 +1,283 @@
+/* =========================================================
+   ATTENDANCE ADMIN — Sidebar Layout
+   ========================================================= */
+
+.admin-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+    background: var(--bg);
+}
+
+.admin-sidebar {
+    background: var(--card-bg);
+    border-right: 1px solid var(--border);
+    padding: 24px 0;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.admin-sidebar-logo {
+    padding: 0 20px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--text);
+    text-decoration: none;
+}
+.admin-sidebar-logo:hover { color: var(--primary); }
+.admin-sidebar-logo i { color: var(--primary); font-size: 1.3rem; }
+
+.admin-sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0 12px;
+    flex: 1;
+}
+
+.admin-sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.15s ease;
+}
+.admin-sidebar-link:hover {
+    background: var(--bg-alt);
+    color: var(--primary);
+}
+.admin-sidebar-link.active {
+    background: var(--primary);
+    color: #fff;
+    font-weight: 600;
+}
+.admin-sidebar-link.active i {
+    color: #fff;
+}
+.admin-sidebar-link i {
+    width: 20px;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+.admin-sidebar-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 16px 12px;
+}
+
+.admin-sidebar-footer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.admin-main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.admin-topbar {
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.admin-topbar-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-content {
+    padding: 32px;
+    flex: 1;
+}
+
+@media (max-width: 900px) {
+    .admin-layout { grid-template-columns: 1fr; }
+    .admin-sidebar {
+        position: fixed;
+        left: -280px;
+        width: 260px;
+        height: 100vh;
+        z-index: 1000;
+        transition: left 0.25s ease;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.2);
+    }
+    .admin-sidebar.open { left: 0; }
+    .admin-content { padding: 20px 16px; }
+    .admin-topbar { padding: 12px 16px; }
+    .admin-sidebar-toggle {
+        display: inline-flex;
+        background: transparent;
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        padding: 6px 10px;
+        color: var(--text);
+        cursor: pointer;
+    }
+}
+
+@media (min-width: 901px) {
+    .admin-sidebar-toggle { display: none; }
+}
+
+/* Stat cards */
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    transition: all 0.15s ease;
+}
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-size: 1.1rem;
+}
+.stat-icon.blue   { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+.stat-icon.green  { background: linear-gradient(135deg, #10b981, #047857); }
+.stat-icon.amber  { background: linear-gradient(135deg, #f59e0b, #b45309); }
+.stat-icon.red    { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+.stat-icon.sky    { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
+
+.stat-value { font-size: 1.6rem; font-weight: 800; color: var(--text); line-height: 1; }
+.stat-label { font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
+
+.admin-panel {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 22px;
+    box-shadow: var(--shadow-sm);
+}
+.admin-panel h3 {
+    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+.admin-panel h3 i { color: var(--primary); }
+
+.admin-table-wrap {
+    overflow-x: auto;
+}
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 640px;
+}
+.admin-table th,
+.admin-table td {
+    padding: 12px 14px;
+    text-align: left;
+    font-size: 0.88rem;
+    border-bottom: 1px solid var(--border);
+}
+.admin-table th {
+    background: var(--bg-alt);
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+.admin-table tbody tr:hover { background: var(--bg-alt); }
+
+/* =========================================================
+   ADMIN TABLE — Single-line rows + horizontal scroll
+   ========================================================= */
+
+/* Enable horizontal scroll on the wrapper */
+.admin-table-wrap {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent cell content from wrapping */
+.admin-table th,
+.admin-table td {
+    white-space: nowrap !important;
+}
+
+/* Better min-width so table doesn't squeeze */
+.admin-table {
+    min-width: 900px;
+}
+
+/* Allow one column (usually name/description) to wrap if needed */
+.admin-table td.wrap-ok {
+    white-space: normal !important;
+    min-width: 200px;
+}
+
+/* Make scrollbar visible and styled */
+.admin-table-wrap::-webkit-scrollbar {
+    height: 8px;
+}
+.admin-table-wrap::-webkit-scrollbar-track {
+    background: var(--bg-alt);
+    border-radius: 4px;
+}
+.admin-table-wrap::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+}
+.admin-table-wrap::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
