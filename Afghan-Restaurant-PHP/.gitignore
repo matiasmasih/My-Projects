@@ -1,0 +1,19 @@
+# Database config (contains password)
+includes/config.php
+
+# Uploads (large images)
+
+# Database dumps
+*.sql
+
+# Editor swap files
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+.env.local
