@@ -1,0 +1,15 @@
+# Ignore uploaded files (user photos, book covers, etc.)
+/uploads/*
+!/uploads/.gitkeep
+
+# Ignore logs
+*.log
+/logs/
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE files
+.vscode/
+.idea/
